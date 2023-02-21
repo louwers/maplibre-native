@@ -2,6 +2,11 @@ load("@build_bazel_rules_apple//apple:apple.bzl", "apple_static_xcframework", "a
 load("@build_bazel_rules_apple//apple:ios.bzl", "ios_framework")
 load("@build_bazel_rules_apple//apple:resources.bzl", "apple_resource_bundle")
 load("//bazel:flags.bzl", "CPP_FLAGS", "MAPLIBRE_FLAGS", "WARNING_FLAGS")
+load(
+    "@com_github_buildbuddy_io_rules_xcodeproj//xcodeproj:defs.bzl",
+    "top_level_target",
+    "xcodeproj",
+)
 
 # This list of public headers is from what Mapbox vendors with their dynamic framework
 # If we forget one the build will fail, and if we add too many there will be a warning
@@ -129,7 +134,7 @@ ios_framework(
     name = "Mapbox.link",
     bundle_id = "com.maplibre.link",
     families = ["iphone"],
-    infoplists = ["build/Info.plist"],
+    infoplists = [":bazel/Info.plist"],
     linkopts = ["-all_load"],
     minimum_os_version = "9.0",
     deps = ["sdk"],
@@ -179,7 +184,7 @@ apple_resource_bundle(
     name = "resources",
     bundle_id = "com.maplibre.mapbox",
     bundle_name = "Mapbox",
-    infoplists = ["build/Info-static.plist"],
+    infoplists = [":bazel/Info-static.plist"],
     resources = glob([
         "platform/ios/resources/*.lproj/**",
         "platform/ios/resources/*.xcassets/**",
@@ -356,5 +361,14 @@ objc_library(
     deps = [
         "//platform/darwin:darwin-objc",
         "//platform/darwin:darwin-objcpp",
+    ],
+)
+
+xcodeproj(
+    name = "xcodeproj",
+    project_name = "MapLibre-Native",
+    tags = ["manual"],
+    top_level_targets = [
+        ":Mapbox.link"
     ],
 )
