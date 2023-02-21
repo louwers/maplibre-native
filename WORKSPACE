@@ -9,6 +9,19 @@ http_archive(
     url = "https://github.com/bazelbuild/rules_apple/archive/76752fe84ff0dc5d793033015647c78efbf41309.tar.gz",
 )
 
+http_archive(
+    name = "com_github_buildbuddy_io_rules_xcodeproj",
+    sha256 = "1e2f40eaee520093343528ac9a4a9180b0500cdd83b1e5e2a95abc8c541686e2",
+    url = "https://github.com/buildbuddy-io/rules_xcodeproj/releases/download/1.1.0/release.tar.gz",
+)
+
+load(
+    "@com_github_buildbuddy_io_rules_xcodeproj//xcodeproj:repositories.bzl",
+    "xcodeproj_rules_dependencies",
+)
+
+xcodeproj_rules_dependencies()
+
 load(
     "@build_bazel_rules_apple//apple:repositories.bzl",
     "apple_rules_dependencies",
