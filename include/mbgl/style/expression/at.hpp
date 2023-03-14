@@ -21,16 +21,15 @@ public:
     EvaluationResult evaluate(const EvaluationContext& params) const override;
     void eachChild(const std::function<void(const Expression&)>&) const override;
 
-    bool operator==(const Expression& e) const override {
-        if (e.getKind() == Kind::At) {
-            auto rhs = static_cast<const At*>(&e);
-            return *index == *(rhs->index) && *input == *(rhs->input);
-        }
-        return false;
+  static ParseResult parse(const mbgl::style::conversion::Convertible &value,
+                           ParsingContext &ctx);
+
+    std::vector<std::optional<Value>> possibleOutputs() const override {
+        return { std::nullopt };
     }
 
-    std::vector<optional<Value>> possibleOutputs() const override {
-        return { nullopt };
+    std::vector<std::optional<Value>> possibleOutputs() const override {
+        return { std::nullopt };
     }
     
     std::string getOperator() const override { return "at"; }

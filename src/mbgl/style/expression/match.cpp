@@ -29,15 +29,27 @@ bool Match<T>::operator==(const Expression& e) const {
 }
 
 template <typename T>
-std::vector<optional<Value>> Match<T>::possibleOutputs() const {
-    std::vector<optional<Value>> result;
+std::vector<std::optional<Value>> Match<T>::possibleOutputs() const {
+    std::vector<std::optional<Value>> result;
     for (const auto& branch : branches) {
         for (auto& output : branch.second->possibleOutputs()) {
             result.push_back(std::move(output));
         }
     }
-    for (auto& output : otherwise->possibleOutputs()) {
-        result.push_back(std::move(output));
+  }
+  for (auto &output : otherwise->possibleOutputs()) {
+    result.push_back(std::move(output));
+  }
+  return result;
+}
+
+template <typename T>
+std::vector<std::optional<Value>> Match<T>::possibleOutputs() const {
+    std::vector<std::optional<Value>> result;
+    for (const auto& branch : branches) {
+        for (auto& output : branch.second->possibleOutputs()) {
+            result.push_back(std::move(output));
+        }
     }
     return result;
 }
@@ -125,10 +137,10 @@ template class Match<std::string>;
 using InputType = variant<int64_t, std::string>;
 
 using namespace mbgl::style::conversion;
-optional<InputType> parseInputValue(const Convertible& input, ParsingContext& parentContext, std::size_t index, optional<type::Type>& inputType) {
+std::optional<InputType> parseInputValue(const Convertible& input, ParsingContext& parentContext, std::size_t index, std::optional<type::Type>& inputType) {
     using namespace mbgl::style::conversion;
-    optional<InputType> result;
-    optional<type::Type> type;
+    std::optional<InputType> result;
+    std::optional<type::Type> type;
 
     auto value = toValue(input);
 
@@ -139,7 +151,7 @@ optional<InputType> parseInputValue(const Convertible& input, ParsingContext& pa
                     parentContext.error("Branch labels must be integers no larger than " + util::toString(Value::maxSafeInteger()) + ".", index);
                 } else {
                     type = {type::Number};
-                    result = optional<InputType>{static_cast<int64_t>(n)};
+                    result = std::optional<InputType>{static_cast<int64_t>(n)};
                 }
             },
             [&] (int64_t n) {
@@ -147,7 +159,7 @@ optional<InputType> parseInputValue(const Convertible& input, ParsingContext& pa
                     parentContext.error("Branch labels must be integers no larger than " + util::toString(Value::maxSafeInteger()) + ".", index);
                 } else {
                     type = {type::Number};
-                    result = optional<InputType>{n};
+                    result = std::optional<InputType>{n};
                 }
             },
             [&] (double n) {
@@ -157,7 +169,7 @@ optional<InputType> parseInputValue(const Convertible& input, ParsingContext& pa
                     parentContext.error("Numeric branch labels must be integer values.", index);
                 } else {
                     type = {type::Number};
-                    result = optional<InputType>{static_cast<int64_t>(n)};
+                    result = std::optional<InputType>{static_cast<int64_t>(n)};
                 }
             },
             [&] (const std::string& s) {
@@ -179,10 +191,37 @@ optional<InputType> parseInputValue(const Convertible& input, ParsingContext& pa
     if (!inputType) {
         inputType = type;
     } else {
-        optional<std::string> err = type::checkSubtype(*inputType, *type);
+        std::optional<std::string> err = type::checkSubtype(*inputType, *type);
         if (err) {
             parentContext.error(*err, index);
-            return optional<InputType>();
+            return std::optional<InputType>();
+        }
+    }
+
+  if (!type) {
+    return result;
+  }
+
+  if (!inputType) {
+    inputType = type;
+  } else {
+    std::optional<std::string> err = type::checkSubtype(*inputType, *type);
+    if (err) {
+      parentContext.error(*err, index);
+      return std::optional<InputType>();
+    }
+
+    if (!type) {
+        return result;
+    }
+
+    if (!inputType) {
+        inputType = type;
+    } else {
+        std::optional<std::string> err = type::checkSubtype(*inputType, *type);
+        if (err) {
+            parentContext.error(*err, index);
+            return std::optional<InputType>();
         }
     }
 
@@ -239,8 +278,8 @@ ParseResult parseMatch(const Convertible& value, ParsingContext& ctx) {
         return ParseResult();
     }
 
-    optional<type::Type> inputType;
-    optional<type::Type> outputType;
+    std::optional<type::Type> inputType;
+    std::optional<type::Type> outputType;
     if (ctx.getExpected() && *ctx.getExpected() != type::Value) {
         outputType = ctx.getExpected();
     }
@@ -264,14 +303,14 @@ ParseResult parseMatch(const Convertible& value, ParsingContext& ctx) {
             
             labels.reserve(groupLength);
             for (size_t j = 0; j < groupLength; j++) {
-                const optional<InputType> inputValue = parseInputValue(arrayMember(label, j), ctx, i, inputType);
+                const std::optional<InputType> inputValue = parseInputValue(arrayMember(label, j), ctx, i, inputType);
                 if (!inputValue) {
                     return ParseResult();
                 }
                 labels.push_back(*inputValue);
             }
         } else {
-            const optional<InputType> inputValue = parseInputValue(label, ctx, i, inputType);
+            const std::optional<InputType> inputValue = parseInputValue(label, ctx, i, inputType);
             if (!inputValue) {
                 return ParseResult();
             }
@@ -302,7 +341,7 @@ ParseResult parseMatch(const Convertible& value, ParsingContext& ctx) {
 
     assert(inputType && outputType);
 
-    optional<std::string> err;
+    std::optional<std::string> err;
     if ((*input)->getType() != type::Value && (err = type::checkSubtype(*inputType, (*input)->getType()))) {
         ctx.error(*err, 1);
         return ParseResult();

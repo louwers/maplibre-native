@@ -82,24 +82,24 @@ ParseResult parseInterpolate(const Convertible& value, ParsingContext& ctx) {
 
     auto length = arrayLength(value);
 
-    if (length < 2) {
-        ctx.error("Expected an interpolation type expression.");
-        return ParseResult();
-    }
+  if (length < 2) {
+    ctx.error("Expected an interpolation type expression.");
+    return ParseResult();
+  }
 
-    const Convertible& interp = arrayMember(value, 1);
-    if (!isArray(interp) || arrayLength(interp) == 0) {
-        ctx.error("Expected an interpolation type expression.");
-        return ParseResult();
-    }
+  const Convertible &interp = arrayMember(value, 1);
+  if (!isArray(interp) || arrayLength(interp) == 0) {
+    ctx.error("Expected an interpolation type expression.");
+    return ParseResult();
+  }
 
-    optional<Interpolator> interpolator;
+    std::optional<Interpolator> interpolator;
     
-    const optional<std::string> interpName = toString(arrayMember(interp, 0));
+    const std::optional<std::string> interpName = toString(arrayMember(interp, 0));
     if (interpName && *interpName == "linear") {
         interpolator = {ExponentialInterpolator(1.0)};
     } else if (interpName && *interpName == "exponential") {
-        optional<double> base;
+        std::optional<double> base;
         if (arrayLength(interp) == 2) {
             base = toDouble(arrayMember(interp, 1));
         }
@@ -109,10 +109,10 @@ ParseResult parseInterpolate(const Convertible& value, ParsingContext& ctx) {
         }
         interpolator = {ExponentialInterpolator(*base)};
     } else if (interpName && *interpName == "cubic-bezier") {
-        optional<double> x1;
-        optional<double> y1;
-        optional<double> x2;
-        optional<double> y2;
+        std::optional<double> x1;
+        std::optional<double> y1;
+        std::optional<double> x2;
+        std::optional<double> y2;
         if (arrayLength(interp) == 5) {
             x1 = toDouble(arrayMember(interp, 1));
             y1 = toDouble(arrayMember(interp, 2));
@@ -156,7 +156,7 @@ ParseResult parseInterpolate(const Convertible& value, ParsingContext& ctx) {
     }
 
     std::map<double, std::unique_ptr<Expression>> stops;
-    optional<type::Type> outputType;
+    std::optional<type::Type> outputType;
     if (ctx.getExpected() && *ctx.getExpected() != type::Value) {
         outputType = ctx.getExpected();
     }
@@ -164,30 +164,311 @@ ParseResult parseInterpolate(const Convertible& value, ParsingContext& ctx) {
     double previous = - std::numeric_limits<double>::infinity();
     
     for (std::size_t i = 3; i + 1 < length; i += 2) {
-        const optional<mbgl::Value> labelValue = toValue(arrayMember(value, i));
-        optional<double> label;
-        optional<std::string> labelError;
+        const std::optional<mbgl::Value> labelValue = toValue(arrayMember(value, i));
+        std::optional<double> label;
+        std::optional<std::string> labelError;
         if (labelValue) {
             labelValue->match(
                 [&](uint64_t n) {
                     if (n > std::numeric_limits<double>::max()) {
-                        label = optional<double>{std::numeric_limits<double>::infinity()};
+                        label = std::optional<double>{std::numeric_limits<double>::infinity()};
                     } else {
-                        label = optional<double>{static_cast<double>(n)};
+                        label = std::optional<double>{static_cast<double>(n)};
                     }
                 },
                 [&](int64_t n) {
                     if (n > std::numeric_limits<double>::max()) {
-                        label = optional<double>{std::numeric_limits<double>::infinity()};
+                        label = std::optional<double>{std::numeric_limits<double>::infinity()};
                     } else {
-                        label = optional<double>{static_cast<double>(n)};
+                        label = std::optional<double>{static_cast<double>(n)};
                     }
                 },
                 [&](double n) {
                     if (n > std::numeric_limits<double>::max()) {
-                        label = optional<double>{std::numeric_limits<double>::infinity()};
+                        label = std::optional<double>{std::numeric_limits<double>::infinity()};
                     } else {
-                        label = optional<double>{n};
+                        label = std::optional<double>{n};
+                    }
+                },
+                [&](const auto&) {}
+            );
+        }
+        if (!label) {
+            ctx.error(labelError ? *labelError :
+                R"(Input/output pairs for "interpolate" expressions must be defined using literal numeric values (not computed expressions) for the input values.)",
+                i);
+            return ParseResult();
+        }
+        
+        if (*label <= previous) {
+            ctx.error(
+                R"(Input/output pairs for "interpolate" expressions must be arranged with input values in strictly ascending order.)",
+                i
+            );
+            return ParseResult();
+        }
+        previous = *label;
+        
+        auto output = ctx.parse(arrayMember(value, i + 1), i + 1, outputType);
+        if (!output) {
+            return ParseResult();
+        }
+        if (!outputType) {
+            outputType = (*output)->getType();
+        }
+
+        stops.emplace(*label, std::move(*output));
+    }
+    interpolator = {ExponentialInterpolator(*base)};
+  } else if (interpName && *interpName == "cubic-bezier") {
+    std::optional<double> x1;
+    std::optional<double> y1;
+    std::optional<double> x2;
+    std::optional<double> y2;
+    if (arrayLength(interp) == 5) {
+      x1 = toDouble(arrayMember(interp, 1));
+      y1 = toDouble(arrayMember(interp, 2));
+      x2 = toDouble(arrayMember(interp, 3));
+      y2 = toDouble(arrayMember(interp, 4));
+    }
+    if (!x1 || !y1 || !x2 || !y2 || *x1 < 0 || *x1 > 1 || *y1 < 0 || *y1 > 1 ||
+        *x2 < 0 || *x2 > 1 || *y2 < 0 || *y2 > 1) {
+      ctx.error("Cubic bezier interpolation requires four numeric arguments "
+                "with values between 0 and 1.",
+                1);
+      return ParseResult();
+    }
+    interpolator = {CubicBezierInterpolator(*x1, *y1, *x2, *y2)};
+  }
+
+  if (!interpolator) {
+    ctx.error("Unknown interpolation type " + (interpName ? *interpName : ""),
+              1, 0);
+    return ParseResult();
+  }
+
+  std::size_t minArgs = 4;
+  if (length - 1 < minArgs) {
+    ctx.error("Expected at least 4 arguments, but found only " +
+              util::toString(length - 1) + ".");
+    return ParseResult();
+  }
+
+  // [interpolation, interp_type, input, 2 * (n pairs)...]
+  if ((length - 1) % 2 != 0) {
+    ctx.error("Expected an even number of arguments.");
+    return ParseResult();
+  }
+
+  ParseResult input = ctx.parse(arrayMember(value, 2), 2, {type::Number});
+  if (!input) {
+    return input;
+  }
+
+  std::map<double, std::unique_ptr<Expression>> stops;
+  std::optional<type::Type> outputType;
+  if (ctx.getExpected() && *ctx.getExpected() != type::Value) {
+    outputType = ctx.getExpected();
+  }
+
+  double previous = -std::numeric_limits<double>::infinity();
+
+  for (std::size_t i = 3; i + 1 < length; i += 2) {
+    const std::optional<mbgl::Value> labelValue =
+        toValue(arrayMember(value, i));
+    std::optional<double> label;
+    std::optional<std::string> labelError;
+    if (labelValue) {
+      labelValue->match(
+          [&](uint64_t n) {
+            if (n > std::numeric_limits<double>::max()) {
+              label = std::optional<double>{
+                  std::numeric_limits<double>::infinity()};
+            } else {
+              label = std::optional<double>{static_cast<double>(n)};
+            }
+          },
+          [&](int64_t n) {
+            if (n > std::numeric_limits<double>::max()) {
+              label = std::optional<double>{
+                  std::numeric_limits<double>::infinity()};
+            } else {
+              label = std::optional<double>{static_cast<double>(n)};
+            }
+          },
+          [&](double n) {
+            if (n > std::numeric_limits<double>::max()) {
+              label = std::optional<double>{
+                  std::numeric_limits<double>::infinity()};
+            } else {
+              label = std::optional<double>{n};
+            }
+          },
+          [&](const auto &) {});
+    }
+    if (!label) {
+      ctx.error(
+          labelError
+              ? *labelError
+              : R"(Input/output pairs for "interpolate" expressions must be defined using literal numeric values (not computed expressions) for the input values.)",
+          i);
+      return ParseResult();
+    }
+
+    if (*label <= previous) {
+      ctx.error(
+          R"(Input/output pairs for "interpolate" expressions must be arranged with input values in strictly ascending order.)",
+          i);
+      return ParseResult();
+    }
+    previous = *label;
+
+    auto output = ctx.parse(arrayMember(value, i + 1), i + 1, outputType);
+    if (!output) {
+      return ParseResult();
+    }
+    if (!outputType) {
+      outputType = (*output)->getType();
+    }
+
+    stops.emplace(*label, std::move(*output));
+  }
+
+  assert(outputType);
+
+  return createInterpolate(*outputType, *interpolator, std::move(*input),
+                           std::move(stops), ctx);
+}
+
+ParseResult
+createInterpolate(type::Type type, Interpolator interpolator,
+                  std::unique_ptr<Expression> input,
+                  std::map<double, std::unique_ptr<Expression>> stops,
+                  ParsingContext &ctx) {
+  return type.match(
+      [&](const type::NumberType &) -> ParseResult {
+        return ParseResult(std::make_unique<InterpolateImpl<double>>(
+            type, interpolator, std::move(input), std::move(stops)));
+      },
+      [&](const type::ColorType &) -> ParseResult {
+        return ParseResult(std::make_unique<InterpolateImpl<Color>>(
+            type, interpolator, std::move(input), std::move(stops)));
+      },
+      [&](const type::Array &arrayType) -> ParseResult {
+        if (arrayType.itemType != type::Number || !arrayType.N) {
+          ctx.error("Type " + toString(type) + " is not interpolatable.");
+          return ParseResult();
+        }
+        return ParseResult(
+            std::make_unique<InterpolateImpl<std::vector<Value>>>(
+                type, interpolator, std::move(input), std::move(stops)));
+      },
+      [&](const auto &) {
+        ctx.error("Type " + toString(type) + " is not interpolatable.");
+        return ParseResult();
+    }
+
+    const Convertible& interp = arrayMember(value, 1);
+    if (!isArray(interp) || arrayLength(interp) == 0) {
+        ctx.error("Expected an interpolation type expression.");
+        return ParseResult();
+    }
+
+    std::optional<Interpolator> interpolator;
+    
+    const std::optional<std::string> interpName = toString(arrayMember(interp, 0));
+    if (interpName && *interpName == "linear") {
+        interpolator = {ExponentialInterpolator(1.0)};
+    } else if (interpName && *interpName == "exponential") {
+        std::optional<double> base;
+        if (arrayLength(interp) == 2) {
+            base = toDouble(arrayMember(interp, 1));
+        }
+        if (!base) {
+            ctx.error("Exponential interpolation requires a numeric base.", 1, 1);
+            return ParseResult();
+        }
+        interpolator = {ExponentialInterpolator(*base)};
+    } else if (interpName && *interpName == "cubic-bezier") {
+        std::optional<double> x1;
+        std::optional<double> y1;
+        std::optional<double> x2;
+        std::optional<double> y2;
+        if (arrayLength(interp) == 5) {
+            x1 = toDouble(arrayMember(interp, 1));
+            y1 = toDouble(arrayMember(interp, 2));
+            x2 = toDouble(arrayMember(interp, 3));
+            y2 = toDouble(arrayMember(interp, 4));
+        }
+        if (
+            !x1 || !y1 || !x2 || !y2 ||
+            *x1 < 0 || *x1 > 1 ||
+            *y1 < 0 || *y1 > 1 ||
+            *x2 < 0 || *x2 > 1 ||
+            *y2 < 0 || *y2 > 1
+        ) {
+            ctx.error("Cubic bezier interpolation requires four numeric arguments with values between 0 and 1.", 1);
+            return ParseResult();
+            
+        }
+        interpolator = {CubicBezierInterpolator(*x1, *y1, *x2, *y2)};
+    }
+    
+    if (!interpolator) {
+        ctx.error("Unknown interpolation type " + (interpName ? *interpName : ""), 1, 0);
+        return ParseResult();
+    }
+    
+    std::size_t minArgs = 4;
+    if (length - 1 < minArgs) {
+        ctx.error("Expected at least 4 arguments, but found only " + util::toString(length - 1) + ".");
+        return ParseResult();
+    }
+    
+    // [interpolation, interp_type, input, 2 * (n pairs)...]
+    if ((length - 1) % 2 != 0) {
+        ctx.error("Expected an even number of arguments.");
+        return ParseResult();
+    }
+    
+    ParseResult input = ctx.parse(arrayMember(value, 2), 2, {type::Number});
+    if (!input) {
+        return input;
+    }
+
+    std::map<double, std::unique_ptr<Expression>> stops;
+    std::optional<type::Type> outputType;
+    if (ctx.getExpected() && *ctx.getExpected() != type::Value) {
+        outputType = ctx.getExpected();
+    }
+    
+    double previous = - std::numeric_limits<double>::infinity();
+    
+    for (std::size_t i = 3; i + 1 < length; i += 2) {
+        const std::optional<mbgl::Value> labelValue = toValue(arrayMember(value, i));
+        std::optional<double> label;
+        std::optional<std::string> labelError;
+        if (labelValue) {
+            labelValue->match(
+                [&](uint64_t n) {
+                    if (n > std::numeric_limits<double>::max()) {
+                        label = std::optional<double>{std::numeric_limits<double>::infinity()};
+                    } else {
+                        label = std::optional<double>{static_cast<double>(n)};
+                    }
+                },
+                [&](int64_t n) {
+                    if (n > std::numeric_limits<double>::max()) {
+                        label = std::optional<double>{std::numeric_limits<double>::infinity()};
+                    } else {
+                        label = std::optional<double>{static_cast<double>(n)};
+                    }
+                },
+                [&](double n) {
+                    if (n > std::numeric_limits<double>::max()) {
+                        label = std::optional<double>{std::numeric_limits<double>::infinity()};
+                    } else {
+                        label = std::optional<double>{n};
                     }
                 },
                 [&](const auto&) {}
@@ -272,8 +553,8 @@ Interpolate::Interpolate(const type::Type& type_,
     assert(input->getType() == type::Number);
 }
 
-std::vector<optional<Value>> Interpolate::possibleOutputs() const {
-    std::vector<optional<Value>> result;
+std::vector<std::optional<Value>> Interpolate::possibleOutputs() const {
+    std::vector<std::optional<Value>> result;
     for (const auto& stop : stops) {
         for (auto& output : stop.second->possibleOutputs()) {
             result.push_back(std::move(output));

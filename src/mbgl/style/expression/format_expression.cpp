@@ -8,9 +8,9 @@ namespace expression {
 
 FormatExpressionSection::FormatExpressionSection(std::unique_ptr<Expression> content_) : content(std::move(content_)) {}
 
-void FormatExpressionSection::setTextSectionOptions(optional<std::unique_ptr<Expression>> fontScale_,
-                                                    optional<std::unique_ptr<Expression>> textFont_,
-                                                    optional<std::unique_ptr<Expression>> textColor_) {
+void FormatExpressionSection::setTextSectionOptions(std::optional<std::unique_ptr<Expression>> fontScale_,
+                                                    std::optional<std::unique_ptr<Expression>> textFont_,
+                                                    std::optional<std::unique_ptr<Expression>> textColor_) {
     if (fontScale_) {
         assert(*fontScale_);
         fontScale = std::shared_ptr<Expression>(std::move(*fontScale_));
@@ -34,10 +34,91 @@ FormatExpression::FormatExpression(std::vector<FormatExpressionSection> sections
 
 using namespace mbgl::style::conversion;
 
-ParseResult FormatExpression::parse(const Convertible& value, ParsingContext& ctx) {
-    std::size_t argsLength = arrayLength(value);
-    if (argsLength < 2) {
-        ctx.error("Expected at least one argument.");
+ParseResult FormatExpression::parse(const Convertible &value,
+                                    ParsingContext &ctx) {
+  std::size_t argsLength = arrayLength(value);
+  if (argsLength < 2) {
+    ctx.error("Expected at least one argument.");
+    return ParseResult();
+  }
+
+  if (isObject(arrayMember(value, 1))) {
+    ctx.error("First argument must be an image or text section.");
+    return ParseResult();
+  }
+
+  std::vector<FormatExpressionSection> sections;
+  bool nextTokenMayBeObject = false;
+  for (std::size_t i = 1; i <= argsLength - 1; ++i) {
+    auto arg = arrayMember(value, i);
+
+    if (nextTokenMayBeObject && isObject(arg)) {
+      nextTokenMayBeObject = false;
+
+            auto fontScaleOption = objectMember(arg, kFormattedSectionFontScale);
+            ParseResult fontScale;
+            if (fontScaleOption) {
+                fontScale = ctx.parse(*fontScaleOption, 1, {type::Number});
+                if (!fontScale) {
+                    return ParseResult();
+                }
+            }
+
+            auto textFontOption = objectMember(arg, kFormattedSectionTextFont);
+            ParseResult textFont;
+            if (textFontOption) {
+                textFont = ctx.parse(*textFontOption, 1, {type::Array(type::String)});
+                if (!textFont) {
+                    return ParseResult();
+                }
+            }
+            auto textColorOption = objectMember(arg, kFormattedSectionTextColor);
+            ParseResult textColor;
+            if (textColorOption) {
+                textColor = ctx.parse(*textColorOption, 1, {type::Color});
+                if (!textColor) {
+                    return ParseResult();
+                }
+            }
+
+            sections.back().setTextSectionOptions(std::move(fontScale), std::move(textFont), std::move(textColor));
+        } else {
+            ParseResult parsedArg = ctx.parse(arg, 1, {type::Value});
+            if (!parsedArg) {
+                ctx.error("Cannot parse formatted section.");
+                return ParseResult();
+            }
+
+            nextTokenMayBeObject = true;
+            sections.emplace_back(std::move(*parsedArg));
+        }
+      }
+
+      const std::optional<Convertible> textFontOption =
+          objectMember(arg, kFormattedSectionTextFont);
+      ParseResult textFont;
+      if (textFontOption) {
+        textFont = ctx.parse(*textFontOption, 1, {type::Array(type::String)});
+        if (!textFont) {
+          return ParseResult();
+        }
+      }
+      const std::optional<Convertible> textColorOption =
+          objectMember(arg, kFormattedSectionTextColor);
+      ParseResult textColor;
+      if (textColorOption) {
+        textColor = ctx.parse(*textColorOption, 1, {type::Color});
+        if (!textColor) {
+          return ParseResult();
+        }
+      }
+
+      sections.back().setTextSectionOptions(
+          std::move(fontScale), std::move(textFont), std::move(textColor));
+    } else {
+      ParseResult parsedArg = ctx.parse(arg, 1, {type::Value});
+      if (!parsedArg) {
+        ctx.error("Cannot parse formatted section.");
         return ParseResult();
     }
 
@@ -54,7 +135,7 @@ ParseResult FormatExpression::parse(const Convertible& value, ParsingContext& ct
         if (nextTokenMayBeObject && isObject(arg)) {
             nextTokenMayBeObject = false;
 
-            const optional<Convertible> fontScaleOption = objectMember(arg, kFormattedSectionFontScale);
+            auto fontScaleOption = objectMember(arg, kFormattedSectionFontScale);
             ParseResult fontScale;
             if (fontScaleOption) {
                 fontScale = ctx.parse(*fontScaleOption, 1, {type::Number});
@@ -63,7 +144,7 @@ ParseResult FormatExpression::parse(const Convertible& value, ParsingContext& ct
                 }
             }
 
-            const optional<Convertible> textFontOption = objectMember(arg, kFormattedSectionTextFont);
+            auto textFontOption = objectMember(arg, kFormattedSectionTextFont);
             ParseResult textFont;
             if (textFontOption) {
                 textFont = ctx.parse(*textFontOption, 1, {type::Array(type::String)});
@@ -71,7 +152,7 @@ ParseResult FormatExpression::parse(const Convertible& value, ParsingContext& ct
                     return ParseResult();
                 }
             }
-            const optional<Convertible> textColorOption = objectMember(arg, kFormattedSectionTextColor);
+            auto textColorOption = objectMember(arg, kFormattedSectionTextColor);
             ParseResult textColor;
             if (textColorOption) {
                 textColor = ctx.parse(*textColorOption, 1, {type::Color});
@@ -168,6 +249,59 @@ EvaluationResult FormatExpression::evaluate(const EvaluationContext& params) con
             return contentResult.error();
         }
 
+        std::optional<std::string> evaluatedText;
+        if (typeOf(*contentResult) == type::Image) {
+            const auto& image = contentResult->get<Image>();
+            // Omit sections with empty image ids.
+            if (!image.id().empty()) {
+                evaluatedSections.emplace_back(image);
+            }
+            // Continue evaluation of a next section, as the image section does not have section options.
+            continue;
+        } else {
+            evaluatedText = toString(*contentResult);
+            if (!evaluatedText) {
+                return EvaluationError({"Could not coerce format expression text input to string."});
+            }
+        }
+
+        std::optional<double> evaluatedFontScale;
+        if (section.fontScale) {
+            auto fontScaleResult = (*section.fontScale)->evaluate(params);
+            if (!fontScaleResult) {
+                return fontScaleResult.error();
+            }
+            evaluatedFontScale = fontScaleResult->get<double>();
+        }
+
+        std::optional<FontStack> evaluatedTextFont;
+        if (section.textFont) {
+            auto textFontResult = (*section.textFont)->evaluate(params);
+            if (!textFontResult) {
+                return textFontResult.error();
+            }
+            auto textFontValue = ValueConverter<std::vector<std::string>>::fromExpressionValue(*textFontResult);
+            if (!textFontValue) {
+                return EvaluationError { "Format text-font option must evaluate to an array of strings" };
+            }
+            evaluatedTextFont = *textFontValue;
+        }
+
+        std::optional<Color> evaluatedTextColor;
+        if (section.textColor) {
+            auto textColorResult = (*section.textColor)->evaluate(params);
+            if (!textColorResult) {
+                return textColorResult.error();
+            }
+
+            evaluatedTextColor = fromExpressionValue<Color>(*textColorResult);
+            if (!evaluatedTextColor) {
+                return EvaluationError { "Format text-color option must evaluate to Color" };
+            }
+        }
+        evaluatedSections.emplace_back(*evaluatedText, evaluatedFontScale, evaluatedTextFont, evaluatedTextColor);
+    }
+
         optional<std::string> evaluatedText;
         if (typeOf(*contentResult) == type::Image) {
             const auto& image = contentResult->get<Image>();
@@ -184,7 +318,7 @@ EvaluationResult FormatExpression::evaluate(const EvaluationContext& params) con
             }
         }
 
-        optional<double> evaluatedFontScale;
+        std::optional<double> evaluatedFontScale;
         if (section.fontScale) {
             auto fontScaleResult = (*section.fontScale)->evaluate(params);
             if (!fontScaleResult) {
@@ -193,7 +327,7 @@ EvaluationResult FormatExpression::evaluate(const EvaluationContext& params) con
             evaluatedFontScale = fontScaleResult->get<double>();
         }
 
-        optional<FontStack> evaluatedTextFont;
+        std::optional<FontStack> evaluatedTextFont;
         if (section.textFont) {
             auto textFontResult = (*section.textFont)->evaluate(params);
             if (!textFontResult) {
@@ -206,7 +340,7 @@ EvaluationResult FormatExpression::evaluate(const EvaluationContext& params) con
             evaluatedTextFont = *textFontValue;
         }
 
-        optional<Color> evaluatedTextColor;
+        std::optional<Color> evaluatedTextColor;
         if (section.textColor) {
             auto textColorResult = (*section.textColor)->evaluate(params);
             if (!textColorResult) {

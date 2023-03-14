@@ -9,7 +9,7 @@ namespace expression {
 EvaluationResult Coalesce::evaluate(const EvaluationContext& params) const {
     EvaluationResult result = Null;
     std::size_t argsCount = args.size();
-    optional<Image> requestedImage;
+    std::optional<Image> requestedImage;
     for (const auto& arg : args) {
         --argsCount;
         result = arg->evaluate(params);
@@ -29,9 +29,27 @@ EvaluationResult Coalesce::evaluate(const EvaluationContext& params) const {
     return result;
 }
 
-void Coalesce::eachChild(const std::function<void(const Expression&)>& visit) const {
-    for (const std::unique_ptr<Expression>& arg : args) {
-        visit(*arg);
+void Coalesce::eachChild(
+    const std::function<void(const Expression &)> &visit) const {
+  for (const std::unique_ptr<Expression> &arg : args) {
+    visit(*arg);
+  }
+}
+
+bool Coalesce::operator==(const Expression &e) const {
+  if (e.getKind() == Kind::Coalesce) {
+    auto rhs = static_cast<const Coalesce *>(&e);
+    return Expression::childrenEqual(args, rhs->args);
+  }
+  return false;
+}
+
+std::vector<std::optional<Value>> Coalesce::possibleOutputs() const {
+    std::vector<std::optional<Value>> result;
+    for (const auto& arg : args) {
+        for (auto& output : arg->possibleOutputs()) {
+            result.push_back(std::move(output));
+        }
     }
 }
 
@@ -43,8 +61,8 @@ bool Coalesce::operator==(const Expression& e) const {
     return false;
 }
 
-std::vector<optional<Value>> Coalesce::possibleOutputs() const {
-    std::vector<optional<Value>> result;
+std::vector<std::optional<Value>> Coalesce::possibleOutputs() const {
+    std::vector<std::optional<Value>> result;
     for (const auto& arg : args) {
         for (auto& output : arg->possibleOutputs()) {
             result.push_back(std::move(output));
@@ -60,6 +78,27 @@ ParseResult Coalesce::parse(const Convertible& value, ParsingContext& ctx) {
     if (length < 2) {
         ctx.error("Expected at least one argument.");
         return ParseResult();
+    }
+ 
+    std::optional<type::Type> outputType;
+    std::optional<type::Type> expectedType = ctx.getExpected();
+    if (expectedType && *expectedType != type::Value) {
+        outputType = expectedType;
+    }
+
+  std::optional<type::Type> outputType;
+  std::optional<type::Type> expectedType = ctx.getExpected();
+  if (expectedType && *expectedType != type::Value) {
+    outputType = expectedType;
+  }
+
+  Coalesce::Args args;
+  args.reserve(length - 1);
+  for (std::size_t i = 1; i < length; i++) {
+    auto parsed = ctx.parse(arrayMember(value, i), i, outputType,
+                            TypeAnnotationOption::omit);
+    if (!parsed) {
+      return parsed;
     }
  
     optional<type::Type> outputType;

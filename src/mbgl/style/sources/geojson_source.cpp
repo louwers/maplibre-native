@@ -61,7 +61,7 @@ void GeoJSONSource::setGeoJSONData(std::shared_ptr<GeoJSONData> geoJSONData) {
     observer->onSourceChanged(*this);
 }
 
-optional<std::string> GeoJSONSource::getURL() const {
+std::optional<std::string> GeoJSONSource::getURL() const {
     return url;
 }
 
@@ -69,8 +69,66 @@ const GeoJSONOptions& GeoJSONSource::getOptions() const {
     return *impl().getOptions();
 }
 
-void GeoJSONSource::loadDescription(FileSource& fileSource) {
-    if (!url) {
+  if (req) {
+    return;
+  }
+
+  req = fileSource.request(Resource::source(*url), [this](const Response &res) {
+    if (res.error) {
+      observer->onSourceError(*this, std::make_exception_ptr(std::runtime_error(
+                                         res.error->message)));
+    } else if (res.notModified) {
+      return;
+    } else if (res.noContent) {
+      observer->onSourceError(*this, std::make_exception_ptr(std::runtime_error(
+                                         "unexpectedly empty GeoJSON")));
+    } else {
+      auto makeImplInBackground = [currentImpl = baseImpl,
+                                   data =
+                                       res.data]() -> Immutable<Source::Impl> {
+        assert(data);
+        auto &current = static_cast<const Impl &>(*currentImpl);
+        conversion::Error error;
+        std::shared_ptr<GeoJSONData> geoJSONData;
+        if (std::optional<GeoJSON> geoJSON =
+                conversion::convertJSON<GeoJSON>(*data, error)) {
+          geoJSONData = createGeoJSONData(*geoJSON, current);
+        } else {
+            auto makeImplInBackground = [currentImpl = baseImpl, data = res.data]() -> Immutable<Source::Impl> {
+                assert(data);
+                auto& current = static_cast<const Impl&>(*currentImpl);
+                conversion::Error error;
+                std::shared_ptr<GeoJSONData> geoJSONData;
+                if (std::optional<GeoJSON> geoJSON = conversion::convertJSON<GeoJSON>(*data, error)) {
+                    geoJSONData = createGeoJSONData(*geoJSON, current);
+                } else {
+                    // Create an empty GeoJSON VT object to make sure we're not infinitely waiting for tiles to load.
+                    Log::Error(Event::ParseStyle, "Failed to parse GeoJSON data: " + error.message);
+                }
+                return makeMutable<Impl>(current, std::move(geoJSONData));
+            };
+            auto onImplReady = [this, self = makeWeakPtr(), capturedReq = req.get()](Immutable<Source::Impl> newImpl) {
+                assert(capturedReq);
+                if (!self) return;                    // This source has been deleted.
+                if (capturedReq != req.get()) return; // A new request is being processed, ignore this impl.
+
+                baseImpl = std::move(newImpl);
+                loaded = true;
+                observer->onSourceLoaded(*this);
+            };
+            threadPool->scheduleAndReplyValue(makeImplInBackground, onImplReady);
+        }
+        return makeMutable<Impl>(current, std::move(geoJSONData));
+      };
+      auto onImplReady = [this, self = makeWeakPtr(), capturedReq = req.get()](
+                             Immutable<Source::Impl> newImpl) {
+        assert(capturedReq);
+        if (!self)
+          return; // This source has been deleted.
+        if (capturedReq != req.get())
+          return; // A new request is being processed, ignore this impl.
+
+        baseImpl = std::move(newImpl);
         loaded = true;
         return;
     }
@@ -94,11 +152,11 @@ void GeoJSONSource::loadDescription(FileSource& fileSource) {
                 auto& current = static_cast<const Impl&>(*currentImpl);
                 conversion::Error error;
                 std::shared_ptr<GeoJSONData> geoJSONData;
-                if (optional<GeoJSON> geoJSON = conversion::convertJSON<GeoJSON>(*data, error)) {
+                if (std::optional<GeoJSON> geoJSON = conversion::convertJSON<GeoJSON>(*data, error)) {
                     geoJSONData = createGeoJSONData(*geoJSON, current);
                 } else {
                     // Create an empty GeoJSON VT object to make sure we're not infinitely waiting for tiles to load.
-                    Log::Error(Event::ParseStyle, "Failed to parse GeoJSON data: %s", error.message.c_str());
+                    Log::Error(Event::ParseStyle, "Failed to parse GeoJSON data: " + error.message);
                 }
                 return makeMutable<Impl>(current, std::move(geoJSONData));
             };

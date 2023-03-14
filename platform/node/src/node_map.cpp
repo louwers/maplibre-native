@@ -695,12 +695,444 @@ void NodeMap::AddSource(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
     if (!nodeMap->map) return Nan::ThrowError(releasedMessage());
 
-    if (info.Length() != 2) {
-        return Nan::ThrowTypeError("Two argument required");
+  if (info.Length() != 2) {
+    return Nan::ThrowTypeError("Two argument required");
+  }
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowTypeError("First argument must be a string");
+  }
+
+  if (!info[1]->IsObject()) {
+    return Nan::ThrowTypeError("Second argument must be an object");
+  }
+
+  Error error;
+  std::optional<std::unique_ptr<Source>> source =
+      convert<std::unique_ptr<Source>>(info[1], error,
+                                       *Nan::Utf8String(info[0]));
+  if (!source) {
+    Nan::ThrowTypeError(error.message.c_str());
+    return;
+  }
+
+  nodeMap->map->getStyle().addSource(std::move(*source));
+}
+
+void NodeMap::RemoveSource(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  using namespace mbgl::style;
+  using namespace mbgl::style::conversion;
+
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() != 1) {
+    return Nan::ThrowTypeError("One argument required");
+  }
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowTypeError("First argument must be a string");
+  }
+
+  nodeMap->map->getStyle().removeSource(*Nan::Utf8String(info[0]));
+}
+
+void NodeMap::AddLayer(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  using namespace mbgl::style;
+  using namespace mbgl::style::conversion;
+
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() != 1) {
+    return Nan::ThrowTypeError("One argument required");
+  }
+
+  Error error;
+  std::optional<std::unique_ptr<Layer>> layer =
+      convert<std::unique_ptr<Layer>>(info[0], error);
+  if (!layer) {
+    Nan::ThrowTypeError(error.message.c_str());
+    return;
+  }
+
+  nodeMap->map->getStyle().addLayer(std::move(*layer));
+}
+
+void NodeMap::RemoveLayer(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  using namespace mbgl::style;
+  using namespace mbgl::style::conversion;
+
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() != 1) {
+    return Nan::ThrowTypeError("One argument required");
+  }
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowTypeError("First argument must be a string");
+  }
+
+  nodeMap->map->getStyle().removeLayer(*Nan::Utf8String(info[0]));
+}
+
+void NodeMap::AddImage(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  using namespace mbgl::style;
+  using namespace mbgl::style::conversion;
+
+  v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
+
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() != 3) {
+    return Nan::ThrowTypeError("Three arguments required");
+  }
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowTypeError("First argument must be a string");
+  }
+
+  if (!info[1]->IsObject()) {
+    return Nan::ThrowTypeError("Second argument must be an object");
+  }
+
+  if (!info[2]->IsObject()) {
+    return Nan::ThrowTypeError("Third argument must be an object");
+  }
+
+  auto optionObject = Nan::To<v8::Object>(info[2]).ToLocalChecked();
+
+  if (!Nan::Get(optionObject, Nan::New("height").ToLocalChecked())
+           .ToLocalChecked()
+           ->IsUint32()) {
+    return Nan::ThrowTypeError("height parameter required");
+  }
+
+  if (!Nan::Get(optionObject, Nan::New("width").ToLocalChecked())
+           .ToLocalChecked()
+           ->IsUint32()) {
+    return Nan::ThrowTypeError("width parameter required");
+  }
+
+  if (!Nan::Get(optionObject, Nan::New("pixelRatio").ToLocalChecked())
+           .ToLocalChecked()
+           ->IsNumber()) {
+    return Nan::ThrowTypeError("pixelRatio parameter required");
+  }
+
+  uint32_t imageHeight =
+      Nan::To<uint32_t>(
+          Nan::Get(optionObject, Nan::New("height").ToLocalChecked())
+              .ToLocalChecked())
+          .ToChecked();
+  uint32_t imageWidth =
+      Nan::To<uint32_t>(
+          Nan::Get(optionObject, Nan::New("width").ToLocalChecked())
+              .ToLocalChecked())
+          .ToChecked();
+
+  if (imageWidth > 1024 || imageHeight > 1024) {
+    return Nan::ThrowTypeError("Max height and width is 1024");
+  }
+
+  bool sdf = false;
+  if (Nan::Get(optionObject, Nan::New("sdf").ToLocalChecked())
+          .ToLocalChecked()
+          ->IsBoolean()) {
+    sdf = Nan::To<bool>(Nan::Get(optionObject, Nan::New("sdf").ToLocalChecked())
+                            .ToLocalChecked())
+              .ToChecked();
+  }
+
+  float pixelRatio =
+      (float)Nan::To<double>(
+          Nan::Get(optionObject, Nan::New("pixelRatio").ToLocalChecked())
+              .ToLocalChecked())
+          .ToChecked();
+  auto imageBuffer = Nan::To<v8::Object>(info[1])
+                         .ToLocalChecked()
+                         ->ToObject(context)
+                         .ToLocalChecked();
+
+  char *imageDataBuffer = node::Buffer::Data(imageBuffer);
+  size_t imageLength = node::Buffer::Length(imageBuffer);
+
+  if (imageLength != imageHeight * imageWidth * 4) {
+    return Nan::ThrowTypeError("Image size does not match buffer size");
+  }
+
+  std::unique_ptr<uint8_t[]> data = std::make_unique<uint8_t[]>(imageLength);
+  std::copy(imageDataBuffer, imageDataBuffer + imageLength, data.get());
+
+  mbgl::UnassociatedImage cImage({imageWidth, imageHeight}, std::move(data));
+  mbgl::PremultipliedImage cPremultipliedImage =
+      mbgl::util::premultiply(std::move(cImage));
+  nodeMap->map->getStyle().addImage(std::make_unique<mbgl::style::Image>(
+      *Nan::Utf8String(info[0]), std::move(cPremultipliedImage), pixelRatio,
+      sdf));
+}
+
+void NodeMap::RemoveImage(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  using namespace mbgl::style;
+  using namespace mbgl::style::conversion;
+
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() != 1) {
+    return Nan::ThrowTypeError("One argument required");
+  }
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowTypeError("First argument must be a string");
+  }
+
+  nodeMap->map->getStyle().removeImage(*Nan::Utf8String(info[0]));
+}
+
+void NodeMap::SetLayerZoomRange(
+    const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  using namespace mbgl::style;
+
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() != 3) {
+    return Nan::ThrowTypeError("Three arguments required");
+  }
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowTypeError("First argument must be a string");
+  }
+
+  if (!info[1]->IsNumber() || !info[2]->IsNumber()) {
+    return Nan::ThrowTypeError("Second and third arguments must be numbers");
+  }
+
+  mbgl::style::Layer *layer =
+      nodeMap->map->getStyle().getLayer(*Nan::Utf8String(info[0]));
+  if (!layer) {
+    return Nan::ThrowTypeError("layer not found");
+  }
+
+  layer->setMinZoom(static_cast<float>(Nan::To<double>(info[1]).ToChecked()));
+  layer->setMaxZoom(static_cast<float>(Nan::To<double>(info[2]).ToChecked()));
+}
+
+void NodeMap::SetLayerProperty(
+    const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  using namespace mbgl::style;
+  using namespace mbgl::style::conversion;
+
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() < 3) {
+    return Nan::ThrowTypeError("Three arguments required");
+  }
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowTypeError("First argument must be a string");
+  }
+
+  mbgl::style::Layer *layer =
+      nodeMap->map->getStyle().getLayer(*Nan::Utf8String(info[0]));
+  if (!layer) {
+    return Nan::ThrowTypeError("layer not found");
+  }
+
+  if (!info[1]->IsString()) {
+    return Nan::ThrowTypeError("Second argument must be a string");
+  }
+
+  std::optional<Error> error =
+      layer->setProperty(*Nan::Utf8String(info[1]), Convertible(info[2]));
+  if (error) {
+    return Nan::ThrowTypeError(error->message.c_str());
+  }
+
+  info.GetReturnValue().SetUndefined();
+}
+
+void NodeMap::SetFilter(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  using namespace mbgl::style;
+  using namespace mbgl::style::conversion;
+
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() < 2) {
+    return Nan::ThrowTypeError("Two arguments required");
+  }
+
+  if (!info[0]->IsString()) {
+    return Nan::ThrowTypeError("First argument must be a string");
+  }
+
+  mbgl::style::Layer *layer =
+      nodeMap->map->getStyle().getLayer(*Nan::Utf8String(info[0]));
+  if (!layer) {
+    return Nan::ThrowTypeError("layer not found");
+  }
+
+  Filter filter;
+
+  if (!info[1]->IsNull() && !info[1]->IsUndefined()) {
+    Error error;
+    std::optional<std::unique_ptr<Source>> source = convert<std::unique_ptr<Source>>(info[1], error, *Nan::Utf8String(info[0]));
+    if (!source) {
+        Nan::ThrowTypeError(error.message.c_str());
+        return;
     }
 
-    if (!info[0]->IsString()) {
-        return Nan::ThrowTypeError("First argument must be a string");
+  layer->setFilter(filter);
+}
+
+void NodeMap::SetSize(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() <= 0 || !info[0]->IsArray()) {
+    return Nan::ThrowTypeError("First argument must be an array");
+  }
+
+  auto size = info[0].As<v8::Array>();
+  uint32_t width = 0;
+  uint32_t height = 0;
+  if (size->Length() > 0) {
+    width = Nan::To<uint32_t>(Nan::Get(size, 0).ToLocalChecked()).ToChecked();
+  }
+  if (size->Length() > 1) {
+    height = Nan::To<uint32_t>(Nan::Get(size, 1).ToLocalChecked()).ToChecked();
+  }
+
+  try {
+    nodeMap->frontend->setSize({width, height});
+    nodeMap->map->setSize({width, height});
+  } catch (const std::exception &ex) {
+    return Nan::ThrowError(ex.what());
+  }
+
+  info.GetReturnValue().SetUndefined();
+}
+
+void NodeMap::SetCenter(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() <= 0 || !info[0]->IsArray()) {
+    return Nan::ThrowTypeError("First argument must be an array");
+  }
+
+  auto center = info[0].As<v8::Array>();
+  double latitude = 0;
+  double longitude = 0;
+  if (center->Length() > 0) {
+    longitude =
+        Nan::To<double>(Nan::Get(center, 0).ToLocalChecked()).ToChecked();
+  }
+  if (center->Length() > 1) {
+    latitude =
+        Nan::To<double>(Nan::Get(center, 1).ToLocalChecked()).ToChecked();
+  }
+
+    Error error;
+    std::optional<std::unique_ptr<Layer>> layer = convert<std::unique_ptr<Layer>>(info[0], error);
+    if (!layer) {
+        Nan::ThrowTypeError(error.message.c_str());
+        return;
+    }
+
+  info.GetReturnValue().SetUndefined();
+}
+
+void NodeMap::SetZoom(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() <= 0 || !info[0]->IsNumber()) {
+    return Nan::ThrowTypeError("First argument must be a number");
+  }
+
+  try {
+    nodeMap->map->jumpTo(
+        mbgl::CameraOptions().withZoom(Nan::To<double>(info[0]).ToChecked()));
+  } catch (const std::exception &ex) {
+    return Nan::ThrowError(ex.what());
+  }
+
+  info.GetReturnValue().SetUndefined();
+}
+
+void NodeMap::SetBearing(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() <= 0 || !info[0]->IsNumber()) {
+    return Nan::ThrowTypeError("First argument must be a number");
+  }
+
+  try {
+    nodeMap->map->jumpTo(mbgl::CameraOptions().withBearing(
+        Nan::To<double>(info[0]).ToChecked()));
+  } catch (const std::exception &ex) {
+    return Nan::ThrowError(ex.what());
+  }
+
+  info.GetReturnValue().SetUndefined();
+}
+
+void NodeMap::SetPitch(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() <= 0 || !info[0]->IsNumber()) {
+    return Nan::ThrowTypeError("First argument must be a number");
+  }
+
+  try {
+    nodeMap->map->jumpTo(
+        mbgl::CameraOptions().withPitch(Nan::To<double>(info[0]).ToChecked()));
+  } catch (const std::exception &ex) {
+    return Nan::ThrowError(ex.what());
+  }
+
+  info.GetReturnValue().SetUndefined();
+}
+
+void NodeMap::SetLight(const Nan::FunctionCallbackInfo<v8::Value> &info) {
+  using namespace mbgl::style;
+  using namespace mbgl::style::conversion;
+
+  auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
+  if (!nodeMap->map)
+    return Nan::ThrowError(releasedMessage());
+
+  if (info.Length() <= 0 || !info[0]->IsObject()) {
+    return Nan::ThrowTypeError("First argument must be an object");
+  }
+
+  try {
+    Error conversionError;
+    if (auto light = convert<mbgl::style::Light>(info[0], conversionError)) {
+      nodeMap->map->getStyle().setLight(std::make_unique<Light>(*light));
+    } else {
+      return Nan::ThrowTypeError(conversionError.message.c_str());
     }
 
     if (!info[1]->IsObject()) {
@@ -708,7 +1140,7 @@ void NodeMap::AddSource(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     }
 
     Error error;
-    mbgl::optional<std::unique_ptr<Source>> source = convert<std::unique_ptr<Source>>(info[1], error, *Nan::Utf8String(info[0]));
+    std::optional<std::unique_ptr<Source>> source = convert<std::unique_ptr<Source>>(info[1], error, *Nan::Utf8String(info[0]));
     if (!source) {
         Nan::ThrowTypeError(error.message.c_str());
         return;
@@ -741,84 +1173,6 @@ void NodeMap::AddLayer(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
     auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
     if (!nodeMap->map) return Nan::ThrowError(releasedMessage());
-
-    if (info.Length() != 1) {
-        return Nan::ThrowTypeError("One argument required");
-    }
-
-    Error error;
-    mbgl::optional<std::unique_ptr<Layer>> layer = convert<std::unique_ptr<Layer>>(info[0], error);
-    if (!layer) {
-        Nan::ThrowTypeError(error.message.c_str());
-        return;
-    }
-
-    nodeMap->map->getStyle().addLayer(std::move(*layer));
-}
-
-void NodeMap::RemoveLayer(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-    using namespace mbgl::style;
-    using namespace mbgl::style::conversion;
-
-    auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
-    if (!nodeMap->map) return Nan::ThrowError(releasedMessage());
-
-    if (info.Length() != 1) {
-        return Nan::ThrowTypeError("One argument required");
-    }
-
-    if (!info[0]->IsString()) {
-        return Nan::ThrowTypeError("First argument must be a string");
-    }
-
-    nodeMap->map->getStyle().removeLayer(*Nan::Utf8String(info[0]));
-}
-
-void NodeMap::AddImage(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-    using namespace mbgl::style;
-    using namespace mbgl::style::conversion;
-
-    v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
-
-    auto nodeMap = Nan::ObjectWrap::Unwrap<NodeMap>(info.Holder());
-    if (!nodeMap->map) return Nan::ThrowError(releasedMessage());
-
-    if (info.Length() != 3) {
-        return Nan::ThrowTypeError("Three arguments required");
-    }
-
-    if (!info[0]->IsString()) {
-        return Nan::ThrowTypeError("First argument must be a string");
-    }
-
-    if (!info[1]->IsObject()) {
-        return Nan::ThrowTypeError("Second argument must be an object");
-    }
-
-    if (!info[2]->IsObject()) {
-        return Nan::ThrowTypeError("Third argument must be an object");
-    }
-
-    auto optionObject = Nan::To<v8::Object>(info[2]).ToLocalChecked();
-
-    if (!Nan::Get(optionObject, Nan::New("height").ToLocalChecked()).ToLocalChecked()->IsUint32()) {
-        return Nan::ThrowTypeError("height parameter required");
-    }
-
-    if (!Nan::Get(optionObject, Nan::New("width").ToLocalChecked()).ToLocalChecked()->IsUint32()) {
-        return Nan::ThrowTypeError("width parameter required");
-    }
-
-    if (!Nan::Get(optionObject, Nan::New("pixelRatio").ToLocalChecked()).ToLocalChecked()->IsNumber()) {
-        return Nan::ThrowTypeError("pixelRatio parameter required");
-    }
-
-    uint32_t imageHeight = Nan::To<uint32_t>(Nan::Get(optionObject, Nan::New("height").ToLocalChecked()).ToLocalChecked()).ToChecked();
-    uint32_t imageWidth = Nan::To<uint32_t>(Nan::Get(optionObject, Nan::New("width").ToLocalChecked()).ToLocalChecked()).ToChecked();
-
-    if (imageWidth > 1024 || imageHeight > 1024) {
-        return Nan::ThrowTypeError("Max height and width is 1024");
-    }
 
     bool sdf = false;
     if (Nan::Get(optionObject, Nan::New("sdf").ToLocalChecked()).ToLocalChecked()->IsBoolean()) {
@@ -912,7 +1266,7 @@ void NodeMap::SetLayerProperty(const Nan::FunctionCallbackInfo<v8::Value>& info)
         return Nan::ThrowTypeError("Second argument must be a string");
     }
 
-    mbgl::optional<Error> error = layer->setProperty(*Nan::Utf8String(info[1]), Convertible(info[2]));
+    std::optional<Error> error = layer->setProperty(*Nan::Utf8String(info[1]), Convertible(info[2]));
     if (error) {
         return Nan::ThrowTypeError(error->message.c_str());
     }
@@ -944,7 +1298,7 @@ void NodeMap::SetFilter(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
     if (!info[1]->IsNull() && !info[1]->IsUndefined()) {
         Error error;
-        mbgl::optional<Filter> converted = convert<Filter>(info[1], error);
+        std::optional<Filter> converted = convert<Filter>(info[1], error);
         if (!converted) {
             Nan::ThrowTypeError(error.message.c_str());
             return;
@@ -1149,7 +1503,7 @@ void NodeMap::SetFeatureState(const Nan::FunctionCallbackInfo<v8::Value>& info) 
 
     std::string sourceID;
     std::string featureID;
-    mbgl::optional<std::string> sourceLayerID;
+    std::optional<std::string> sourceLayerID;
     auto feature = Nan::To<v8::Object>(info[0]).ToLocalChecked();
     if (Nan::Has(feature, Nan::New("source").ToLocalChecked()).FromJust()) {
         auto sourceOption = Nan::Get(feature, Nan::New("source").ToLocalChecked()).ToLocalChecked();
@@ -1191,9 +1545,9 @@ void NodeMap::SetFeatureState(const Nan::FunctionCallbackInfo<v8::Value>& info) 
     bool valueParsed = false;
     FeatureState newState;
 
-    const std::function<optional<Error>(const std::string&, const Convertible&)> convertFn =
-        [&](const std::string& k, const Convertible& v) -> optional<Error> {
-        optional<Value> value = toValue(v);
+    const std::function<std::optional<Error>(const std::string&, const Convertible&)> convertFn =
+        [&](const std::string& k, const Convertible& v) -> std::optional<Error> {
+        std::optional<Value> value = toValue(v);
         if (value) {
             stateValue = std::move(*value);
             valueParsed = true;
@@ -1202,7 +1556,7 @@ void NodeMap::SetFeatureState(const Nan::FunctionCallbackInfo<v8::Value>& info) 
             std::size_t length = arrayLength(v);
             array.reserve(length);
             for (size_t i = 0; i < length; ++i) {
-                optional<Value> arrayVal = toValue(arrayMember(v, i));
+                std::optional<Value> arrayVal = toValue(arrayMember(v, i));
                 if (arrayVal) {
                     array.emplace_back(*arrayVal);
                 }
@@ -1218,11 +1572,11 @@ void NodeMap::SetFeatureState(const Nan::FunctionCallbackInfo<v8::Value>& info) 
         }
         if (!valueParsed) {
             Nan::ThrowTypeError("Could not get feature state value");
-            return nullopt;
+            return std::nullopt;
         }
         stateKey = k;
         newState[stateKey] = stateValue;
-        return nullopt;
+        return std::nullopt;
     };
 
     eachMember(state, convertFn);
@@ -1250,7 +1604,7 @@ void NodeMap::GetFeatureState(const Nan::FunctionCallbackInfo<v8::Value>& info) 
 
     std::string sourceID;
     std::string featureID;
-    mbgl::optional<std::string> sourceLayerID;
+    std::optional<std::string> sourceLayerID;
     auto feature = Nan::To<v8::Object>(info[0]).ToLocalChecked();
     if (Nan::Has(feature, Nan::New("source").ToLocalChecked()).FromJust()) {
         auto sourceOption = Nan::Get(feature, Nan::New("source").ToLocalChecked()).ToLocalChecked();
@@ -1307,9 +1661,9 @@ void NodeMap::RemoveFeatureState(const Nan::FunctionCallbackInfo<v8::Value>& inf
     }
 
     std::string sourceID;
-    mbgl::optional<std::string> sourceLayerID;
-    mbgl::optional<std::string> featureID;
-    mbgl::optional<std::string> stateKey;
+    std::optional<std::string> sourceLayerID;
+    std::optional<std::string> featureID;
+    std::optional<std::string> stateKey;
     auto feature = Nan::To<v8::Object>(info[0]).ToLocalChecked();
     if (Nan::Has(feature, Nan::New("source").ToLocalChecked()).FromJust()) {
         auto sourceOption = Nan::Get(feature, Nan::New("source").ToLocalChecked()).ToLocalChecked();
@@ -1406,7 +1760,7 @@ void NodeMap::QueryRenderedFeatures(const Nan::FunctionCallbackInfo<v8::Value>& 
         if (Nan::Has(options, Nan::New("filter").ToLocalChecked()).FromJust()) {
             auto filterOption = Nan::Get(options, Nan::New("filter").ToLocalChecked()).ToLocalChecked();
             Error error;
-            mbgl::optional<Filter> converted = convert<Filter>(filterOption, error);
+            std::optional<Filter> converted = convert<Filter>(filterOption, error);
             if (!converted) {
                 return Nan::ThrowTypeError(error.message.c_str());
             }

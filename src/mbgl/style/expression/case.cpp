@@ -20,10 +20,30 @@ EvaluationResult Case::evaluate(const EvaluationContext& params) const {
     return otherwise->evaluate(params);
 }
 
-void Case::eachChild(const std::function<void(const Expression&)>& visit) const {
-    for (const Branch& branch : branches) {
-        visit(*branch.first);
-        visit(*branch.second);
+void Case::eachChild(
+    const std::function<void(const Expression &)> &visit) const {
+  for (const Branch &branch : branches) {
+    visit(*branch.first);
+    visit(*branch.second);
+  }
+  visit(*otherwise);
+}
+
+bool Case::operator==(const Expression &e) const {
+  if (e.getKind() == Kind::Case) {
+    auto rhs = static_cast<const Case *>(&e);
+    return *otherwise == *(rhs->otherwise) &&
+           Expression::childrenEqual(branches, rhs->branches);
+  }
+  return false;
+}
+
+std::vector<std::optional<Value>> Case::possibleOutputs() const {
+    std::vector<std::optional<Value>> result;
+    for (const auto& branch : branches) {
+        for (auto& output : branch.second->possibleOutputs()) {
+            result.push_back(std::move(output));
+        }
     }
     visit(*otherwise);
 }
@@ -36,8 +56,8 @@ bool Case::operator==(const Expression& e) const {
     return false;
 }
 
-std::vector<optional<Value>> Case::possibleOutputs() const {
-    std::vector<optional<Value>> result;
+std::vector<std::optional<Value>> Case::possibleOutputs() const {
+    std::vector<std::optional<Value>> result;
     for (const auto& branch : branches) {
         for (auto& output : branch.second->possibleOutputs()) {
             result.push_back(std::move(output));
@@ -64,7 +84,7 @@ ParseResult Case::parse(const Convertible& value, ParsingContext& ctx) {
         return ParseResult();
     }
 
-    optional<type::Type> outputType;
+    std::optional<type::Type> outputType;
     if (ctx.getExpected() && *ctx.getExpected() != type::Value) {
         outputType = ctx.getExpected();
     }

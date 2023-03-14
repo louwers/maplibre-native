@@ -51,7 +51,7 @@ struct OnlineFileRequest {
     ActorRef<OnlineFileRequest> actor();
     void onCancel(std::function<void()>);
 
-    Duration getUpdateInterval(optional<Timestamp> expires) const;
+    Duration getUpdateInterval(std::optional<Timestamp> expires) const;
     OnlineFileSourceThread& impl;
     Resource resource;
     std::unique_ptr<AsyncRequest> request;
@@ -70,7 +70,7 @@ struct OnlineFileRequest {
     // backoff when retrying requests.
     uint32_t failedRequests = 0;
     Response::Error::Reason failedRequestReason = Response::Error::Reason::Success;
-    optional<Timestamp> retryAfter;
+    std::optional<Timestamp> retryAfter;
 };
 
 class OnlineFileSourceThread {
@@ -267,7 +267,203 @@ private:
             }
         }
 
-        optional<OnlineFileRequest*> pop() {
+        std::optional<OnlineFileRequest*> pop() {
+            if (queue.empty()) {
+                return {};
+            }
+
+            if (queue.begin() == firstLowPriorityRequest) {
+                firstLowPriorityRequest++;
+            }
+
+            OnlineFileRequest* next = queue.front();
+            queue.pop_front();
+            return {next};
+        }
+
+        bool contains(OnlineFileRequest* request) const {
+            return (std::find(queue.begin(), queue.end(), request) != queue.end());
+        }
+
+  void activateRequest(OnlineFileRequest *req) {
+    auto callback = [=](const Response &response) {
+      activeRequests.erase(req);
+      req->request.reset();
+      req->completed(response);
+      activatePendingRequest();
+    };
+
+    activeRequests.insert(req);
+
+    if (online) {
+      req->request = httpFileSource.request(req->resource, callback);
+    } else {
+      Response response;
+      response.error =
+          std::make_unique<Response::Error>(Response::Error::Reason::Connection,
+                                            "Online connectivity is disabled.");
+      callback(response);
+    }
+
+    void remove(OnlineFileRequest* req) {
+        allRequests.erase(req);
+        if (activeRequests.erase(req)) {
+            activatePendingRequest();
+        } else {
+            pendingRequests.remove(req);
+        }
+    }
+
+    void activateOrQueueRequest(OnlineFileRequest* req) {
+        assert(allRequests.find(req) != allRequests.end());
+        assert(activeRequests.find(req) == activeRequests.end());
+        assert(!req->request);
+
+        if (activeRequests.size() >= getMaximumConcurrentRequests()) {
+            queueRequest(req);
+        } else {
+            activateRequest(req);
+        }
+    }
+
+    void queueRequest(OnlineFileRequest* req) { pendingRequests.insert(req); }
+
+    void activateRequest(OnlineFileRequest* req) {
+        auto callback = [=](const Response& response) {
+            activeRequests.erase(req);
+            req->request.reset();
+            req->completed(response);
+            activatePendingRequest();
+        };
+
+        activeRequests.insert(req);
+
+        if (online) {
+            req->request = httpFileSource.request(req->resource, callback);
+        } else {
+            Response response;
+            response.error = std::make_unique<Response::Error>(Response::Error::Reason::Connection,
+                                                               "Online connectivity is disabled.");
+            callback(response);
+        }
+    }
+
+    void activatePendingRequest() {
+        auto req = pendingRequests.pop();
+
+        if (req) {
+            activateRequest(*req);
+        }
+    }
+
+    bool isPending(OnlineFileRequest* req) { return pendingRequests.contains(req); }
+
+    bool isActive(OnlineFileRequest* req) { return activeRequests.find(req) != activeRequests.end(); }
+
+    void setResourceTransform(ResourceTransform transform) { resourceTransform = std::move(transform); }
+
+    void setResourceOptions(ResourceOptions options) {
+        resourceOptions = options;
+    }
+
+    const ResourceOptions& getResourceOptions() const {
+        return resourceOptions;
+    }
+
+    void setClientOptions(ClientOptions options) {
+        clientOptions = options;
+    }
+
+    const ClientOptions& getClientOptions() const {
+        return clientOptions;
+    }
+
+    void setOnlineStatus(bool status) {
+        online = status;
+        if (online) {
+            networkIsReachableAgain();
+        }
+    }
+
+    uint32_t getMaximumConcurrentRequests() const {
+        return maximumConcurrentRequests;
+    }
+
+    void setMaximumConcurrentRequests(uint32_t maximumConcurrentRequests_) {
+        maximumConcurrentRequests = maximumConcurrentRequests_;
+    }
+
+    void setAPIBaseURL(std::string t) {
+        resourceOptions.withTileServerOptions(TileServerOptions().withBaseURL(std::move(t)));
+    }
+
+    const std::string& getAPIBaseURL() const { return resourceOptions.tileServerOptions().baseURL(); }
+
+    void setApiKey(std::string t) { resourceOptions.withApiKey(std::move(t)); }
+    const std::string& getApiKey() const { return resourceOptions.apiKey(); }
+
+private:
+    friend struct OnlineFileRequest;
+
+    void networkIsReachableAgain() {
+        // Notify regular priority requests.
+        for (auto& req : allRequests) {
+            if (req->resource.priority == Resource::Priority::Regular) {
+                req->networkIsReachableAgain();
+            }
+        }
+
+        // Notify low priority requests.
+        for (auto& req : allRequests) {
+            if (req->resource.priority == Resource::Priority::Low) {
+                req->networkIsReachableAgain();
+            }
+        }
+    }
+
+    // Using Pending Requests as an priority queue which processes
+    // file requests in a FIFO manner but prefers regular requests
+    // over offline requests with a low priority such that low priority
+    // requests do not throttle regular requests.
+    //
+    // The order of a queue is therefore:
+    //
+    // hi0 -- hi1 -- hi2 -- hi3 -- lo0 -- lo1 --lo2
+    //                              ^
+    //                              firstLowPriorityRequest
+
+    struct PendingRequests {
+        PendingRequests() : firstLowPriorityRequest(queue.begin()) {}
+
+        std::list<OnlineFileRequest*> queue;
+        std::list<OnlineFileRequest*>::iterator firstLowPriorityRequest;
+
+        void remove(const OnlineFileRequest* request) {
+            auto it = std::find(queue.begin(), queue.end(), request);
+            if (it != queue.end()) {
+                if (it == firstLowPriorityRequest) {
+                    firstLowPriorityRequest++;
+                }
+                queue.erase(it);
+            }
+        }
+
+        void insert(OnlineFileRequest* request) {
+            if (request->resource.priority == Resource::Priority::Regular) {
+                firstLowPriorityRequest = queue.insert(firstLowPriorityRequest, request);
+                firstLowPriorityRequest++;
+            }
+            else {
+                if (firstLowPriorityRequest == queue.end()) {
+                    firstLowPriorityRequest = queue.insert(queue.end(), request);
+                }
+                else {
+                    queue.insert(queue.end(), request);
+                }
+            }
+        }
+
+            std::optional<OnlineFileRequest*> pop() {
             if (queue.empty()) {
                 return {};
             }
@@ -443,7 +639,7 @@ OnlineFileRequest::~OnlineFileRequest() {
     }
 }
 
-Timestamp interpolateExpiration(const Timestamp& current, optional<Timestamp> prior, bool& expired) {
+Timestamp interpolateExpiration(const Timestamp& current, std::optional<Timestamp> prior, bool& expired) {
     auto now = util::now();
     if (current > now) {
         return current;
@@ -509,7 +705,7 @@ void OnlineFileRequest::schedule(Duration timeout) {
     });
 }
 
-Duration OnlineFileRequest::getUpdateInterval(optional<Timestamp> expires) const {
+Duration OnlineFileRequest::getUpdateInterval(std::optional<Timestamp> expires) const {
     // Calculate a timeout that depends on how many
     // consecutive errors we've encountered, and on the expiration time, if present.
     Duration errorRetryTimeout = http::errorRetryTimeout(failedRequestReason, failedRequests, retryAfter);
@@ -567,7 +763,7 @@ void OnlineFileRequest::completed(Response response) {
 
     if (response.error) {
         if (response.error->reason == Response::Error::Reason::NotFound) {
-            Log::Error(Event::General, "The resource `%s` not found", sanitizeURL(resource.url).c_str());
+            Log::Error(Event::General, "The resource `" + sanitizeURL(resource.url) + "` not found");
         }
         failedRequests++;
         failedRequestReason = response.error->reason;
