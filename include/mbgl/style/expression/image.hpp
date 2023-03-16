@@ -2,7 +2,7 @@
 
 #include <mbgl/style/conversion.hpp>
 #include <mbgl/util/color.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 #include <string>
 #include <vector>
@@ -35,7 +35,7 @@ namespace conversion {
 template <>
 struct Converter<expression::Image> {
 public:
-    optional<expression::Image> operator()(const Convertible& value, Error& error) const;
+    std::optional<expression::Image> operator()(const Convertible& value, Error& error) const;
 };
 
 template <>

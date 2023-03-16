@@ -18,8 +18,8 @@ class SourcePrepareParameters;
 
 class TileAtlasTextures {
 public:    
-    optional<gfx::Texture> glyph;
-    optional<gfx::Texture> icon;
+    std::optional<gfx::Texture> glyph;
+    std::optional<gfx::Texture> icon;
 };
 
 class TileRenderData {
@@ -28,7 +28,7 @@ public:
     const gfx::Texture& getGlyphAtlasTexture() const;
     const gfx::Texture& getIconAtlasTexture() const;
     // To be implemented for concrete tile types.
-    virtual optional<ImagePosition> getPattern(const std::string&) const;
+    virtual std::optional<ImagePosition> getPattern(const std::string&) const;
     virtual const LayerRenderData* getLayerRenderData(const style::Layer::Impl&) const;
     virtual Bucket* getBucket(const style::Layer::Impl&) const;
     virtual void upload(gfx::UploadPass&) {}

@@ -2,7 +2,7 @@
 
 #include <mbgl/gfx/uniform.hpp>
 #include <mbgl/gl/types.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <mbgl/util/literal.hpp>
 #include <mbgl/util/ignore.hpp>
 #include <mbgl/util/indexed_tuple.hpp>
@@ -49,7 +49,7 @@ public:
     }
 
     UniformLocation location;
-    optional<Value> current = {};
+    std::optional<Value> current = {};
 };
 
 UniformLocation uniformLocation(ProgramID, const char* name);

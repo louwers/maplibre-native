@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 #include <future>
 #include <utility>

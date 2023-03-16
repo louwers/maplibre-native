@@ -606,32 +606,32 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
 
         if (property == Property::LineBlur) {
             setLineBlur(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::LineGapWidth) {
             setLineGapWidth(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::LineOffset) {
             setLineOffset(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::LineOpacity) {
             setLineOpacity(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::LineWidth) {
             setLineWidth(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::LineSortKey) {
             setLineSortKey(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
     }
     if (property == Property::LineColor) {
@@ -642,7 +642,7 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
         }
 
         setLineColor(*typedValue);
-        return nullopt;
+        return std::nullopt;
     }
     if (property == Property::LineDasharray) {
         Error error;
@@ -652,7 +652,7 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
         }
 
         setLineDasharray(*typedValue);
-        return nullopt;
+        return std::nullopt;
     }
     if (property == Property::LineGradient) {
         Error error;
@@ -662,7 +662,7 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
         }
 
         setLineGradient(*typedValue);
-        return nullopt;
+        return std::nullopt;
     }
     if (property == Property::LinePattern) {
         Error error;
@@ -672,7 +672,7 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
         }
 
         setLinePattern(*typedValue);
-        return nullopt;
+        return std::nullopt;
     }
     if (property == Property::LineTranslate) {
         Error error;
@@ -682,7 +682,7 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
         }
 
         setLineTranslate(*typedValue);
-        return nullopt;
+        return std::nullopt;
     }
     if (property == Property::LineTranslateAnchor) {
         Error error;
@@ -692,7 +692,7 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
         }
 
         setLineTranslateAnchor(*typedValue);
-        return nullopt;
+        return std::nullopt;
     }
     if (property == Property::LineCap) {
         Error error;
@@ -702,7 +702,7 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
         }
 
         setLineCap(*typedValue);
-        return nullopt;
+        return std::nullopt;
     }
     if (property == Property::LineJoin) {
         Error error;
@@ -712,7 +712,7 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
         }
 
         setLineJoin(*typedValue);
-        return nullopt;
+        return std::nullopt;
     }
     if (property == Property::LineMiterLimit || property == Property::LineRoundLimit) {
         Error error;
@@ -723,12 +723,12 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
 
         if (property == Property::LineMiterLimit) {
             setLineMiterLimit(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::LineRoundLimit) {
             setLineRoundLimit(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
     }
 
@@ -740,57 +740,57 @@ std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, con
 
     if (property == Property::LineBlurTransition) {
         setLineBlurTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::LineColorTransition) {
         setLineColorTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::LineDasharrayTransition) {
         setLineDasharrayTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::LineGapWidthTransition) {
         setLineGapWidthTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::LineGradientTransition) {
         setLineGradientTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::LineOffsetTransition) {
         setLineOffsetTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::LineOpacityTransition) {
         setLineOpacityTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::LinePatternTransition) {
         setLinePatternTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::LineTranslateTransition) {
         setLineTranslateTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::LineTranslateAnchorTransition) {
         setLineTranslateAnchorTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::LineWidthTransition) {
         setLineWidthTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     return Error{"layer doesn't support this property"};

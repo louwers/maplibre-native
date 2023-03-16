@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mbgl/i18n/collator.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 #include <string>
 
@@ -11,7 +11,7 @@ namespace expression {
 
 class Collator {
 public:
-    Collator(bool caseSensitive, bool diacriticSensitive, const optional<std::string>& locale = {});
+    Collator(bool caseSensitive, bool diacriticSensitive, const std::optional<std::string>& locale = {});
 
     bool operator==(const Collator& other) const;
 

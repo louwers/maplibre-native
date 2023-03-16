@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <mbgl/util/chrono.hpp>
 #include <mbgl/map/bound_options.hpp>
 #include <mbgl/map/map_observer.hpp>
@@ -63,26 +63,26 @@ public:
     bool isPanning() const;
 
     // Camera
-    CameraOptions getCameraOptions(const optional<EdgeInsets>& = {}) const;
+    CameraOptions getCameraOptions(const std::optional<EdgeInsets>& = {}) const;
     void jumpTo(const CameraOptions&);
     void easeTo(const CameraOptions&, const AnimationOptions&);
     void flyTo(const CameraOptions&, const AnimationOptions&);
     void moveBy(const ScreenCoordinate&, const AnimationOptions& = {});
-    void scaleBy(double scale, const optional<ScreenCoordinate>& anchor, const AnimationOptions& animation = {});
+    void scaleBy(double scale, const std::optional<ScreenCoordinate>& anchor, const AnimationOptions& animation = {});
     void pitchBy(double pitch, const AnimationOptions& animation = {});
     void rotateBy(const ScreenCoordinate& first, const ScreenCoordinate& second, const AnimationOptions& = {});
     CameraOptions cameraForLatLngBounds(const LatLngBounds&,
                                         const EdgeInsets&,
-                                        const optional<double>& bearing = {},
-                                        const optional<double>& pitch = {}) const;
+                                        const std::optional<double>& bearing = {},
+                                        const std::optional<double>& pitch = {}) const;
     CameraOptions cameraForLatLngs(const std::vector<LatLng>&,
                                    const EdgeInsets&,
-                                   const optional<double>& bearing = {},
-                                   const optional<double>& pitch = {}) const;
+                                   const std::optional<double>& bearing = {},
+                                   const std::optional<double>& pitch = {}) const;
     CameraOptions cameraForGeometry(const Geometry<double>&,
                                     const EdgeInsets&,
-                                    const optional<double>& bearing = {},
-                                    const optional<double>& pitch = {}) const;
+                                    const std::optional<double>& bearing = {},
+                                    const std::optional<double>& pitch = {}) const;
     LatLngBounds latLngBoundsForCamera(const CameraOptions&) const;
     LatLngBounds latLngBoundsForCameraUnwrapped(const CameraOptions&) const;
 
@@ -91,7 +91,7 @@ public:
 
     void setBounds(const BoundOptions& options);
 
-    /// Returns the current map bound options. All optional fields in BoundOptions are set.
+    /// Returns the current map bound options. All std::optional fields in BoundOptions are set.
     BoundOptions getBounds() const;
 
     /// @}

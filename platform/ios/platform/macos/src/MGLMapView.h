@@ -333,7 +333,7 @@ MGL_EXPORT IB_DESIGNABLE
 
 /**
  Moves the viewpoint to a different location with respect to the map with an
- optional transition animation.
+ std::optional transition animation.
 
  @param camera The new viewpoint.
  @param animated Specify `YES` if you want the map view to animate the change to
@@ -344,7 +344,7 @@ MGL_EXPORT IB_DESIGNABLE
 
 /**
  Moves the viewpoint to a different location with respect to the map with an
- optional transition duration and timing function.
+ std::optional transition duration and timing function.
 
  @param camera The new viewpoint.
  @param duration The amount of time, measured in seconds, that the transition
@@ -359,7 +359,7 @@ MGL_EXPORT IB_DESIGNABLE
 
  /**
  Moves the viewpoint to a different location with respect to the map with an
- optional transition duration and timing function, and optionally some additional
+ std::optional transition duration and timing function, and optionally some additional
  padding on each side.
  
  @param camera The new viewpoint.
@@ -391,7 +391,7 @@ MGL_EXPORT IB_DESIGNABLE
 
 /**
  Moves the viewpoint to a different location using a transition animation that
- evokes powered flight and an optional transition duration.
+ evokes powered flight and an std::optional transition duration.
 
  The transition animation seamlessly incorporates zooming and panning to help
  the user find his or her bearings even after traversing a great distance.
@@ -407,7 +407,7 @@ MGL_EXPORT IB_DESIGNABLE
 
 /**
  Moves the viewpoint to a different location using a transition animation that
- evokes powered flight and an optional transition duration and peak altitude.
+ evokes powered flight and an std::optional transition duration and peak altitude.
 
  The transition animation seamlessly incorporates zooming and panning to help
  the user find his or her bearings even after traversing a great distance.
@@ -526,7 +526,7 @@ MGL_EXPORT IB_DESIGNABLE
 
 /**
  Sets the visible region so that the map displays the specified annotations with
- the specified amount of padding on each side and an optional completion
+ the specified amount of padding on each side and an std::optional completion
  handler.
 
  Calling this method updates the value in the `visibleCoordinateBounds` property
@@ -648,7 +648,7 @@ MGL_EXPORT IB_DESIGNABLE
 
 /**
  Deprecated. Sets the distance from the edges of the map view’s frame to the
- edges of the map view’s logical viewport, with an optional transition animation.
+ edges of the map view’s logical viewport, with an std::optional transition animation.
 
  When the value of this property is equal to `NSEdgeInsetsZero`, viewport
  properties such as `centerCoordinate` assume a viewport that matches the map
@@ -671,7 +671,7 @@ MGL_EXPORT IB_DESIGNABLE
 
 /**
  Sets the distance from the edges of the map view’s frame to the edges of the
- map view’s logical viewport with an optional transition animation and
+ map view’s logical viewport with an std::optional transition animation and
  completion handler.
  
  When the value of this property is equal to `NSEdgeInsetsZero`, viewport

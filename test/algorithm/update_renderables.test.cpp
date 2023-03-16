@@ -169,7 +169,7 @@ TEST(UpdateRenderables, SingleTile) {
               }),
               log);
 
-    // Mark the created tile as having the optional request tried.
+    // Mark the created tile as having the std::optional request tried.
     log.clear();
     source.dataTiles[{ 1, 0, { 1, 0, 1 } }]->triedOptional = true;
     algorithm::updateRenderables(
@@ -225,7 +225,7 @@ TEST(UpdateRenderables, SingleTile) {
                   GetTileDataAction{ { 2, 0, { 2, 1, 1 } }, NotFound },    // ...
                   GetTileDataAction{ { 0, 0, { 0, 0, 0 } }, Found },       // parent tile
                   RetainTileDataAction{ { 0, 0, { 0, 0, 0 } }, TileNecessity::Optional }, //
-                  // optional parent tile was already created before, but is not renderable
+                  // std::optional parent tile was already created before, but is not renderable
 
                   GetTileDataAction{ { 1, 0, { 1, 0, 1 } }, Found },       // ideal tile
                   RetainTileDataAction{ { 1, 0, { 1, 0, 1 } }, TileNecessity::Required }, //
@@ -331,7 +331,7 @@ TEST(UpdateRenderables, DontUseWrongParentTile) {
               }),
               log);
 
-    // Now mark the created tile as having the optional request tried.
+    // Now mark the created tile as having the std::optional request tried.
     log.clear();
     source.dataTiles[{ 2, 0, { 2, 0, 0 } }]->triedOptional = true;
     algorithm::updateRenderables(
@@ -344,7 +344,7 @@ TEST(UpdateRenderables, DontUseWrongParentTile) {
                   GetTileDataAction{ { 3, 0, { 3, 1, 0 } }, NotFound },    // ...
                   GetTileDataAction{ { 3, 0, { 3, 1, 1 } }, NotFound },    // ...
                   GetTileDataAction{ { 1, 0, { 1, 0, 0 } }, NotFound },    // parent tile, missing
-                  CreateTileDataAction{ { 1, 0, { 1, 0, 0 } } },           // find optional parent
+                  CreateTileDataAction{ { 1, 0, { 1, 0, 0 } } },           // find std::optional parent
                   RetainTileDataAction{ { 1, 0, { 1, 0, 0 } }, TileNecessity::Optional }, //
                   GetTileDataAction{ { 0, 0, { 0, 0, 0 } }, NotFound },    // parent tile, missing
               }),
@@ -716,7 +716,7 @@ TEST(UpdateRenderables, UseOverzoomedTileAfterMaxzoom) {
         }),
         log);
 
-    // Mark the created tile as having tried the optional request.
+    // Mark the created tile as having tried the std::optional request.
     log.clear();
     source.dataTiles[{ 2, 0, { 2, 0, 0 } }]->triedOptional = true;
     algorithm::updateRenderables(
@@ -1094,7 +1094,7 @@ TEST(UpdateRenderables, RepeatedRenderWithMissingOptionals) {
               }),
               log);
 
-    // Mark next level has having tried optional.
+    // Mark next level has having tried std::optional.
     log.clear();
     source.dataTiles[{ 6, 0, { 6, 0, 0 } }]->triedOptional = true;
     algorithm::updateRenderables(
@@ -1138,7 +1138,7 @@ TEST(UpdateRenderables, RepeatedRenderWithMissingOptionals) {
               }),
               log);
 
-    // Mark next level has having tried optional.
+    // Mark next level has having tried std::optional.
     log.clear();
     source.dataTiles[{ 5, 0, { 5, 0, 0 } }]->triedOptional = true;
     algorithm::updateRenderables(
@@ -1162,7 +1162,7 @@ TEST(UpdateRenderables, RepeatedRenderWithMissingOptionals) {
               }),
               log);
 
-    // Mark next level has having tried optional.
+    // Mark next level has having tried std::optional.
     log.clear();
     source.dataTiles[{ 4, 0, { 4, 0, 0 } }]->triedOptional = true;
     algorithm::updateRenderables(
@@ -1187,7 +1187,7 @@ TEST(UpdateRenderables, RepeatedRenderWithMissingOptionals) {
               }),
               log);
 
-    // Mark next level has having tried optional.
+    // Mark next level has having tried std::optional.
     log.clear();
     source.dataTiles[{ 3, 0, { 3, 0, 0 } }]->triedOptional = true;
     algorithm::updateRenderables(

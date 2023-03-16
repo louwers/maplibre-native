@@ -1,13 +1,13 @@
 #pragma once
 
 #include <mbgl/util/geo.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 namespace mbgl {
 
 /**
  * @brief Holds options to limit what parts of a map are visible. All fields are
- * optional.
+ * std::optional.
  */
 struct BoundOptions {
     /// Sets the latitude and longitude bounds to which the camera center are constrained
@@ -28,19 +28,19 @@ struct BoundOptions {
     }
 
     /// Constrain the center of the camera to be within these bounds.
-    optional<LatLngBounds> bounds;
+    std::optional<LatLngBounds> bounds;
 
     /// Maximum zoom level allowed.
-    optional<double> maxZoom;
+    std::optional<double> maxZoom;
 
     /// Minimum zoom level allowed.
-    optional<double> minZoom;
+    std::optional<double> minZoom;
 
     /// Maximum pitch allowed in degrees.
-    optional<double> maxPitch;
+    std::optional<double> maxPitch;
 
     /// Minimum pitch allowed in degrees.
-    optional<double> minPitch;
+    std::optional<double> minPitch;
 };
 
 }  // namespace mbgl

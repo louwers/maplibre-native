@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class MGLShape;
 
 /**
- The `MGLMapViewDelegate` protocol defines a set of optional methods that you
+ The `MGLMapViewDelegate` protocol defines a set of std::optional methods that you
  can use to receive messages from an `MGLMapView` instance. Because many map
  operations require the `MGLMapView` class to load data asynchronously, the map
  view calls these methods to notify your application when specific operations

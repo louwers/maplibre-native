@@ -66,7 +66,7 @@ namespace QMapLibreGL {
 
     Represents \l {https://www.mapbox.com/help/define-features/}{map features}
     via its \a type (PointType, LineStringType or PolygonType), \a geometry, \a
-    properties map and \a id (optional).
+    properties map and \a id (std::optional).
 */
 
 /*!

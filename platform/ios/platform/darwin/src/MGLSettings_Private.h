@@ -1,7 +1,7 @@
 #import "MGLSettings.h"
 #import <mbgl/util/tile_server_options.hpp>
 #import <mbgl/util/default_style.hpp>
-#import <mbgl/util/optional.hpp>
+#import <mbgl/util/std::optional.hpp>
 
 NS_ASSUME_NONNULL_BEGIN
 

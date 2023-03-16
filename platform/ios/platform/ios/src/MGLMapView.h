@@ -521,7 +521,7 @@ MGL_EXPORT
 @property (nonatomic, assign) MGLUserTrackingMode userTrackingMode;
 
 /**
- Deprecated. Sets the mode used to track the user location, with an optional transition.
+ Deprecated. Sets the mode used to track the user location, with an std::optional transition.
  
  To specify a completion handler to execute after the animation finishes, use
  the `-setUserTrackingMode:animated:completionHandler:` method.
@@ -536,7 +536,7 @@ MGL_EXPORT
 - (void)setUserTrackingMode:(MGLUserTrackingMode)mode animated:(BOOL)animated __attribute__((deprecated("Use `-setUserTrackingMode:animated:completionHandler:` instead.")));
 
 /**
- Sets the mode used to track the user location, with an optional transition and
+ Sets the mode used to track the user location, with an std::optional transition and
  completion handler.
 
  @param mode The mode used to track the user location.
@@ -561,7 +561,7 @@ MGL_EXPORT
 
 /**
  Sets the vertical alignment of the user location annotation within the
- receiver, with an optional transition.
+ receiver, with an std::optional transition.
 
  @param alignment The vertical alignment of the user location annotation.
  @param animated If `YES`, the user location annotation animates to its new
@@ -628,7 +628,7 @@ MGL_EXPORT
 
 /**
  Deprecated. Sets the geographic coordinate that is the subject of observation as
- the user location is being tracked, with an optional transition animation.
+ the user location is being tracked, with an std::optional transition animation.
 
  By default, the target coordinate is set to an invalid coordinate, indicating
  that there is no target. In course tracking mode, the target forms one of two
@@ -651,7 +651,7 @@ MGL_EXPORT
 
 /**
  Sets the geographic coordinate that is the subject of observation as the user
- location is being tracked, with an optional transition animation and completion
+ location is being tracked, with an std::optional transition animation and completion
  handler.
 
  By default, the target coordinate is set to an invalid coordinate, indicating
@@ -839,7 +839,7 @@ MGL_EXPORT
 
 /**
  Changes the center coordinate, zoom level, and direction of the map, calling a
- completion handler at the end of an optional animation. For animated changes, 
+ completion handler at the end of an std::optional animation. For animated changes, 
  wait until the map view has finished loading before calling this method.
 
  @param centerCoordinate The new center coordinate for the map.
@@ -1112,7 +1112,7 @@ MGL_EXPORT
 
 /**
  Sets the visible region so that the map displays the specified annotations with
- the specified amount of padding on each side and an optional completion
+ the specified amount of padding on each side and an std::optional completion
  handler.
 
  Calling this method updates the value in the `visibleCoordinateBounds` property
@@ -1134,7 +1134,7 @@ MGL_EXPORT
 
 /**
  Moves the viewpoint to a different location with respect to the map with an
- optional transition animation. For animated changes, wait until the map view has 
+ std::optional transition animation. For animated changes, wait until the map view has 
  finished loading before calling this method.
 
  @param camera The new viewpoint.
@@ -1151,7 +1151,7 @@ MGL_EXPORT
 
 /**
  Moves the viewpoint to a different location with respect to the map with an
- optional transition duration and timing function. For animated changes, wait 
+ std::optional transition duration and timing function. For animated changes, wait 
  until the map view has finished loading before calling this method.
 
  @param camera The new viewpoint.
@@ -1171,7 +1171,7 @@ MGL_EXPORT
 
 /**
  Moves the viewpoint to a different location with respect to the map with an
- optional transition duration and timing function. For animated changes, wait 
+ std::optional transition duration and timing function. For animated changes, wait 
  until the map view has finished loading before calling this method.
 
  @param camera The new viewpoint.
@@ -1187,7 +1187,7 @@ MGL_EXPORT
 
 /**
  Moves the viewpoint to a different location with respect to the map with an
- optional transition duration and timing function, and optionally some additional
+ std::optional transition duration and timing function, and optionally some additional
  padding on each side. For animated changes, wait until the map view has 
  finished loading before calling this method.
 
@@ -1219,7 +1219,7 @@ MGL_EXPORT
 
 /**
  Moves the viewpoint to a different location using a transition animation that
- evokes powered flight and an optional transition duration.
+ evokes powered flight and an std::optional transition duration.
 
  The transition animation seamlessly incorporates zooming and panning to help
  the user find his or her bearings even after traversing a great distance.
@@ -1235,7 +1235,7 @@ MGL_EXPORT
 
 /**
  Moves the viewpoint to a different location using a transition animation that
- evokes powered flight and an optional transition duration and peak altitude.
+ evokes powered flight and an std::optional transition duration and peak altitude.
 
  The transition animation seamlessly incorporates zooming and panning to help
  the user find his or her bearings even after traversing a great distance.
@@ -1402,7 +1402,7 @@ MGL_EXPORT
 
 /**
  Deprecated. Sets the distance from the edges of the map view’s frame to the edges
- of the map view’s logical viewport with an optional transition animation.
+ of the map view’s logical viewport with an std::optional transition animation.
 
  When the value of this property is equal to `UIEdgeInsetsZero`, viewport
  properties such as `centerCoordinate` assume a viewport that matches the map
@@ -1429,7 +1429,7 @@ MGL_EXPORT
 
 /**
  Sets the distance from the edges of the map view’s frame to the edges of the
- map view’s logical viewport with an optional transition animation and
+ map view’s logical viewport with an std::optional transition animation and
  completion handler.
 
  When the value of this property is equal to `UIEdgeInsetsZero`, viewport
@@ -1720,7 +1720,7 @@ MGL_EXPORT
 - (void)selectAnnotation:(id <MGLAnnotation>)annotation animated:(BOOL)animated __attribute__((deprecated("Use `-selectAnnotation:animated:completionHandler:` instead.")));
 
 /**
- Selects an annotation and displays its callout view with an optional completion
+ Selects an annotation and displays its callout view with an std::optional completion
  handler.
 
  The `animated` parameter determines whether the selection is animated including whether the map is
@@ -1744,7 +1744,7 @@ MGL_EXPORT
 
 /**
  :nodoc:
- Selects an annotation and displays its callout view with an optional completion
+ Selects an annotation and displays its callout view with an std::optional completion
  handler. This method should be considered "alpha" and as such is subject to
  change.
 

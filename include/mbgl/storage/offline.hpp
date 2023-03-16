@@ -3,7 +3,7 @@
 #include <mbgl/util/geo.hpp>
 #include <mbgl/util/geometry.hpp>
 #include <mbgl/util/range.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <mbgl/util/variant.hpp>
 #include <mbgl/style/types.hpp>
 #include <mbgl/storage/response.hpp>

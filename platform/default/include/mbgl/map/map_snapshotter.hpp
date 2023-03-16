@@ -2,7 +2,7 @@
 
 #include <mbgl/util/client_options.hpp>
 #include <mbgl/util/image.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <mbgl/util/geo.hpp>
 
 #include <exception>
@@ -38,7 +38,7 @@ public:
                    const ResourceOptions&,
                    const ClientOptions&,
                    MapSnapshotterObserver&,
-                   optional<std::string> localFontFamily = nullopt);
+                   std::optional<std::string> localFontFamily = std::nullopt);
 
     MapSnapshotter(Size size, float pixelRatio, const ResourceOptions&, const ClientOptions& = ClientOptions());
 

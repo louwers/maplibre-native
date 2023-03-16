@@ -2,7 +2,7 @@
 
 #include <mbgl/util/geometry.hpp>
 #include <mbgl/util/feature.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 #include <cstdint>
 #include <string>
@@ -48,7 +48,7 @@ class GeometryTileFeature {
 public:
     virtual ~GeometryTileFeature() = default;
     virtual FeatureType getType() const = 0;
-    virtual optional<Value> getValue(const std::string& key) const = 0;
+    virtual std::optional<Value> getValue(const std::string& key) const = 0;
     virtual const PropertyMap& getProperties() const;
     virtual FeatureIdentifier getID() const { return NullValue {}; }
     virtual const GeometryCollection& getGeometries() const;

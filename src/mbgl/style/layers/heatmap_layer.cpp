@@ -299,7 +299,7 @@ std::optional<Error> HeatmapLayer::setPropertyInternal(const std::string& name, 
         }
 
         setHeatmapColor(*typedValue);
-        return nullopt;
+        return std::nullopt;
     }
     if (property == Property::HeatmapIntensity || property == Property::HeatmapOpacity) {
         Error error;
@@ -310,12 +310,12 @@ std::optional<Error> HeatmapLayer::setPropertyInternal(const std::string& name, 
 
         if (property == Property::HeatmapIntensity) {
             setHeatmapIntensity(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::HeatmapOpacity) {
             setHeatmapOpacity(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
     }
     if (property == Property::HeatmapRadius || property == Property::HeatmapWeight) {
@@ -327,12 +327,12 @@ std::optional<Error> HeatmapLayer::setPropertyInternal(const std::string& name, 
 
         if (property == Property::HeatmapRadius) {
             setHeatmapRadius(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::HeatmapWeight) {
             setHeatmapWeight(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
     }
 
@@ -344,27 +344,27 @@ std::optional<Error> HeatmapLayer::setPropertyInternal(const std::string& name, 
 
     if (property == Property::HeatmapColorTransition) {
         setHeatmapColorTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::HeatmapIntensityTransition) {
         setHeatmapIntensityTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::HeatmapOpacityTransition) {
         setHeatmapOpacityTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::HeatmapRadiusTransition) {
         setHeatmapRadiusTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::HeatmapWeightTransition) {
         setHeatmapWeightTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     return Error{"layer doesn't support this property"};

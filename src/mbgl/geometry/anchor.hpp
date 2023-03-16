@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mbgl/util/geometry.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -11,9 +11,9 @@ class Anchor {
 public:
     Point<float> point;
     float angle = 0.0f;
-    optional<std::size_t> segment;
+    std::optional<std::size_t> segment;
 
-    Anchor(float x_, float y_, float angle_, optional<std::size_t> segment_ = nullopt)
+    Anchor(float x_, float y_, float angle_, std::optional<std::size_t> segment_ = std::nullopt)
         : point(x_, y_), angle(angle_), segment(std::move(segment_)) {}
 };
 

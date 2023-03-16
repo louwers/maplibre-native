@@ -406,37 +406,37 @@ std::optional<Error> RasterLayer::setPropertyInternal(const std::string& name, c
 
         if (property == Property::RasterBrightnessMax) {
             setRasterBrightnessMax(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::RasterBrightnessMin) {
             setRasterBrightnessMin(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::RasterContrast) {
             setRasterContrast(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::RasterFadeDuration) {
             setRasterFadeDuration(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::RasterHueRotate) {
             setRasterHueRotate(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::RasterOpacity) {
             setRasterOpacity(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
 
         if (property == Property::RasterSaturation) {
             setRasterSaturation(*typedValue);
-            return nullopt;
+            return std::nullopt;
         }
     }
     if (property == Property::RasterResampling) {
@@ -447,7 +447,7 @@ std::optional<Error> RasterLayer::setPropertyInternal(const std::string& name, c
         }
 
         setRasterResampling(*typedValue);
-        return nullopt;
+        return std::nullopt;
     }
 
     Error error;
@@ -458,42 +458,42 @@ std::optional<Error> RasterLayer::setPropertyInternal(const std::string& name, c
 
     if (property == Property::RasterBrightnessMaxTransition) {
         setRasterBrightnessMaxTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::RasterBrightnessMinTransition) {
         setRasterBrightnessMinTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::RasterContrastTransition) {
         setRasterContrastTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::RasterFadeDurationTransition) {
         setRasterFadeDurationTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::RasterHueRotateTransition) {
         setRasterHueRotateTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::RasterOpacityTransition) {
         setRasterOpacityTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::RasterResamplingTransition) {
         setRasterResamplingTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     if (property == Property::RasterSaturationTransition) {
         setRasterSaturationTransition(*transition);
-        return nullopt;
+        return std::nullopt;
     }
 
     return Error{"layer doesn't support this property"};

@@ -48,7 +48,7 @@ MapSnapshotter::MapSnapshotter(jni::JNIEnv& _env,
         mbgl::android::FileSource::getSharedResourceOptions(_env, _jFileSource),
         mbgl::android::FileSource::getSharedClientOptions(_env, _jFileSource),
         *this,
-        _localIdeographFontFamily ? jni::Make<std::string>(_env, _localIdeographFontFamily) : optional<std::string>{});
+        _localIdeographFontFamily ? jni::Make<std::string>(_env, _localIdeographFontFamily) : std::optional<std::string>{});
 
     if (position) {
         snapshotter->setCameraOptions(CameraPosition::getCameraOptions(_env, position, pixelRatio));
@@ -218,7 +218,7 @@ void MapSnapshotter::addLayerBelow(JNIEnv& env, jlong nativeLayerPtr, const jni:
     try {
         layer->addToStyle(
             snapshotter->getStyle(),
-            below ? mbgl::optional<std::string>(jni::Make<std::string>(env, below)) : mbgl::optional<std::string>());
+            below ? std::optional<std::string>(jni::Make<std::string>(env, below)) : std::optional<std::string>());
     } catch (const std::runtime_error& error) {
         jni::ThrowNew(
             env, jni::FindClass(env, "com/mapbox/mapboxsdk/style/layers/CannotAddLayerException"), error.what());
@@ -242,7 +242,7 @@ void MapSnapshotter::addLayerAbove(JNIEnv& env, jlong nativeLayerPtr, const jni:
     }
 
     // Check if we found a sibling to place before
-    mbgl::optional<std::string> before;
+    std::optional<std::string> before;
     if (index > snapshotterLayers.size()) {
         // Not found
         jni::ThrowNew(env,

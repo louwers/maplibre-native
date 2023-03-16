@@ -88,7 +88,7 @@ void Log::record(EventSeverity severity,
                  Event event,
                  int64_t code,
                  const std::string& msg,
-                 const optional<std::string>& threadName) {
+                 const std::optional<std::string>& threadName) {
     std::lock_guard<std::mutex> lock(mutex);
     if (currentObserver && severity != EventSeverity::Debug &&
         currentObserver->onRecord(severity, event, code, msg)) {

@@ -8,7 +8,7 @@
 #include <mbgl/util/chrono.hpp>
 #include <mbgl/util/geo.hpp>
 #include <mbgl/util/noncopyable.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 #include <cstdint>
 #include <cmath>
@@ -29,12 +29,12 @@ public:
 
     // Camera
     /** Returns the current camera options. */
-    CameraOptions getCameraOptions(const optional<EdgeInsets>&) const;
+    CameraOptions getCameraOptions(const std::optional<EdgeInsets>&) const;
 
     /** Instantaneously, synchronously applies the given camera options. */
     void jumpTo(const CameraOptions&);
     /** Asynchronously transitions all specified camera options linearly along
-        an optional time curve. However, center coordinate is not transitioned
+        an std::optional time curve. However, center coordinate is not transitioned
         linearly as, instead, ground speed is kept linear.*/
     void easeTo(const CameraOptions&, const AnimationOptions& = {});
     /** Asynchronously zooms out, pans, and zooms back into the given camera

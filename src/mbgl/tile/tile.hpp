@@ -2,7 +2,7 @@
 
 #include <mbgl/util/noncopyable.hpp>
 #include <mbgl/util/chrono.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <mbgl/util/feature.hpp>
 #include <mbgl/util/tile_coordinate.hpp>
 #include <mbgl/tile/tile_id.hpp>
@@ -145,8 +145,8 @@ public:
 
     const Kind kind;
     OverscaledTileID id;
-    optional<Timestamp> modified;
-    optional<Timestamp> expires;
+    std::optional<Timestamp> modified;
+    std::optional<Timestamp> expires;
     // Indicates whether this tile is used for the currently visible layers on the map.
     // Re-initialized at every source update.
     bool usedByRenderedLayers = false;

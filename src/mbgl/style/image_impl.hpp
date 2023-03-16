@@ -17,7 +17,7 @@ public:
          bool sdf = false,
          ImageStretches stretchX = {},
          ImageStretches stretchY = {},
-         optional<ImageContent> content = nullopt);
+         std::optional<ImageContent> content = std::nullopt);
 
     const std::string id;
 
@@ -34,7 +34,7 @@ public:
     const ImageStretches stretchY;
 
     // The space where text can be fit into this image.
-    const optional<ImageContent> content;
+    const std::optional<ImageContent> content;
 };
 
 } // namespace style

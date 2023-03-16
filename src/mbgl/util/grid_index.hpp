@@ -2,7 +2,7 @@
 
 #include <mapbox/geometry/point.hpp>
 #include <mapbox/geometry/box.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 #include <cstdint>
 #include <cstddef>
@@ -67,8 +67,8 @@ public:
     std::vector<T> query(const BBox&) const;
     std::vector<std::pair<T,BBox>> queryWithBoxes(const BBox&) const;
     
-    bool hitTest(const BBox&, optional<std::function<bool(const T&)>> predicate = nullopt) const;
-    bool hitTest(const BCircle&, optional<std::function<bool(const T&)>> predicate = nullopt) const;
+    bool hitTest(const BBox&, std::optional<std::function<bool(const T&)>> predicate = std::nullopt) const;
+    bool hitTest(const BCircle&, std::optional<std::function<bool(const T&)>> predicate = std::nullopt) const;
     
     bool empty() const;
 

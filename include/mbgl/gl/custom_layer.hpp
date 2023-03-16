@@ -73,7 +73,7 @@ public:
     Mutable<Impl> mutableImpl() const;
 
 private:
-    optional<conversion::Error> setPropertyInternal(const std::string& name,
+    std::optional<conversion::Error> setPropertyInternal(const std::string& name,
                                                     const conversion::Convertible& value) final;
     StyleProperty getProperty(const std::string&) const final;
     std::unique_ptr<Layer> cloneRef(const std::string& id) const final;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 #include <algorithm>
 
@@ -9,14 +9,14 @@ namespace mbgl {
 template <class T>
 class PaintPropertyStatistics {
 public:
-    optional<T> max() const { return {}; }
+    std::optional<T> max() const { return {}; }
     void add(const T&) {}
 };
 
 template <>
 class PaintPropertyStatistics<float> {
 public:
-    optional<float> max() const {
+    std::optional<float> max() const {
         return _max;
     }
 
@@ -25,7 +25,7 @@ public:
     }
 
 private:
-    optional<float> _max;
+    std::optional<float> _max;
 };
 
 } // namespace mbgl

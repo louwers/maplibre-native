@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
  annotation near that annotation.
  
  To receive updates from an object that conforms to the `MGLCalloutView` protocol,
- use the optional methods available in the `MGLCalloutViewDelegate` protocol.
+ use the std::optional methods available in the `MGLCalloutViewDelegate` protocol.
  
  #### Related examples
  See the <a href="https://docs.mapbox.com/ios/maps/examples/custom-callout/">
@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
  A Boolean value indicating whether the callout view should be anchored to
  the corresponding annotation. You can adjust the callout view’s precise location by
  overriding -[UIView setCenter:]. The callout view will not be anchored to the
- annotation if this optional property is unimplemented.
+ annotation if this std::optional property is unimplemented.
  */
 @property (nonatomic, readonly, assign, getter=isAnchoredToAnnotation) BOOL anchoredToAnnotation;
 
@@ -93,14 +93,14 @@ NS_ASSUME_NONNULL_BEGIN
  A Boolean value indicating whether the callout view should be dismissed automatically
  when the map view’s viewport changes. Note that a single tap on the map view
  still dismisses the callout view regardless of the value of this property.
- The callout view will be dismissed if this optional property is unimplemented.
+ The callout view will be dismissed if this std::optional property is unimplemented.
  */
 @property (nonatomic, readonly, assign) BOOL dismissesAutomatically;
 
 @end
 
 /**
- The `MGLCalloutViewDelegate` protocol defines a set of optional methods that
+ The `MGLCalloutViewDelegate` protocol defines a set of std::optional methods that
  you can use to receive messages from an object that conforms to the
  `MGLCalloutView` protocol. The callout view uses these methods to inform the
  delegate that the user has interacted with the the callout view.

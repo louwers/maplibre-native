@@ -85,7 +85,7 @@ MGL_EXPORT
  annotation views that are reused will not necessarily be associated with the
  same annotation they were initialized with. Also, annotation views that are in
  the reuse queue will have a nil value for the annotation property. Passing an annotation
- instance to the view is optional and the map view will automatically associate annotations
+ instance to the view is std::optional and the map view will automatically associate annotations
  with views when views are provided to the map via the `-[MGLMapViewDelegate mapView:viewForAnnotation:]`
  method.
  
@@ -211,7 +211,7 @@ MGL_EXPORT
 @property (nonatomic, assign, getter=isSelected) BOOL selected;
 
 /**
- Sets the selection state of the annotation view with an optional animation.
+ Sets the selection state of the annotation view with an std::optional animation.
 
  You should not call this method directly. A map view calls this method in
  response to user interactions with the annotation. Subclasses may override this

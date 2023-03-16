@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 #include <algorithm>
 #include <cassert>
@@ -13,7 +13,7 @@ class Enum {
 public:
     using Type = T;
     static const char * toString(T);
-    static optional<T> toEnum(const std::string&);
+    static std::optional<T> toEnum(const std::string&);
 };
 
 #define MBGL_DEFINE_ENUM(T, ...)                                                   \
@@ -28,10 +28,10 @@ const char * Enum<T>::toString(T t) {                                           
 }                                                                                  \
                                                                                    \
 template <>                                                                        \
-optional<T> Enum<T>::toEnum(const std::string& s) {                                \
+std::optional<T> Enum<T>::toEnum(const std::string& s) {                                \
     auto it = std::find_if(std::begin(T##_names), std::end(T##_names),             \
         [&] (const auto& v) { return s == v.second; });                            \
-    return it == std::end(T##_names) ? optional<T>() : it->first;                  \
+    return it == std::end(T##_names) ? std::optional<T>() : it->first;                  \
 }
 
 } // namespace mbgl

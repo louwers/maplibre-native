@@ -3,7 +3,7 @@
 #include <mbgl/map/map.hpp>
 #include <mbgl/map/map_snapshotter.hpp>
 #include <mbgl/util/geometry.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <mbgl/util/run_loop.hpp>
 #include <mbgl/util/timer.hpp>
 #if defined(MBGL_RENDER_BACKEND_OPENGL) && !defined(MBGL_LAYER_CUSTOM_DISABLE_ALL)
@@ -148,7 +148,7 @@ private:
 
     GLFWwindow *window = nullptr;
     bool dirty = false;
-    mbgl::optional<std::string> featureID;
+    std::optional<std::string> featureID;
     std::unique_ptr<mbgl::MapSnapshotter> snapshotter;
     std::unique_ptr<SnapshotObserver> snapshotterObserver;
     mbgl::ResourceOptions mapResourceOptions;

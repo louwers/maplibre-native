@@ -2,7 +2,7 @@
 
 #include <mbgl/tile/tile_id.hpp>
 #include <mbgl/tile/tile_necessity.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <mbgl/util/range.hpp>
 
 #include <unordered_set>
@@ -21,7 +21,7 @@ void updateRenderables(GetTileFn getTile,
                        RenderTileFn renderTile,
                        const IdealTileIDs& idealTileIDs,
                        const Range<uint8_t>& zoomRange,
-                       const optional<uint8_t>& maxParentOverscaleFactor = nullopt) {
+                       const std::optional<uint8_t>& maxParentOverscaleFactor = std::nullopt) {
     std::unordered_set<OverscaledTileID> checked;
     bool covered;
     int32_t overscaledZ;
@@ -108,7 +108,7 @@ void updateRenderables(GetTileFn getTile,
 
                     if (tile) {
                         if (!parentIsLoaded) {
-                            // We haven't completed loading the child, so we only do an optional
+                            // We haven't completed loading the child, so we only do an std::optional
                             // (cache) request in an attempt to quickly load data that we can show.
                             retainTile(*tile, TileNecessity::Optional);
                         } else {

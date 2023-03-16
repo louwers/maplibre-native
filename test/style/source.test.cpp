@@ -34,7 +34,7 @@
 #include <mbgl/util/image.hpp>
 
 #include <mbgl/util/logging.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <mbgl/util/range.hpp>
 #include <mbgl/util/tileset.hpp>
 #include <mbgl/util/timer.hpp>
@@ -466,7 +466,7 @@ TEST(Source, RasterTileCancel) {
 
     test.fileSource->tileResponse = [&] (const Resource&) {
         test.end();
-        return optional<Response>();
+        return std::optional<Response>();
     };
 
     RasterLayer layer("id", "source");
@@ -499,7 +499,7 @@ TEST(Source, RasterDEMTileCancel) {
 
     test.fileSource->tileResponse = [&] (const Resource&) {
         test.end();
-        return optional<Response>();
+        return std::optional<Response>();
     };
 
     HillshadeLayer layer("id", "source");
@@ -532,7 +532,7 @@ TEST(Source, VectorTileCancel) {
 
     test.fileSource->tileResponse = [&] (const Resource&) {
         test.end();
-        return optional<Response>();
+        return std::optional<Response>();
     };
 
     LineLayer layer("id", "source");
@@ -780,7 +780,7 @@ public:
                            [&](const OverscaledTileID& tileID) { return std::make_unique<FakeTile>(*this, tileID); });
     }
 
-    const optional<Tileset>& getTileset() const override {
+    const std::optional<Tileset>& getTileset() const override {
         return static_cast<const style::VectorSource::Impl&>(*baseImpl).tileset;
     }
 };
@@ -809,7 +809,7 @@ TEST(Source, InvisibleSourcesTileNecessity) {
     EXPECT_CALL(renderTilesetSource, tileSetNecessity(TileNecessity::Required)).Times(1);
     renderSource->update(initialized.baseImpl, layers, true, true, test.tileParameters());
 
-    // Necessity for invisible tiles must be set to `optional`.
+    // Necessity for invisible tiles must be set to `std::optional`.
     EXPECT_CALL(renderTilesetSource, tileSetNecessity(TileNecessity::Optional)).Times(1);
     renderSource->update(initialized.baseImpl, layers, false, false, test.tileParameters());
 
@@ -877,7 +877,7 @@ TEST(Source, RenderTileSetSourceUpdate) {
             mockedUpdateInternal();
         }
 
-        const optional<Tileset>& getTileset() const override {
+        const std::optional<Tileset>& getTileset() const override {
             return static_cast<const style::VectorSource::Impl&>(*baseImpl).tileset;
         }
     };
@@ -957,7 +957,7 @@ TEST(Source, SetMaxParentOverscaleFactor) {
     tileset.tiles = {"tiles"};
 
     RasterSource source("source", tileset, 512);
-    ASSERT_EQ(nullopt, source.getMaxOverscaleFactorForParentTiles());
+    ASSERT_EQ(std::nullopt, source.getMaxOverscaleFactorForParentTiles());
     source.setMaxOverscaleFactorForParentTiles(3);
     ASSERT_EQ(3, *source.getMaxOverscaleFactorForParentTiles());
     source.loadDescription(*test.fileSource);

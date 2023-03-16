@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
  does not need to be based on `CLLocationManager`.
  
  To receive location updates from an object that conforms to the `MGLLocationManager`
- protocol, use the optional methods available in the `MGLLocationManagerDelegate` protocol.
+ protocol, use the std::optional methods available in the `MGLLocationManagerDelegate` protocol.
  */
 @protocol MGLLocationManager <NSObject>
 

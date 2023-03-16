@@ -2,7 +2,7 @@
 
 #include <mbgl/gfx/texture.hpp>
 #include <mbgl/util/image.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <mbgl/util/variant.hpp>
 
 #include <map>

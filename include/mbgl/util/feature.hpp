@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mbgl/util/optional.hpp>
+#include <optional>
 #include <mbgl/util/string.hpp>
 
 #include <mapbox/compatibility/value.hpp>
@@ -31,22 +31,22 @@ public:
 };
 
 template <class T>
-optional<T> numericValue(const Value& value) {
-    return value.match([](uint64_t t) { return optional<T>(static_cast<T>(t)); },
-                       [](int64_t t) { return optional<T>(static_cast<T>(t)); },
-                       [](double t) { return optional<T>(static_cast<T>(t)); },
-                       [](const auto&) { return optional<T>(); });
+std::optional<T> numericValue(const Value& value) {
+    return value.match([](uint64_t t) { return std::optional<T>(static_cast<T>(t)); },
+                       [](int64_t t) { return std::optional<T>(static_cast<T>(t)); },
+                       [](double t) { return std::optional<T>(static_cast<T>(t)); },
+                       [](const auto&) { return std::optional<T>(); });
 }
 
-inline optional<std::string> featureIDtoString(const FeatureIdentifier& id) {
+inline std::optional<std::string> featureIDtoString(const FeatureIdentifier& id) {
     if (id.is<NullValue>()) {
-        return nullopt;
+        return std::nullopt;
     }
 
     return id.match(
         [](const std::string& value_) { return value_; }, [](uint64_t value_) { return util::toString(value_); },
         [](int64_t value_) { return util::toString(value_); }, [](double value_) { return util::toString(value_); },
-        [](const auto&) -> optional<std::string> { return nullopt; });
+        [](const auto&) -> std::optional<std::string> { return std::nullopt; });
 }
 
 } // namespace mbgl

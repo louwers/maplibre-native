@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 #include <mbgl/util/default_style.hpp>
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 namespace mbgl {
 
@@ -65,7 +65,7 @@ namespace mbgl {
          * @param domainName  The domain name.
          * @return TileServerOptions for chaining options together.
          */
-        TileServerOptions& withSourceTemplate(std::string sourceTemplate, std::string domainName, optional<std::string> versionPrefix);
+        TileServerOptions& withSourceTemplate(std::string sourceTemplate, std::string domainName, std::optional<std::string> versionPrefix);
 
         /**
          * @brief Gets the previously set (or default) source template.
@@ -84,9 +84,9 @@ namespace mbgl {
         /**
          * @brief Gets the previously set (or default) version prefix
          *
-         * @return const optional<std::string>& version prefix.
+         * @return const std::optional<std::string>& version prefix.
          */
-        const optional<std::string>& sourceVersionPrefix() const;
+        const std::optional<std::string>& sourceVersionPrefix() const;
 
         /**
          * @brief Sets the template for styles.
@@ -96,7 +96,7 @@ namespace mbgl {
          *
          * @return TileServerOptions for chaining options together.
          */
-        TileServerOptions& withStyleTemplate(std::string styleTemplate, std::string domainName, optional<std::string> versionPrefix);
+        TileServerOptions& withStyleTemplate(std::string styleTemplate, std::string domainName, std::optional<std::string> versionPrefix);
 
         /**
          * @brief Gets the previously set (or default) style template.
@@ -115,9 +115,9 @@ namespace mbgl {
         /**
          * @brief Gets the previously set (or default) version prefix
          *
-         * @return const optional<std::string>& version prefix.
+         * @return const std::optional<std::string>& version prefix.
          */
-        const optional<std::string>& styleVersionPrefix() const;
+        const std::optional<std::string>& styleVersionPrefix() const;
 
         /**
          * @brief Sets the template for sprites.
@@ -126,7 +126,7 @@ namespace mbgl {
          * @param spritesTemplate The sprites template.
          * @return TileServerOptions for chaining options together.
          */
-        TileServerOptions& withSpritesTemplate(std::string spritesTemplate, std::string domainName, optional<std::string> versionPrefix);
+        TileServerOptions& withSpritesTemplate(std::string spritesTemplate, std::string domainName, std::optional<std::string> versionPrefix);
 
         /**
          * @brief Gets the previously set (or default) sprites template.
@@ -145,9 +145,9 @@ namespace mbgl {
         /**
          * @brief Gets the previously set (or default) version prefix
          *
-         * @return const optional<std::string>& version prefix.
+         * @return const std::optional<std::string>& version prefix.
          */
-        const optional<std::string>& spritesVersionPrefix() const;
+        const std::optional<std::string>& spritesVersionPrefix() const;
 
         /**
          * @brief Sets the template for glyphs.
@@ -157,7 +157,7 @@ namespace mbgl {
          *
          * @return TileServerOptions for chaining options together.
          */
-        TileServerOptions& withGlyphsTemplate(std::string glyphsTemplate, std::string domainName, optional<std::string> versionPrefix);
+        TileServerOptions& withGlyphsTemplate(std::string glyphsTemplate, std::string domainName, std::optional<std::string> versionPrefix);
 
         /**
          * @brief Gets the previously set (or default) glyphs template.
@@ -176,9 +176,9 @@ namespace mbgl {
         /**
          * @brief Gets the previously set (or default) version prefix
          *
-         * @return const optional<std::string>& version prefix.
+         * @return const std::optional<std::string>& version prefix.
          */
-        const optional<std::string>& glyphsVersionPrefix() const;
+        const std::optional<std::string>& glyphsVersionPrefix() const;
 
         /**
          * @brief Sets the template for tiles.
@@ -188,7 +188,7 @@ namespace mbgl {
          *
          * @return TileServerOptions for chaining options together.
          */
-        TileServerOptions& withTileTemplate(std::string tileTemplate, std::string domainName, optional<std::string> versionPrefix);
+        TileServerOptions& withTileTemplate(std::string tileTemplate, std::string domainName, std::optional<std::string> versionPrefix);
 
         /**
          * @brief Gets the previously set (or default) tile template.
@@ -207,9 +207,9 @@ namespace mbgl {
         /**
          * @brief Gets the previously set (or default) version prefix
          *
-         * @return const optional<std::string>& version prefix.
+         * @return const std::optional<std::string>& version prefix.
          */
-        const optional<std::string>& tileVersionPrefix() const;
+        const std::optional<std::string>& tileVersionPrefix() const;
         
         /**
          * @brief Sets the access token parameter name.

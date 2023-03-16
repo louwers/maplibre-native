@@ -40,7 +40,7 @@ template <class T>
 class PropertyExpression final : public PropertyExpressionBase {
 public:
     // Second parameter to be used only for conversions from legacy functions.
-    PropertyExpression(std::unique_ptr<expression::Expression> expression_, optional<T> defaultValue_ = nullopt)
+    PropertyExpression(std::unique_ptr<expression::Expression> expression_, std::optional<T> defaultValue_ = std::nullopt)
         : PropertyExpressionBase(std::move(expression_)),
           defaultValue(std::move(defaultValue_)) {
     }
@@ -48,7 +48,7 @@ public:
     T evaluate(const expression::EvaluationContext& context, T finalDefaultValue = T()) const {
         const expression::EvaluationResult result = expression->evaluate(context);
         if (result) {
-            const optional<T> typed = expression::fromExpressionValue<T>(*result);
+            const std::optional<T> typed = expression::fromExpressionValue<T>(*result);
             return typed ? *typed : defaultValue ? *defaultValue : finalDefaultValue;
         }
         return defaultValue ? *defaultValue : finalDefaultValue;
@@ -123,7 +123,7 @@ public:
         return evaluate(expression::EvaluationContext(zoom, &feature, &state), finalDefaultValue);
     }
 
-    std::vector<optional<T>> possibleOutputs() const {
+    std::vector<std::optional<T>> possibleOutputs() const {
         return expression::fromExpressionValues<T>(expression->possibleOutputs());
     }
 
@@ -133,7 +133,7 @@ public:
     }
 
 private:
-    optional<T> defaultValue;
+    std::optional<T> defaultValue;
 };
 
 } // namespace style

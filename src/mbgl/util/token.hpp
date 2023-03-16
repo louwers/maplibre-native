@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mbgl/util/optional.hpp>
+#include <optional>
 
 #include <map>
 #include <string>
@@ -28,7 +28,7 @@ std::string replaceTokens(const std::string &source, const Lookup &lookup) {
             for (brace++; brace != end && tokenReservedChars.find(*brace) == std::string::npos; brace++);
             if (brace != end && *brace == '}') {
                 std::string key { pos + 1, brace };
-                if (optional<std::string> replacement = lookup(key)) {
+                if (std::optional<std::string> replacement = lookup(key)) {
                     result.append(*replacement);
                 } else {
                     result.append("{");
