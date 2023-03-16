@@ -80,9 +80,6 @@ public:
     int64_t changes = 0;
 };
 
-template <typename T>
-using optional = std::experimental::optional<T>;
-
 mapbox::util::variant<Database, Exception> Database::tryOpen(const std::string &filename, int flags) {
     if (!QSqlDatabase::drivers().contains("QSQLITE")) {
         return Exception { ResultCode::CantOpen, "SQLite driver not found." };
