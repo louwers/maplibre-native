@@ -65,7 +65,7 @@ MAPBOX_ETERNAL_CONSTEXPR const auto properties = mapbox::eternal::hash_map<mapbo
 
 } // namespace
 
-optional<Error> Light::setProperty(const std::string& name, const Convertible& value) {
+std::optional<Error> Light::setProperty(const std::string& name, const Convertible& value) {
     const auto it = properties.find(name.c_str());
     if (it == properties.end()) {
         return Error { "light doesn't support this property" };
@@ -76,7 +76,7 @@ optional<Error> Light::setProperty(const std::string& name, const Convertible& v
         
     if (property == Property::Anchor) {
         Error error;
-        optional<PropertyValue<LightAnchorType>> typedValue = convert<PropertyValue<LightAnchorType>>(value, error, false, false);
+        std::optional<PropertyValue<LightAnchorType>> typedValue = convert<PropertyValue<LightAnchorType>>(value, error, false, false);
         if (!typedValue) {
             return error;
         }
@@ -88,7 +88,7 @@ optional<Error> Light::setProperty(const std::string& name, const Convertible& v
     
     if (property == Property::Color) {
         Error error;
-        optional<PropertyValue<Color>> typedValue = convert<PropertyValue<Color>>(value, error, false, false);
+        std::optional<PropertyValue<Color>> typedValue = convert<PropertyValue<Color>>(value, error, false, false);
         if (!typedValue) {
             return error;
         }
@@ -100,7 +100,7 @@ optional<Error> Light::setProperty(const std::string& name, const Convertible& v
     
     if (property == Property::Intensity) {
         Error error;
-        optional<PropertyValue<float>> typedValue = convert<PropertyValue<float>>(value, error, false, false);
+        std::optional<PropertyValue<float>> typedValue = convert<PropertyValue<float>>(value, error, false, false);
         if (!typedValue) {
             return error;
         }
@@ -112,7 +112,7 @@ optional<Error> Light::setProperty(const std::string& name, const Convertible& v
     
     if (property == Property::Position) {
         Error error;
-        optional<PropertyValue<Position>> typedValue = convert<PropertyValue<Position>>(value, error, false, false);
+        std::optional<PropertyValue<Position>> typedValue = convert<PropertyValue<Position>>(value, error, false, false);
         if (!typedValue) {
             return error;
         }
@@ -124,7 +124,7 @@ optional<Error> Light::setProperty(const std::string& name, const Convertible& v
     
 
     Error error;
-    optional<TransitionOptions> transition = convert<TransitionOptions>(value, error);
+    std::optional<TransitionOptions> transition = convert<TransitionOptions>(value, error);
     if (!transition) {
         return error;
     }

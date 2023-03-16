@@ -285,7 +285,7 @@ Value HeatmapLayer::serialize() const {
     return result;
 }
 
-optional<Error> HeatmapLayer::setPropertyInternal(const std::string& name, const Convertible& value) {
+std::optional<Error> HeatmapLayer::setPropertyInternal(const std::string& name, const Convertible& value) {
     const auto it = layerProperties.find(name.c_str());
     if (it == layerProperties.end()) return Error{"layer doesn't support this property"};
 
@@ -337,7 +337,7 @@ optional<Error> HeatmapLayer::setPropertyInternal(const std::string& name, const
     }
 
     Error error;
-    optional<TransitionOptions> transition = convert<TransitionOptions>(value, error);
+    std::optional<TransitionOptions> transition = convert<TransitionOptions>(value, error);
     if (!transition) {
         return error;
     }

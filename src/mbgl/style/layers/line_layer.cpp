@@ -590,7 +590,7 @@ Value LineLayer::serialize() const {
     return result;
 }
 
-optional<Error> LineLayer::setPropertyInternal(const std::string& name, const Convertible& value) {
+std::optional<Error> LineLayer::setPropertyInternal(const std::string& name, const Convertible& value) {
     const auto it = layerProperties.find(name.c_str());
     if (it == layerProperties.end()) return Error{"layer doesn't support this property"};
 
@@ -733,7 +733,7 @@ optional<Error> LineLayer::setPropertyInternal(const std::string& name, const Co
     }
 
     Error error;
-    optional<TransitionOptions> transition = convert<TransitionOptions>(value, error);
+    std::optional<TransitionOptions> transition = convert<TransitionOptions>(value, error);
     if (!transition) {
         return error;
     }

@@ -60,7 +60,7 @@ MAPBOX_ETERNAL_CONSTEXPR const auto properties = mapbox::eternal::hash_map<mapbo
 
 } // namespace
 
-optional<Error> Light::setProperty(const std::string& name, const Convertible& value) {
+std::optional<Error> Light::setProperty(const std::string& name, const Convertible& value) {
     const auto it = properties.find(name.c_str());
     if (it == properties.end()) {
         return Error { "light doesn't support this property" };
@@ -73,7 +73,7 @@ optional<Error> Light::setProperty(const std::string& name, const Convertible& v
         for (const property of properties) {
             const dataDriven = property['property-type'] === 'data-driven' || property['property-type'] === 'cross-faded-data-driven';
             const convertTokens = property.name === 'icon-image' || property.name === 'text-field';
-            const conversion = `optional<${propertyValueType(property)}> typedValue = convert<${propertyValueType(property)}>(value, error, ${dataDriven}, ${convertTokens})`;
+            const conversion = `std::optional<${propertyValueType(property)}> typedValue = convert<${propertyValueType(property)}>(value, error, ${dataDriven}, ${convertTokens})`;
             conversions[conversion] = conversions[conversion] || [];
             conversions[conversion].push(property);
         }
@@ -100,7 +100,7 @@ optional<Error> Light::setProperty(const std::string& name, const Convertible& v
     <% } %>
 
     Error error;
-    optional<TransitionOptions> transition = convert<TransitionOptions>(value, error);
+    std::optional<TransitionOptions> transition = convert<TransitionOptions>(value, error);
     if (!transition) {
         return error;
     }

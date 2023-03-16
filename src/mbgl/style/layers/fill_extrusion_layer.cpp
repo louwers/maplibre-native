@@ -388,7 +388,7 @@ Value FillExtrusionLayer::serialize() const {
     return result;
 }
 
-optional<Error> FillExtrusionLayer::setPropertyInternal(const std::string& name, const Convertible& value) {
+std::optional<Error> FillExtrusionLayer::setPropertyInternal(const std::string& name, const Convertible& value) {
     const auto it = layerProperties.find(name.c_str());
     if (it == layerProperties.end()) return Error{"layer doesn't support this property"};
 
@@ -473,7 +473,7 @@ optional<Error> FillExtrusionLayer::setPropertyInternal(const std::string& name,
     }
 
     Error error;
-    optional<TransitionOptions> transition = convert<TransitionOptions>(value, error);
+    std::optional<TransitionOptions> transition = convert<TransitionOptions>(value, error);
     if (!transition) {
         return error;
     }
