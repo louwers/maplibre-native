@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  build:
+  build_and_test:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -55,3 +55,6 @@ jobs:
           cmake --version
           cmake -B build -DCMAKE_BUILD_TYPE=Debug -DMBGL_WITH_CORE_ONLY=ON -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DMBGL_WITH_COVERAGE=ON
           cmake --build build
+
+      - name: Run test
+        run: build/mbgl-test-runner
