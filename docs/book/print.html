@@ -84,7 +84,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="design/index.html"><strong aria-hidden="true">1.</strong> Design</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="design/ten-thousand-foot-view.html"><strong aria-hidden="true">1.1.</strong> Ten Thousand Foot View</a></li><li class="chapter-item expanded "><a href="design/coordinate-system.html"><strong aria-hidden="true">1.2.</strong> Coordinate System</a></li><li class="chapter-item expanded "><a href="design/expressions.html"><strong aria-hidden="true">1.3.</strong> Expressions</a></li><li class="chapter-item expanded "><a href="design/archictural-problems-and-recommendations.html"><strong aria-hidden="true">1.4.</strong> Architectural Problems and Recommendations</a></li><li class="chapter-item expanded "><a href="design/android-map-rendering-data-flow.html"><strong aria-hidden="true">1.5.</strong> Android Map Rendering Data Flow</a></li><li class="chapter-item expanded "><a href="design/geometry-tile-worker.html"><strong aria-hidden="true">1.6.</strong> Geometry Tile Worker</a></li></ol></li><li class="chapter-item expanded "><a href="android/index.html"><strong aria-hidden="true">2.</strong> MapLibre Native for Android</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="android/getting-started-guide.html"><strong aria-hidden="true">2.1.</strong> Quickstart</a></li><li class="chapter-item expanded "><a href="android/location-component-guide.html"><strong aria-hidden="true">2.2.</strong> Location Component</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="design/index.html"><strong aria-hidden="true">1.</strong> Design</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="design/ten-thousand-foot-view.html"><strong aria-hidden="true">1.1.</strong> Ten Thousand Foot View</a></li><li class="chapter-item expanded "><a href="design/coordinate-system.html"><strong aria-hidden="true">1.2.</strong> Coordinate System</a></li><li class="chapter-item expanded "><a href="design/expressions.html"><strong aria-hidden="true">1.3.</strong> Expressions</a></li><li class="chapter-item expanded "><a href="design/archictural-problems-and-recommendations.html"><strong aria-hidden="true">1.4.</strong> Architectural Problems and Recommendations</a></li><li class="chapter-item expanded "><a href="design/android-map-rendering-data-flow.html"><strong aria-hidden="true">1.5.</strong> Android Map Rendering Data Flow</a></li><li class="chapter-item expanded "><a href="design/geometry-tile-worker.html"><strong aria-hidden="true">1.6.</strong> Geometry Tile Worker</a></li></ol></li><li class="chapter-item expanded "><a href="android/index.html"><strong aria-hidden="true">2.</strong> MapLibre Native for Android</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="android/getting-started-guide.html"><strong aria-hidden="true">2.1.</strong> Quickstart</a></li><li class="chapter-item expanded "><a href="android/annotation-guide.html"><strong aria-hidden="true">2.2.</strong> Annotation: Marker</a></li><li class="chapter-item expanded "><a href="android/location-component-guide.html"><strong aria-hidden="true">2.3.</strong> Location Component</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -1196,7 +1196,7 @@ brevity, this document does not speak of these classes.</p>
 <pre><code class="language-gradle">allprojects {
     repositories {
     ...
-    mavenCentral()                
+    mavenCentral()
     }
 }
 </code></pre>
@@ -1216,7 +1216,7 @@ brevity, this document does not speak of these classes.</p>
 <li>
 <p>Add a <code>MapView</code> to your layout XML file (usually <code>&lt;project&gt;/&lt;app-module&gt;/src/main/res/layout/activity_main.xml</code>).</p>
 <pre><code class="language-xml">...
-&lt;com.mapbox.mapboxsdk.maps.MapView
+&lt;org.maplibre.android.maps.MapView
     android:id=&quot;@+id/mapView&quot;
     android:layout_width=&quot;match_parent&quot;
     android:layout_height=&quot;match_parent&quot;
@@ -1229,10 +1229,11 @@ brevity, this document does not speak of these classes.</p>
 <pre><code class="language-kotlin">import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
-import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapView
+import org.maplibre.android.Maplibre
+import org.maplibre.android.camera.CameraPosition
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.maps.MapView
+import org.maplibre.android.testapp.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -1241,9 +1242,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Init MapLibre
-        Mapbox.getInstance(this)
+        MapLibre.getInstance(this)
 
         // Init layout view
         val inflater = LayoutInflater.from(this)
@@ -1302,6 +1303,170 @@ class MainActivity : AppCompatActivity() {
 <div style="text-align: center;">
 <img src="https://user-images.githubusercontent.com/32692818/228113379-475e86f5-e3fa-4a36-8b4b-1fcba0f1eb3b.png" alt="Screenshot with the map in demotile style" width="50%" height="50%">
 </div>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="annotation-marker"><a class="header" href="#annotation-marker">Annotation: Marker</a></h1>
+<p>This guide will show you how to add Markers in the map.</p>
+<p><code>Annotation</code> is an overlay on top of a Map. In package
+<code>org.maplibre.android.annotations</code>, it has the following subclasses:</p>
+<ol>
+<li><a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.annotations/-marker/index.html">Marker</a></li>
+<li><a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.annotations/-polyline/index.html">Polyline</a></li>
+<li><a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.annotations/-polygon/index.html">Polygon</a></li>
+</ol>
+<p>A Marker shows an icon image at a geographical location. By default, marker uses
+a <a href="https://github.com/maplibre/maplibre-native/blob/main/platform/android/MapboxGLAndroidSDK/src/main/res/drawable-xxxhdpi/maplibre_marker_icon_default.png">provided image</a> as its icon.</p>
+<p><img src="https://raw.githubusercontent.com/maplibre/maplibre-native/main/test/fixtures/sprites/default_marker.png" alt="marker image" /></p>
+<p>Or, the icon can be customized using <a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.annotations/-icon-factory/index.html">IconFactory</a> to generate an
+<a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.annotations/-icon/index.html">Icon</a> using a provided image.</p>
+<p>For more customization, please read the documentation about <a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.annotations/-marker-options/index.html">MarkerOptions</a>.</p>
+<p>In this showcase, we continue the code from the <a href="android/./getting-started-guide.html">Quickstart</a>,
+rename Activity into <code>JsonApiActivity</code>,
+and pull the GeoJSON data from a free and public API.
+Then add markers to the map with GeoJSON:</p>
+<ol>
+<li>
+<p>In your module Gradle file (usually <code>&lt;project&gt;/&lt;app-module&gt;/build.gradle</code>), add
+<code>okhttp</code> to simplify code for making HTTP requests.</p>
+<pre><code class="language-gradle">dependencies {
+    ...
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    ...
+}
+</code></pre>
+</li>
+<li>
+<p>Sync your Android project the with Gradle files.</p>
+</li>
+<li>
+<p>In <code>JsonApiActivity</code> we add a new variable for <code>MapboxMap</code>.
+It is used to add annotations to the map instance.</p>
+</li>
+</ol>
+<pre><code class="language-kotlin">class JsonApiActivity : AppCompatActivity() {
+
+    // Declare a variable for MapView
+    private lateinit var mapView: MapView
+
+    // Declare a variable for MapboxMap
+    private lateinit var maplibreMap: MapLibreMap
+</code></pre>
+<ol start="4">
+<li>Call <code>mapview.getMapSync()</code> in order to get a <code>MapboxMap</code> object.
+After <code>mapboxMap</code> is assigned, call the <code>getEarthQuakeDataFromUSGS()</code> method
+to make a HTTP request and transform data into the map annotations.</li>
+</ol>
+<pre><code class="language-kotlin">        mapView.getMapAsync { map -&gt;
+            maplibreMap = map
+
+            maplibreMap.setStyle(&quot;https://demotiles.maplibre.org/style.json&quot;)
+
+            // Fetch data from USGS
+            getEarthQuakeDataFromUSGS()
+        }
+</code></pre>
+<ol start="5">
+<li>Define a function <code>getEarthQuakeDataFromUSGS()</code> to fetch GeoJSON data from a public API.
+If we successfully get the response, call <code>addMarkersToMap()</code> on the UI thread.</li>
+</ol>
+<pre><code class="language-kotlin">    // Get Earthquake data from usgs.gov, read API doc at:
+    // https://earthquake.usgs.gov/fdsnws/event/1/
+    private fun getEarthQuakeDataFromUSGS() {
+        val url = &quot;https://earthquake.usgs.gov/fdsnws/event/1/query&quot;.toHttpUrl().newBuilder()
+            .addQueryParameter(&quot;format&quot;, &quot;geojson&quot;)
+            .addQueryParameter(&quot;starttime&quot;, &quot;2022-01-01&quot;)
+            .addQueryParameter(&quot;endtime&quot;, &quot;2022-12-31&quot;)
+            .addQueryParameter(&quot;minmagnitude&quot;, &quot;5.8&quot;)
+            .addQueryParameter(&quot;latitude&quot;, &quot;24&quot;)
+            .addQueryParameter(&quot;longitude&quot;, &quot;121&quot;)
+            .addQueryParameter(&quot;maxradius&quot;, &quot;1.5&quot;)
+            .build()
+        val request: Request = Request.Builder().url(url).build()
+
+        OkHttpClient().newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Toast.makeText(this@JsonApiActivity, &quot;Fail to fetch data&quot;, Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val featureCollection = response.body?.string()
+                    ?.let(FeatureCollection::fromJson)
+                    ?: return
+                // If FeatureCollection in response is not null
+                // Then add markers to map
+                runOnUiThread { addMarkersToMap(featureCollection) }
+            }
+        })
+    }
+</code></pre>
+<ol start="6">
+<li>Now it is time to add markers into the map.
+<ul>
+<li>In the <code>addMarkersToMap()</code> method, we define two types of bitmap for the marker icon.</li>
+<li>For each feature in the GeoJSON, add a marker with a snippet about earthquake details.</li>
+<li>If the magnitude of an earthquake is bigger than 6.0, we use the red icon. Otherwise, we use the blue one.</li>
+<li>Finally, move the camera to the bounds of the newly added markers</li>
+</ul>
+</li>
+</ol>
+<pre><code class="language-kotlin">    private fun addMarkersToMap(data: FeatureCollection) {
+        val bounds = mutableListOf&lt;LatLng&gt;()
+
+        // Get bitmaps for marker icon
+        val infoIconDrawable = ResourcesCompat.getDrawable(
+            this.resources,
+            // Intentionally specify package name
+            // This makes copy from another project easier
+            org.maplibre.android.R.drawable.maplibre_info_icon_default,
+            null
+        )!!
+        val bitmapBlue = infoIconDrawable.toBitmap()
+        val bitmapRed = infoIconDrawable
+            .mutate()
+            .apply { setTint(Color.RED) }
+            .toBitmap()
+
+        // Add symbol for each point feature
+        data.features()?.forEach { feature -&gt;
+            val geometry = feature.geometry()?.toJson() ?: return@forEach
+            val point = Point.fromJson(geometry) ?: return@forEach
+            val latLng = LatLng(point.latitude(), point.longitude())
+            bounds.add(latLng)
+
+            // Contents in InfoWindow of each marker
+            val title = feature.getStringProperty(&quot;title&quot;)
+            val epochTime = feature.getNumberProperty(&quot;time&quot;)
+            val dateString = SimpleDateFormat(&quot;yyyy/MM/dd HH:mm&quot;, Locale.TAIWAN).format(epochTime)
+
+            // If magnitude &gt; 6.0, show marker with red icon. If not, show blue icon instead
+            val mag = feature.getNumberProperty(&quot;mag&quot;)
+            val icon = IconFactory.getInstance(this)
+                .fromBitmap(if (mag.toFloat() &gt; 6.0) bitmapRed else bitmapBlue)
+
+            // Use MarkerOptions and addMarker() to add a new marker in map
+            val markerOptions = MarkerOptions()
+                .position(latLng)
+                .title(dateString)
+                .snippet(title)
+                .icon(icon)
+            maplibreMap.addMarker(markerOptions)
+        }
+
+        // Move camera to newly added annotations
+        maplibreMap.getCameraForLatLngBounds(LatLngBounds.fromLatLngs(bounds))?.let {
+            val newCameraPosition = CameraPosition.Builder()
+                .target(it.target)
+                .zoom(it.zoom - 0.5)
+                .build()
+            maplibreMap.cameraPosition = newCameraPosition
+        }
+    }
+</code></pre>
+<ol start="7">
+<li>Here is the final result. For the full contents of <code>JsonApiActivity</code>, please visit source code of <a href="https://github.com/maplibre/maplibre-native/tree/main/platform/android/MapboxGLAndroidSDKTestApp/src/main/java/org/maplibre/android/testapp/activity/annotation/JsonApiActivity.kt">Test APP</a></li>
+</ol>
+<div style="align: center">
+  <img src="https://github.com/maplibre/maplibre-native/assets/19887090/00446249-9b19-4a48-8a46-00d4c5a2f981" alt="Screenshot with the map in demotile style">
+</div>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="locationcomponent"><a class="header" href="#locationcomponent">LocationComponent</a></h1>
 <p>This guide will demonstrate how to utilize the <a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.location/-location-component/index.html">LocationComponent</a> to represent the user's current location.</p>
 <ol>
@@ -1328,7 +1493,26 @@ class MainActivity : AppCompatActivity() {
 <li>Add a variable <code>locationComponent</code> to manage user location.</li>
 <li>At the end of the <code>onCreate()</code> method, call <code>checkPermissions(</code>) to ensure that the application can access the user's location.</li>
 </ul>
-<pre><code class="language-kotlin">{{#include ../../../../platform/android/MapboxGLAndroidSDKTestApp/src/main/java/com/mapbox/mapboxsdk/testapp/activity/location/BasicLocationPulsingCircleActivity.kt:top}}
+<pre><code class="language-kotlin">/**
+ * This activity shows a basic usage of the LocationComponent's pulsing circle. There's no
+ * customization of the pulsing circle's color, radius, speed, etc.
+ */
+class BasicLocationPulsingCircleActivity : AppCompatActivity(), OnMapReadyCallback {
+    private var lastLocation: Location? = null
+    private lateinit var mapView: MapView
+    private var permissionsManager: PermissionsManager? = null
+    private var locationComponent: LocationComponent? = null
+    private lateinit var maplibreMap: MapLibreMap
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_location_layer_basic_pulsing_circle)
+        mapView = findViewById(R.id.mapView)
+        if (savedInstanceState != null) {
+            lastLocation = savedInstanceState.getParcelable(SAVED_STATE_LOCATION)
+        }
+        mapView.onCreate(savedInstanceState)
+        checkPermissions()
+    }
 </code></pre>
 <ol start="3">
 <li>
@@ -1337,7 +1521,39 @@ class MainActivity : AppCompatActivity() {
 <p>If the permissions are granted, call <code>mapView.getMapAsync(this)</code> to register the activity as a listener for onMapReady event.</p>
 </li>
 </ol>
-<pre><code class="language-kotlin">{{#include ../../../../platform/android/MapboxGLAndroidSDKTestApp/src/main/java/com/mapbox/mapboxsdk/testapp/activity/location/BasicLocationPulsingCircleActivity.kt:permission}}
+<pre><code class="language-kotlin">    private fun checkPermissions() {
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+            mapView.getMapAsync(this)
+        } else {
+            permissionsManager = PermissionsManager(object : PermissionsListener {
+                override fun onExplanationNeeded(permissionsToExplain: List&lt;String&gt;) {
+                    Toast.makeText(
+                        this@BasicLocationPulsingCircleActivity,
+                        &quot;You need to accept location permissions.&quot;,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                override fun onPermissionResult(granted: Boolean) {
+                    if (granted) {
+                        mapView.getMapAsync(this@BasicLocationPulsingCircleActivity)
+                    } else {
+                        finish()
+                    }
+                }
+            })
+            permissionsManager!!.requestLocationPermissions(this)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array&lt;String&gt;,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionsManager!!.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
 </code></pre>
 <ol start="4">
 <li>
@@ -1356,7 +1572,23 @@ class MainActivity : AppCompatActivity() {
 </ul>
 </li>
 </ol>
-<pre><code class="language-kotlin">{{#include ../../../../platform/android/MapboxGLAndroidSDKTestApp/src/main/java/com/mapbox/mapboxsdk/testapp/activity/location/BasicLocationPulsingCircleActivity.kt:onMapReady}}
+<pre><code class="language-kotlin">    @SuppressLint(&quot;MissingPermission&quot;)
+    override fun onMapReady(maplibreMap: MapLibreMap) {
+        this.maplibreMap = maplibreMap
+        maplibreMap.setStyle(Style.getPredefinedStyle(&quot;Streets&quot;)) { style: Style -&gt;
+            locationComponent = maplibreMap.locationComponent
+            val locationComponentOptions =
+                LocationComponentOptions.builder(this@BasicLocationPulsingCircleActivity)
+                    .pulseEnabled(true)
+                    .build()
+            val locationComponentActivationOptions =
+                buildLocationComponentActivationOptions(style, locationComponentOptions)
+            locationComponent!!.activateLocationComponent(locationComponentActivationOptions)
+            locationComponent!!.isLocationComponentEnabled = true
+            locationComponent!!.cameraMode = CameraMode.TRACKING
+            locationComponent!!.forceLocationUpdate(lastLocation)
+        }
+    }
 </code></pre>
 <ol start="5">
 <li><a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.location/-location-component-activation-options/index.html">LocationComponentActivationOptions</a> is used to hold the style, <a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.location/-location-component-options/index.html">LocationComponentOptions</a> and other locating behaviors.
@@ -1367,7 +1599,22 @@ class MainActivity : AppCompatActivity() {
 </ul>
 </li>
 </ol>
-<pre><code class="language-kotlin">{{#include ../../../../platform/android/MapboxGLAndroidSDKTestApp/src/main/java/com/mapbox/mapboxsdk/testapp/activity/location/BasicLocationPulsingCircleActivity.kt:LocationComponentActivationOptions}}
+<pre><code class="language-kotlin">    private fun buildLocationComponentActivationOptions(
+        style: Style,
+        locationComponentOptions: LocationComponentOptions
+    ): LocationComponentActivationOptions {
+        return LocationComponentActivationOptions
+            .builder(this, style)
+            .locationComponentOptions(locationComponentOptions)
+            .useDefaultLocationEngine(true)
+            .locationEngineRequest(
+                LocationEngineRequest.Builder(750)
+                    .setFastestInterval(750)
+                    .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
+                    .build()
+            )
+            .build()
+    }
 </code></pre>
 <ol start="6">
 <li>For further customization, you can also utilize the <code>foregroundTintColor()</code> and <code>pulseColor()</code> methods on the <a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.location/-location-component-options/index.html">LocationComponentOptions</a> builder:</li>
@@ -1381,14 +1628,14 @@ class MainActivity : AppCompatActivity() {
 </code></pre>
 <ol start="7">
 <li>
-<p>Here is the final results with different color configurations. For the complete content of this demo, please refer to the source code of the <a href="https://github.com/maplibre/maplibre-native/tree/main/platform/android/MapboxGLAndroidSDKTestApp/src/main/java/com/mapbox/mapboxsdk/testapp/activity/location/BasicLocationPulsingCircleActivity.kt">Test APP</a> <sup class="footnote-reference"><a href="#2">2</a></sup>.</p>
+<p>Here is the final results with different color configurations. For the complete content of this demo, please refer to the source code of the <a href="https://github.com/maplibre/maplibre-native/tree/main/platform/android/MapboxGLAndroidSDKTestApp/src/main/java/org/maplibre/android/testapp/activity/location/BasicLocationPulsingCircleActivity.kt">Test APP</a> <sup class="footnote-reference"><a href="#2">2</a></sup>.</p>
 <p><img src="https://github.com/maplibre/maplibre-native/assets/19887090/03dfc87b-111b-4dd0-b4a3-d89e30ed6b63" alt="result" /></p>
 </li>
 </ol>
 <div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
 <p>A variety of <a href="https://maplibre.org/maplibre-native/android/api/-map-libre%20-native%20for%20-android/com.mapbox.mapboxsdk.location.modes/-camera-mode/index.html">camera modes</a> determine how the camera will track the user location.<br />
 They provide the right context to your users at the correct time.<br />
-<sup class="footnote-reference"><a href="#2">2</a></sup>: In <a href="https://github.com/maplibre/maplibre-native/tree/main/platform/android/MapboxGLAndroidSDKTestApp/src/main/java/com/mapbox/mapboxsdk/testapp/activity/location/BasicLocationPulsingCircleActivity.kt">Test APP</a>, it also uses menu items to manage user location icon.</p>
+<sup class="footnote-reference"><a href="#2">2</a></sup>: In <a href="https://github.com/maplibre/maplibre-native/tree/main/platform/android/MapboxGLAndroidSDKTestApp/src/main/java/org/maplibre/android/testapp/activity/location/BasicLocationPulsingCircleActivity.kt">Test APP</a>, it also uses menu items to manage user location icon.</p>
 </div>
 
                     </main>
