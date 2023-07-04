@@ -16,30 +16,37 @@ cc_library(
     srcs = glob(
         [
             "src/mbgl/test/*.cpp",
+            "**/*.test.cpp",
+            "include/**/*.hpp"
         ],
         exclude = [
             "src/mbgl/test/test.cpp",
             "src/mbgl/test/http_server.cpp",
         ],
+        allow_empty = False
     ),
     hdrs = glob([
         "src/mbgl/test/*.hpp",
     ]),
+    includes = [
+        "include"
+    ],
     copts = CPP_FLAGS + MAPLIBRE_FLAGS,
     strip_include_prefix = "src",
     deps = [
         "testutils",
         "//:mbgl-core",
-    ],
+    ] + select({
+        "//:linux": ["//platform/linux:impl"],
+        "//:ios": ["//platform/ios:sdk"]
+    }),
+    visibility = [
+        "//test/ios:__pkg__"
+    ]
 )
 
 cc_test(
     name = "core",
-    srcs = glob(
-        [
-            "**/*.test.cpp",
-        ],
-    ),
     args = [
         "--gtest_filter=-Map.StyleNetworkErrorRetry:Map.StyleNotFound",
     ],
@@ -51,7 +58,6 @@ cc_test(
         "testlib",
         "testutils",
         "//:mbgl-core",
-        "//platform/linux:impl",
         "//vendor/googletest:gtest_main",
     ],
 )

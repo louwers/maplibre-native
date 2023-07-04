@@ -10,6 +10,7 @@ cc_library(
     ],
     visibility = [
         "//render-test/ios:__pkg__",
+        "//test/ios:__pkg__"
     ],
 )
 

@@ -1,0 +1,27 @@
+load("@build_bazel_rules_apple//apple:ios.bzl", "ios_application", "ios_build_test")
+load("//bazel:flags.bzl", "CPP_FLAGS", "MAPLIBRE_FLAGS")
+
+objc_library(
+  name = "unit_test_app_cpp_srcs",
+  srcs = [
+    "ios_test_runner.cpp"
+  ],
+  copts = CPP_FLAGS + MAPLIBRE_FLAGS,
+  deps = [
+    "//platform/ios/test/common:ios_test_runner_lib",
+    "//test:testlib",
+  ]
+)
+
+ios_build_test(
+  name = "build_test",
+  minimum_os_version = "12.0",
+  targets = [
+    "unit_test_app_cpp_srcs"
+  ]
+)
+
+# ios_application(
+#   name = "unit_test_app",
+
+# )
