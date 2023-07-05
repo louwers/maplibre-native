@@ -21,6 +21,7 @@ objc_library(
         "AppDelegate.h",
         "AppDelegate.m",
         "iosTestRunner.mm",
+        "iosTestRunner.h",
         "main.m"
     ],
     data = [

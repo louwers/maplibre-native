@@ -16,15 +16,15 @@ objc_library(
 ios_application(
   name = "unit_test_app",
   minimum_os_version = "12.0",
-  bundle_id = "org.maplibre.unittestapp",
+  bundle_id = "org.maplibre.UnitTestsApp",
   infoplists = [
     "Info.plist"
   ],
   families = ["iphone"],
   deps = [
+    "unit_test_app_cpp_srcs",
     "//platform/ios/test/common:ios_test_runner_lib",
     "//platform/ios/test/common:common_test_app_srcs",
-    "unit_test_app_cpp_srcs"
   ]
 )
 
@@ -35,8 +35,3 @@ ios_build_test(
     "unit_test_app_cpp_srcs"
   ]
 )
-
-# ios_application(
-#   name = "unit_test_app",
-
-# )

@@ -20,7 +20,7 @@ cc_library(
             "include/**/*.hpp"
         ],
         exclude = [
-            "src/mbgl/test/test.cpp",
+            # "src/mbgl/test/test.cpp",
             "src/mbgl/test/http_server.cpp",
         ],
         allow_empty = False
