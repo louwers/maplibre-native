@@ -13,6 +13,21 @@ objc_library(
   ]
 )
 
+ios_application(
+  name = "unit_test_app",
+  minimum_os_version = "12.0",
+  bundle_id = "org.maplibre.unittestapp",
+  infoplists = [
+    "Info.plist"
+  ],
+  families = ["iphone"],
+  deps = [
+    "//platform/ios/test/common:ios_test_runner_lib",
+    "//platform/ios/test/common:common_test_app_srcs",
+    "unit_test_app_cpp_srcs"
+  ]
+)
+
 ios_build_test(
   name = "build_test",
   minimum_os_version = "12.0",

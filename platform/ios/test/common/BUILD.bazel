@@ -15,6 +15,27 @@ cc_library(
 )
 
 objc_library(
+    name = "common_test_app_srcs",
+    srcs = [
+        "ios_test_runner.hpp",
+        "AppDelegate.h",
+        "AppDelegate.m",
+        "iosTestRunner.mm",
+        "main.m"
+    ],
+    data = [
+        "LaunchScreen.storyboard",
+        "Main.storyboard",
+    ],
+    deps = [
+        "ios_test_runner_lib",
+    ],
+    visibility = [
+        "//test/ios:__pkg__"
+    ]
+)
+
+objc_library(
     name = "render_test_app_srcs",
     srcs = [
         "AppDelegate.h",
