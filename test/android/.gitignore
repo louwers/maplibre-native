@@ -1,0 +1,4 @@
+.gradle
+.cxx
+app/build
+app/src/main/assets/data.zip

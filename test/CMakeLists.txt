@@ -229,3 +229,12 @@ set_property(TARGET mbgl-test PROPERTY FOLDER Core)
 if (MLN_WITH_CLANG_TIDY)
     set_target_properties(mbgl-test PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
 endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL Android)
+    set_source_files_properties(
+        ${PROJECT_SOURCE_DIR}/test/util/thread.test.cpp
+        PROPERTIES
+        COMPILE_FLAGS
+        -Wno-unknown-warning-option
+    )
+endif()
