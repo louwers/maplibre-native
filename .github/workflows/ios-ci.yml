@@ -56,7 +56,7 @@ jobs:
       fail-fast: false
       matrix:
         renderer: [legacy, drawable, metal]
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: macos-13
     concurrency:
       # cancel jobs on PRs only
       group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.renderer }}
