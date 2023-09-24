@@ -70,6 +70,19 @@ jobs:
         working-directory: platform/ios
         shell: bash
     steps:
+      - name: 'Download Provisioning Profiles'
+        id: provisioning
+        uses: poad/apple-provisioning-profiles-downloader@v1.0.8
+        with: 
+          bundle-id: '*'
+          profile-type: 'IOS_APP_DEVELOPMENT'
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+
+      - name: 'Provisioning Profiles result'
+        run: echo ${{ steps.provisioning.outputs.profiles }}
+
       - uses: actions/checkout@v4
         with:
           submodules: recursive
