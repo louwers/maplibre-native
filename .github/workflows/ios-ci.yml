@@ -70,6 +70,11 @@ jobs:
         working-directory: platform/ios
         shell: bash
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
       - name: 'Download Provisioning Profiles'
         id: provisioning
         uses: poad/apple-provisioning-profiles-downloader@v1.0.8
@@ -83,10 +88,6 @@ jobs:
       - name: 'Provisioning Profiles result'
         run: echo ${{ steps.provisioning.outputs.profiles }}
 
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          fetch-depth: 0
 
       - name: Cache node modules
         uses: actions/cache@v3
