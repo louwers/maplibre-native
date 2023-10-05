@@ -1,9 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion androidVersions.compileSdkVersion
-    ndkVersion androidSdkVersions.ndkVersion
-    buildToolsVersion androidSdkVersions.buildToolsVersion
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId = 'com.mapbox.mapboxsdk.maps.benchmark_runner'
@@ -34,15 +32,38 @@ android {
     }
     externalNativeBuild {
         cmake {
-            version androidSdkVersions.cmakeVersion
+            version '3.19.0+'
             path '../../../CMakeLists.txt'
         }
     }
+
+    flavorDimensions += "renderer"
+    productFlavors {
+        create("legacy") {
+            dimension = "renderer"
+            externalNativeBuild {
+                cmake {
+                    arguments "-DMLN_LEGACY_RENDERER=ON", "-DMLN_DRAWABLE_RENDERER=OFF"
+                }
+            }
+        }
+        create("drawable") {
+            dimension = "renderer"
+            externalNativeBuild {
+                cmake {
+                    arguments "-DMLN_LEGACY_RENDERER=OFF", "-DMLN_DRAWABLE_RENDERER=ON"
+                }
+            }
+        }
+    }
+
     buildTypes {
         release {
             signingConfig signingConfigs.debug
         }
     }
+
+    namespace 'android.app'
 }
 
 dependencies {
