@@ -845,17 +845,7 @@ public:
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 
-    // set initial position
-    //
-    mbgl::CameraOptions options;
-    options.center = mbgl::LatLng(0, 0);
-    mbgl::EdgeInsets padding = MLNEdgeInsetsFromNSEdgeInsets(self.contentInset);
-    options.padding = padding;
-    options.zoom = 0;
-
     _cameraChangeReasonBitmask = MLNCameraChangeReasonNone;
-
-    _mbglMap->jumpTo(options);
     _pendingLatitude = NAN;
     _pendingLongitude = NAN;
     _targetCoordinate = kCLLocationCoordinate2DInvalid;
