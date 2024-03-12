@@ -184,6 +184,7 @@ swift_library(
     data = [
         "test/amsterdam.geojson",
         "test/one-liner.json",
+        "test/zoom-14.json",
     ],
     visibility = [
         "//platform/ios/test:__pkg__",

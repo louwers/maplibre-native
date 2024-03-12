@@ -13,6 +13,18 @@ static MLNMapView *mapView;
 @interface MLNMapViewTests : XCTestCase
 @end
 
+@interface MapViewDelegateTester : NSObject <MLNMapViewDelegate>
+@property (nonatomic, copy) void (^didFinishLoadingStyle)(MLNStyle *style);
+@end
+
+@implementation MapViewDelegateTester
+- (void)mapView:(MLNMapView *)mapView didFinishLoadingStyle:(MLNStyle *)style {
+    if (self.didFinishLoadingStyle) {
+        self.didFinishLoadingStyle(style);
+    }
+}
+@end
+
 @implementation MLNMapViewTests
 
 - (void)setUp {
@@ -150,6 +162,22 @@ static MLNMapView *mapView;
         [expectation fulfill];
     }];
     [self waitForExpectations:@[expectation] timeout:1];
+}
+
+- (void)testLoadZoomLevelFromStyle {
+    NSURL *styleURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"zoom-14" withExtension:@"json"];
+    mapView = [[MLNMapView alloc] initWithFrame:CGRectMake(0, 0, 64, 64) styleURL:styleURL];
+    
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Zoom should be 14.0 when style is loaded."];
+    
+    MapViewDelegateTester *delegateTester = [[MapViewDelegateTester alloc] init];
+    delegateTester.didFinishLoadingStyle = ^(MLNStyle *style) {
+        [expectation fulfill];
+    };
+    mapView.delegate = delegateTester;
+    [self waitForExpectations:@[expectation] timeout:1];
+    
+    XCTAssertEqualWithAccuracy(mapView.zoomLevel, 14.0, 0.01);
 }
 
 @end
