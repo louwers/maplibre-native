@@ -39,12 +39,6 @@ final class MapLibreAnimatorProvider {
     return new MapLibreCameraAnimatorAdapter(values, updateListener, cancelableCallback);
   }
 
-  MapLibrePaddingAnimator paddingAnimator(double[][] values,
-                                        MapLibreAnimator.AnimationsValueChangeListener<double[]> updateListener,
-                                        @Nullable MapLibreMap.CancelableCallback cancelableCallback) {
-    return new MapLibrePaddingAnimator(values, updateListener, cancelableCallback);
-  }
-
   /**
    * This animator is for the LocationComponent pulsing circle.
    *

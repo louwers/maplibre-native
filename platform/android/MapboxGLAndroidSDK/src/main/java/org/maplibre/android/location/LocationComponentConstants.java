@@ -20,9 +20,6 @@ public final class LocationComponentConstants {
   // Default animation duration for zooming while tracking.
   static final long DEFAULT_TRACKING_ZOOM_ANIM_DURATION = 750;
 
-  // Default animation duration for updating padding while tracking.
-  static final long DEFAULT_TRACKING_PADDING_ANIM_DURATION = 750;
-
   // Default animation duration for tilting while tracking.
   static final long DEFAULT_TRACKING_TILT_ANIM_DURATION = 1250;
 

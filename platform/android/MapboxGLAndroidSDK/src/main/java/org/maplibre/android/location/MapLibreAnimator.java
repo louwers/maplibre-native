@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * @param <K> Data type that will be animated.
  */
-public abstract class MapLibreAnimator<K> extends ValueAnimator implements ValueAnimator.AnimatorUpdateListener {
+abstract class MapLibreAnimator<K> extends ValueAnimator implements ValueAnimator.AnimatorUpdateListener {
   @Retention(RetentionPolicy.SOURCE)
   @IntDef( {
     ANIMATOR_LAYER_LATLNG,
@@ -29,8 +29,7 @@ public abstract class MapLibreAnimator<K> extends ValueAnimator implements Value
     ANIMATOR_LAYER_ACCURACY,
     ANIMATOR_ZOOM,
     ANIMATOR_TILT,
-    ANIMATOR_PULSING_CIRCLE,
-    ANIMATOR_PADDING
+    ANIMATOR_PULSING_CIRCLE
   })
   @interface Type {
   }
@@ -45,7 +44,6 @@ public abstract class MapLibreAnimator<K> extends ValueAnimator implements Value
   static final int ANIMATOR_ZOOM = 7;
   static final int ANIMATOR_TILT = 8;
   static final int ANIMATOR_PULSING_CIRCLE = 9;
-  static final int ANIMATOR_PADDING = 10;
 
   private final AnimationsValueChangeListener<K> updateListener;
   private final K target;
@@ -61,7 +59,7 @@ public abstract class MapLibreAnimator<K> extends ValueAnimator implements Value
    */
   private boolean invalid;
 
-  public MapLibreAnimator(@NonNull @Size(min = 2) K[] values, @NonNull AnimationsValueChangeListener<K> updateListener,
+  MapLibreAnimator(@NonNull @Size(min = 2) K[] values, @NonNull AnimationsValueChangeListener<K> updateListener,
                    int maxAnimationFps) {
     minUpdateInterval = 1E9 / maxAnimationFps;
     setObjectValues((Object[]) values);
