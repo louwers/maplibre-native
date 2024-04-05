@@ -16,7 +16,7 @@ function(mbgl_generate_license param)
 
         if(TARGET ${LIBRARY})
             get_target_property(NAME ${LIBRARY} INTERFACE_MAPLIBRE_NAME)
-            get_target_property(URL ${LIBRARY} INTERFACE_MAPBOX_URL)
+            get_target_property(URL ${LIBRARY} INTERFACE_MAPLIBRE_URL)
             get_target_property(AUTHOR ${LIBRARY} INTERFACE_MAPLIBRE_AUTHOR)
             get_target_property(LICENSE ${LIBRARY} INTERFACE_MAPBOX_LICENSE)
 
