@@ -30,7 +30,7 @@ endif()
 set_target_properties(
     mbgl-vendor-csscolorparser
     PROPERTIES
-        INTERFACE_MAPBOX_NAME "csscolorparser"
+        INTERFACE_MAPLIBRE_NAME "csscolorparser"
         INTERFACE_MAPBOX_URL "https://github.com/mapbox/css-color-parser-cpp"
         INTERFACE_MAPLIBRE_AUTHOR "Dean McNamee and Konstantin Käfer"
         INTERFACE_MAPBOX_LICENSE ${CMAKE_CURRENT_LIST_DIR}/csscolorparser/LICENSE

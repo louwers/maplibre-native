@@ -26,7 +26,7 @@ target_include_directories(
 set_target_properties(
     mbgl-vendor-parsedate
     PROPERTIES
-        INTERFACE_MAPBOX_NAME "parsedate"
+        INTERFACE_MAPLIBRE_NAME "parsedate"
         INTERFACE_MAPBOX_URL "https://curl.haxx.se"
         INTERFACE_MAPLIBRE_AUTHOR "Daniel Stenberg and others"
         INTERFACE_MAPBOX_LICENSE ${CMAKE_CURRENT_LIST_DIR}/parsedate/COPYING
