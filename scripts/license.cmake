@@ -18,7 +18,7 @@ function(mbgl_generate_license param)
             get_target_property(NAME ${LIBRARY} INTERFACE_MAPLIBRE_NAME)
             get_target_property(URL ${LIBRARY} INTERFACE_MAPLIBRE_URL)
             get_target_property(AUTHOR ${LIBRARY} INTERFACE_MAPLIBRE_AUTHOR)
-            get_target_property(LICENSE ${LIBRARY} INTERFACE_MAPBOX_LICENSE)
+            get_target_property(LICENSE ${LIBRARY} INTERFACE_MAPLIBRE_LICENSE)
 
             if(NOT LICENSE OR NOT EXISTS ${LICENSE})
                 message(FATAL_ERROR "License not found for target: ${LIBRARY}")

@@ -17,5 +17,5 @@ set_target_properties(
         INTERFACE_MAPLIBRE_NAME "wagyu"
         INTERFACE_MAPLIBRE_URL "https://github.com/mapbox/wagyu.git"
         INTERFACE_MAPLIBRE_AUTHOR "Angus Johnson and Mapbox"
-        INTERFACE_MAPBOX_LICENSE ${CMAKE_CURRENT_LIST_DIR}/wagyu/LICENSE
+        INTERFACE_MAPLIBRE_LICENSE ${CMAKE_CURRENT_LIST_DIR}/wagyu/LICENSE
 )

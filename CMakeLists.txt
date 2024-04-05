@@ -1345,7 +1345,7 @@ set_target_properties(
         INTERFACE_MAPLIBRE_NAME "unordered_dense"
         INTERFACE_MAPLIBRE_URL "https://github.com/martinus/unordered_dense"
         INTERFACE_MAPLIBRE_AUTHOR "Martin Leitner-Ankerl"
-        INTERFACE_MAPBOX_LICENSE ${PROJECT_SOURCE_DIR}/vendor/unordered_dense/LICENSE
+        INTERFACE_MAPLIBRE_LICENSE ${PROJECT_SOURCE_DIR}/vendor/unordered_dense/LICENSE
 )
 
 target_link_libraries(
@@ -1416,7 +1416,7 @@ set_target_properties(
         INTERFACE_MAPLIBRE_NAME "MapLibre Native"
         INTERFACE_MAPLIBRE_URL "https://github.com/maplibre/maplibre-native"
         INTERFACE_MAPLIBRE_AUTHOR "Mapbox"
-        INTERFACE_MAPBOX_LICENSE ${PROJECT_SOURCE_DIR}/LICENSE.md
+        INTERFACE_MAPLIBRE_LICENSE ${PROJECT_SOURCE_DIR}/LICENSE.md
 )
 
 set_property(TARGET mbgl-core PROPERTY FOLDER Core)

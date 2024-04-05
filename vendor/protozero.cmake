@@ -17,5 +17,5 @@ set_target_properties(
         INTERFACE_MAPLIBRE_NAME "protozero"
         INTERFACE_MAPLIBRE_URL "https://github.com/mapbox/protozero"
         INTERFACE_MAPLIBRE_AUTHOR "Mapbox"
-        INTERFACE_MAPBOX_LICENSE ${CMAKE_CURRENT_LIST_DIR}/protozero/LICENSE.md
+        INTERFACE_MAPLIBRE_LICENSE ${CMAKE_CURRENT_LIST_DIR}/protozero/LICENSE.md
 )

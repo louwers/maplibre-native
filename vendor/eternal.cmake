@@ -17,5 +17,5 @@ set_target_properties(
         INTERFACE_MAPLIBRE_NAME "eternal"
         INTERFACE_MAPLIBRE_URL "https://github.com/mapbox/eternal"
         INTERFACE_MAPLIBRE_AUTHOR "Mapbox"
-        INTERFACE_MAPBOX_LICENSE ${CMAKE_CURRENT_LIST_DIR}/eternal/LICENSE.md
+        INTERFACE_MAPLIBRE_LICENSE ${CMAKE_CURRENT_LIST_DIR}/eternal/LICENSE.md
 )
