@@ -36,7 +36,7 @@ if(WIN32 AND NOT MLN_WITH_QT)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/platform/windows/custom-toolchain.cmake)
 endif()
 
-project("Mapbox GL Native" LANGUAGES CXX C)
+project("MapLibre Native" LANGUAGES CXX C)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER Core)
@@ -1413,7 +1413,7 @@ export(TARGETS
 set_target_properties(
     mbgl-core
     PROPERTIES
-        INTERFACE_MAPBOX_NAME "Mapbox GL Native"
+        INTERFACE_MAPBOX_NAME "MapLibre Native"
         INTERFACE_MAPBOX_URL "https://github.com/maplibre/maplibre-native"
         INTERFACE_MAPBOX_AUTHOR "Mapbox"
         INTERFACE_MAPBOX_LICENSE ${PROJECT_SOURCE_DIR}/LICENSE.md
