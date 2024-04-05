@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, macOS, ARM64]
+    runs-on: macos-14
     defaults:
       run:
         working-directory: platform/ios
@@ -17,15 +17,7 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: npm install
-        run: npm ci --ignore-scripts
-
-      - run: chmod +x scripts/deploy-swift-package.sh
-
-      - run: cp bazel/example_config.bzl bazel/config.bzl
-
-      - name: Build, package, and upload iOS release
-        run: scripts/deploy-swift-package.sh
-        env:
-          DIST_GITHUB_TOKEN: ${{ secrets.DIST_GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build XCFramework
+        run: |
+          bazel build --compilation_mode=opt --apple_generate_dsym --output_groups=+dsyms --//:renderer=metal //platform/ios:MapLibre.dynamic --embed_label=maplibre_ios_"$(cat VERSION)"
+          echo xcframework="$(bazel info execution_root)"/"$(bazel cquery --output=files --compilation_mode=opt --//:renderer=metal //platform/ios:MapLibre.dynamic)" >> "$GITHUB_ENV"
