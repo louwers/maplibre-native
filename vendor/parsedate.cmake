@@ -28,6 +28,6 @@ set_target_properties(
     PROPERTIES
         INTERFACE_MAPBOX_NAME "parsedate"
         INTERFACE_MAPBOX_URL "https://curl.haxx.se"
-        INTERFACE_MAPBOX_AUTHOR "Daniel Stenberg and others"
+        INTERFACE_MAPLIBRE_AUTHOR "Daniel Stenberg and others"
         INTERFACE_MAPBOX_LICENSE ${CMAKE_CURRENT_LIST_DIR}/parsedate/COPYING
 )

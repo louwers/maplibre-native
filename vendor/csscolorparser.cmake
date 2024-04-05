@@ -32,6 +32,6 @@ set_target_properties(
     PROPERTIES
         INTERFACE_MAPBOX_NAME "csscolorparser"
         INTERFACE_MAPBOX_URL "https://github.com/mapbox/css-color-parser-cpp"
-        INTERFACE_MAPBOX_AUTHOR "Dean McNamee and Konstantin Käfer"
+        INTERFACE_MAPLIBRE_AUTHOR "Dean McNamee and Konstantin Käfer"
         INTERFACE_MAPBOX_LICENSE ${CMAKE_CURRENT_LIST_DIR}/csscolorparser/LICENSE
 )
