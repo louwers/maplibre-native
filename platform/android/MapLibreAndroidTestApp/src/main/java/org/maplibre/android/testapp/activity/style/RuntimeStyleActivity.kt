@@ -18,12 +18,16 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMap.CancelableCallback
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.expressions.Expression.get
 import org.maplibre.android.style.layers.CircleLayer
 import org.maplibre.android.style.layers.FillLayer
 import org.maplibre.android.style.layers.Layer
 import org.maplibre.android.style.layers.LineLayer
 import org.maplibre.android.style.layers.Property
 import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.android.style.layers.PropertyFactory.iconImage
+import org.maplibre.android.style.layers.PropertyFactory.textField
+import org.maplibre.android.style.layers.PropertyFactory.textFont
 import org.maplibre.android.style.layers.RasterLayer
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.layers.TransitionOptions
@@ -35,6 +39,7 @@ import org.maplibre.android.style.sources.VectorSource
 import org.maplibre.android.testapp.R
 import org.maplibre.android.testapp.styles.TestStyles
 import org.maplibre.android.testapp.utils.ResourceUtils
+import org.maplibre.android.utils.BitmapUtils
 import timber.log.Timber
 import java.io.IOException
 
@@ -103,6 +108,9 @@ class RuntimeStyleActivity : AppCompatActivity() {
                         )
                     )
                 )
+
+                val customUserIcon = BitmapUtils.getDrawableFromRes(this, R.drawable.custom_user_icon)!!
+                style.addImage("custom-user-icon", customUserIcon)
             }
         }
     }
@@ -244,6 +252,11 @@ class RuntimeStyleActivity : AppCompatActivity() {
 
                 R.id.action_fill_filter_color -> {
                     styleFillColorLayer()
+                    true
+                }
+
+                R.id.action_show_housenumbers -> {
+                    showHouseNumbers()
                     true
                 }
 
@@ -720,6 +733,18 @@ class RuntimeStyleActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "No water layer in this style", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun showHouseNumbers() {
+        val houseNumberLayer = SymbolLayer("big-house-numbers", "openmaptiles")
+            .withSourceLayer("housenumber")
+            .withProperties(
+                iconImage("custom-user-icon"),
+                textFont(arrayOf("Americana-Bold")),
+                textField(get("housenumber"))
+                )
+        houseNumberLayer.sourceLayer = "housenumber"
+        maplibreMap.style!!.addLayer(houseNumberLayer)
     }
 
     private open class DefaultCallback : CancelableCallback {
