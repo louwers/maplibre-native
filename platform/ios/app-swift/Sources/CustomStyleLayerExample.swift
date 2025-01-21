@@ -118,38 +118,39 @@ class CustomStyleLayer: MLNCustomStyleLayer {
 
     override func draw(in _: MLNMapView, with context: MLNStyleLayerDrawingContext) {
         #if MLN_RENDER_BACKEND_METAL
-            // Use the supplied render command encoder to encode commands
-            guard let renderEncoder else {
-                return
-            }
+            guard let renderEncoder else { return }
 
+            // Project to 0..1.
             let p1 = project(CLLocationCoordinate2D(latitude: 25.0, longitude: 12.5))
             let p2 = project(CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0))
             let p3 = project(CLLocationCoordinate2D(latitude: 0.0, longitude: 25.0))
 
-            struct Vertex {
-                var position: vector_float2
-                var color: vector_float4
-            }
+            // Multiply by the world size so it becomes the tile coordinate system.
+            let worldSize = 512.0 * pow(2.0, context.zoomLevel)
 
+            let p1Tile = CGPoint(x: p1.x * worldSize, y: p1.y * worldSize)
+            let p2Tile = CGPoint(x: p2.x * worldSize, y: p2.y * worldSize)
+            let p3Tile = CGPoint(x: p3.x * worldSize, y: p3.y * worldSize)
+
+            // Then build your triangle from tile coordinates
+            struct Vertex { var position: vector_float2; var color: vector_float4 }
             let triangleVertices: [Vertex] = [
-                Vertex(position: vector_float2(Float(p1.x), Float(p1.y)), color: vector_float4(1, 0, 0, 1)),
-                Vertex(position: vector_float2(Float(p2.x), Float(p2.y)), color: vector_float4(0, 1, 0, 1)),
-                Vertex(position: vector_float2(Float(p3.x), Float(p3.y)), color: vector_float4(0, 0, 1, 1)),
+                Vertex(position: vector_float2(Float(p1Tile.x), Float(p1Tile.y)),
+                       color: vector_float4(1, 0, 0, 1)),
+                Vertex(position: vector_float2(Float(p2Tile.x), Float(p2Tile.y)),
+                       color: vector_float4(0, 1, 0, 1)),
+                Vertex(position: vector_float2(Float(p3Tile.x), Float(p3Tile.y)),
+                       color: vector_float4(0, 0, 1, 1)),
             ]
 
-            // Convert the projection matrix to float from double, and scale it to match our projection
-            var projectionMatrix = convertMatrix(context.projectionMatrix)
-            let worldSize = 512.0 * pow(2.0, context.zoomLevel)
-            projectionMatrix.m00 = projectionMatrix.m00 * Float(worldSize)
-            projectionMatrix.m11 = projectionMatrix.m11 * Float(worldSize)
+            // Use the camera's full projection matrix *unchanged*.
+            var matrix = convertMatrix(context.projectionMatrix)
 
+            // Encode
             renderEncoder.setRenderPipelineState(pipelineState!)
             renderEncoder.setDepthStencilState(depthStencilStateWithoutStencil)
-
-            // Pass in the parameter data.
             renderEncoder.setVertexBytes(triangleVertices, length: MemoryLayout<Vertex>.size * triangleVertices.count, index: 0)
-            renderEncoder.setVertexBytes(&projectionMatrix, length: MemoryLayout<float4x4>.size, index: 1)
+            renderEncoder.setVertexBytes(&matrix, length: MemoryLayout<float4x4>.size, index: 1)
 
             // Draw the triangle.
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
