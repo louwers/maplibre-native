@@ -6,17 +6,12 @@ use walkdir::WalkDir;
 
 use build_support::parse_deps;
 
-/// Helper that returns a new cmake::Config with common settings.
-/// It selects the renderer based on Cargo features: the user must enable exactly one of:
-/// "metal", "opengl", or "vulkan". If none are explicitly enabled, on iOS/macOS the default is metal,
-/// and on all other platforms the default is vulkan.
 fn create_cmake_config(project_root: &Path) -> cmake::Config {
     let mut cfg = cmake::Config::new(project_root);
     cfg.generator("Ninja");
     cfg.define("CMAKE_C_COMPILER_LAUNCHER", "ccache");
     cfg.define("CMAKE_CXX_COMPILER_LAUNCHER", "ccache");
     cfg.define("MLN_DRAWABLE_RENDERER", "ON");
-    cfg.define("MLN_WITH_OPENGL", "OFF");
 
     let (metal_enabled, opengl_enabled, vulkan_enabled) = {
         let metal = env::var("CARGO_FEATURE_METAL").is_ok();
