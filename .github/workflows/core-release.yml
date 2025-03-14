@@ -1,0 +1,69 @@
+
+name: Release MapLibre Native Core
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: core-${{ github.sha }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos:
+    needs: [create-release]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build macOS (Metal)
+        run: bazel build //:mbgl-core --//:renderer=metal
+      - name: Rename artifact
+        run: cp bazel-bin/libmbgl-core.a libmaplibre-native-core-macos-metal.a
+      - name: Upload macOS artifact
+        run: gh release upload core-${{ github.sha }} libmaplibre-native-core-macos-metal.a
+
+  build-ios:
+    needs: [create-release]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build iOS (Metal)
+        run: bazel build //:mbgl-core --//:renderer=metal --apple_platform_type=ios
+      - name: Rename artifact
+        run: cp bazel-bin/libmbgl-core.a libmaplibre-native-core-ios-metal.a
+      - name: Upload iOS artifact
+        run: gh release upload core-${{ github.sha }} libmaplibre-native-core-ios-metal.a
+
+  build-linux:
+    needs: [create-release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build Linux (Vulkan)
+        run: bazel build //:mbgl-core --//:renderer=vulkan
+      - name: Rename Vulkan artifact
+        run: cp bazel-bin/libmbgl-core.a libmaplibre-native-core-linux-vulkan.a
+      - name: Build Linux (OpenGL ES)
+        run: bazel build //:mbgl-core --//:renderer=drawable
+      - name: Rename OpenGL artifact
+        run: cp bazel-bin/libmbgl-core.a libmaplibre-native-core-linux-opengl.a
+      - name: Upload Linux artifacts
+        run: gh release upload core-${{ github.sha }} libmaplibre-native-core-linux-vulkan.a libmaplibre-native-core-linux-opengl.a
