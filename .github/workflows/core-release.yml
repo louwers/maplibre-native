@@ -57,13 +57,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Build Linux (Vulkan)
-        run: bazel build //:mbgl-core --//:renderer=vulkan
-      - name: Rename Vulkan artifact
-        run: cp bazel-bin/libmbgl-core.a libmaplibre-native-core-linux-vulkan.a
       - name: Build Linux (OpenGL ES)
         run: bazel build //:mbgl-core --//:renderer=drawable
       - name: Rename OpenGL artifact
         run: cp bazel-bin/libmbgl-core.a libmaplibre-native-core-linux-opengl.a
       - name: Upload Linux artifacts
-        run: gh release upload core-${{ github.sha }} libmaplibre-native-core-linux-vulkan.a libmaplibre-native-core-linux-opengl.a
+        run: gh release upload core-${{ github.sha }} libmaplibre-native-core-linux-opengl.a
