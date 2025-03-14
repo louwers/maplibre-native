@@ -35,6 +35,8 @@ jobs:
         run: cp bazel-bin/libmbgl-core.a libmaplibre-native-core-macos-metal.a
       - name: Upload macOS artifact
         run: gh release upload core-${{ github.sha }} libmaplibre-native-core-macos-metal.a
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   build-ios:
     needs: [create-release]
@@ -49,6 +51,8 @@ jobs:
         run: cp bazel-bin/libmbgl-core.a libmaplibre-native-core-ios-metal.a
       - name: Upload iOS artifact
         run: gh release upload core-${{ github.sha }} libmaplibre-native-core-ios-metal.a
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   build-linux:
     needs: [create-release]
@@ -63,3 +67,5 @@ jobs:
         run: cp bazel-bin/libmbgl-core.a libmaplibre-native-core-linux-opengl.a
       - name: Upload Linux artifacts
         run: gh release upload core-${{ github.sha }} libmaplibre-native-core-linux-opengl.a
+        env:
+          GH_TOKEN: ${{ github.token }}
