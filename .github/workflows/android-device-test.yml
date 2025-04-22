@@ -137,6 +137,7 @@ jobs:
           role-duration-seconds: 14400
 
       - name: Run ${{ matrix.test.name }} on AWS Device Farm
+        if: env.run_device_test == 'true'
         run: |
           export name="${{ matrix.test.name }}"
           export appType=ANDROID_APP
