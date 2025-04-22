@@ -60,7 +60,7 @@ android:
   - 'metrics/**'
   - 'platform/default/**'
   - 'render-test/**'
-  - 'scripts/**'
+  - 'scripts/style-code.mjs'
   - 'src/**'
   - 'test/**'
   - 'vendor/**'
