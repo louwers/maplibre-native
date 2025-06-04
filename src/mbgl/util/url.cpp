@@ -53,15 +53,23 @@ std::string percentDecode(const std::string& input) {
 
     auto it = input.begin();
     const auto end = input.end();
-    char hex[3] = "00";
+    char hex[3] = "";
 
     while (it != end) {
         auto cur = std::find(it, end, '%');
         decoded.append(it, cur);
         it = cur;
         if (cur != end) {
-            it += input.copy(hex, 2, cur - input.begin() + 1) + 1;
+            const auto remaining = static_cast<size_t>(std::distance(cur, end));
+            if (remaining < 3) {
+                decoded.append(cur, end);
+                break;
+            }
+            hex[0] = *(cur + 1);
+            hex[1] = *(cur + 2);
+            hex[2] = '\0';
             decoded += static_cast<char>(std::strtoul(hex, nullptr, 16));
+            it = cur + 3;
         }
     }
 

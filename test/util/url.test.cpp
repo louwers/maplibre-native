@@ -14,6 +14,13 @@ TEST(URL, percentDecode) {
     EXPECT_EQ("\"éncøðing\"", percentDecode("%22%C3%A9nc%C3%B8%C3%B0ing%22"));
 }
 
+TEST(URL, percentDecodeInvalid) {
+    EXPECT_EQ("%", percentDecode("%"));
+    EXPECT_EQ("%2", percentDecode("%2"));
+    EXPECT_EQ("abc%", percentDecode("abc%"));
+    EXPECT_EQ("abc%2", percentDecode("abc%2"));
+}
+
 TEST(URL, Scheme) {
     EXPECT_EQ(URL::Segment({0, 4}), URL("http://example.com/test?query=foo").scheme);
     EXPECT_EQ(URL::Segment({0, 4}), URL("http://127.0.0.1:8080/test?query=foo").scheme);
