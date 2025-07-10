@@ -105,7 +105,7 @@
       }
     },
     {
-      "name": "linux--opengl-sccache",
+      "name": "linux-opengl-sccache",
       "inherits": "linux-opengl",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER_LAUNCHER": "sccache"
