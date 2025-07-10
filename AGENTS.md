@@ -43,3 +43,5 @@ Before making any commits always make sure that the project builds:
 ```
 cmake --build build-linux-opengl
 ```
+
+This can take a while!
