@@ -21,10 +21,11 @@ apt install build-essential clang cmake ninja-build pkg-config libcurl4-openssl-
 Also install `sccache`:
 
 ```
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-cargo install sccache
-echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+curl -LO https://github.com/mozilla/sccache/releases/download/v0.10.0/sccache-dist-v0.10.0-x86_64-unknown-linux-musl.tar.gz
+tar -xzf sccache-dist-v0.10.0-x86_64-unknown-linux-musl.tar.gz
+sudo mv sccache-dist-v0.10.0-x86_64-unknown-linux-musl/sccache-dist /usr/local/bin/sccache
+sudo chmod +x /usr/local/bin/sccache
+rm -rf sccache-dist-v0.10.0-x86_64-unknown-linux-musl*
 ```
 
 Configure the CMake project:
