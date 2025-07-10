@@ -105,6 +105,18 @@
       }
     },
     {
+      "name": "linux--opengl-sccache",
+      "inherits": "linux-opengl",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER_LAUNCHER": "sccache"
+      },
+      "environment": {
+        "SCCACHE_S3_NO_CREDENTIALS": "1",
+        "SCCACHE_BUCKET": "maplibre-native-sccache",
+        "SCCACHE_REGION": "eu-central-1"
+      }
+    },
+    {
       "name": "linux-opengl-core",
       "inherits": "linux-opengl",
       "cacheVariables": {
