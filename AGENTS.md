@@ -17,7 +17,7 @@ git submodule update --recursive
 2. Install dependencies:
 
 ```
-apt install build-essential clang cmake ninja-build pkg-config libcurl4-openssl-dev libglfw3-dev libuv1-dev libpng-dev libicu-dev libjpeg-turbo8-dev libwebp-dev xvfb libegl1-mesa-dev
+apt install build-essential clang cmake ninja-build pkg-config libcurl4-openssl-dev libglfw3-dev libuv1-dev libpng-dev libicu-dev libjpeg-turbo8-dev libwebp-dev xvfb
 ```
 
 3. Also install `sccache`:
@@ -33,7 +33,7 @@ rm -rf sccache-v0.10.0-x86_64-unknown-linux-musl
 4. Configure the CMake project:
 
 ```
-cmake --preset linux-opengl-sccache
+cmake --preset linux-opengl-sccache -DMLN_WITH_WAYLAND=OFF
 ```
 
 ## Building
@@ -44,4 +44,4 @@ Before making any commits always make sure that the project builds:
 cmake --build build-linux-opengl
 ```
 
-This can take a while!
+This can take 10-20 minutes. Let it run!
