@@ -2,12 +2,34 @@ package org.maplibre.android.testapp.activity.maplayout
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Button
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.*
+import org.maplibre.android.style.layers.LineLayer
+import org.maplibre.android.style.layers.Property
+import org.maplibre.android.style.layers.PropertyFactory.lineCap
+import org.maplibre.android.style.layers.PropertyFactory.lineColor
+import org.maplibre.android.style.layers.PropertyFactory.lineDasharray
+import org.maplibre.android.style.layers.PropertyFactory.lineJoin
+import org.maplibre.android.style.layers.PropertyFactory.lineWidth
+import org.maplibre.android.style.layers.PropertyFactory.visibility
+import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.android.testapp.R
 import org.maplibre.android.testapp.utils.ApiKeyUtils
 import org.maplibre.android.testapp.utils.NavUtils
+import org.maplibre.geojson.LineString
+import org.maplibre.geojson.Point
+
+private const val SOURCE_ID = "source"
+private const val LAYER_ID = "layer"
+private const val CENTRE_LAT = 39.749
+private const val CENTRE_LONG = -105.005
+private const val CENTRE_ZOOM = 10.0
+private const val TOTAL_POINTS = 10000
+private const val INCREMENT = 0.0001
 
 /**
  * Test activity showcasing a simple MapView without any MapLibreMap interaction.
@@ -29,9 +51,18 @@ class SimpleMapActivity : AppCompatActivity() {
         mapView.getMapAsync {
             val key = ApiKeyUtils.getApiKey(applicationContext)
             if (key == null || key == "YOUR_API_KEY_GOES_HERE") {
-                it.setStyle(
-                    Style.Builder().fromUri("https://demotiles.maplibre.org/style.json")
-                )
+                it.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(
+                    CENTRE_LAT,
+                    CENTRE_LONG
+                ), CENTRE_ZOOM
+                ))
+
+                configure(it)
+                val button = mapView.findViewById<Button>(R.id.reconfigure_button)
+                button.setOnClickListener { _ ->
+                    configure(it)
+                }
+
             } else {
                 val styles = Style.getPredefinedStyles()
                 if (styles.isNotEmpty()) {
@@ -39,6 +70,43 @@ class SimpleMapActivity : AppCompatActivity() {
                     it.setStyle(Style.Builder().fromUri(styleUrl))
                 }
             }
+        }
+    }
+
+    private fun configure(map: MapLibreMap) {
+        map.setStyle(
+            "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        ) {
+            style ->
+                val source = style.getSource(SOURCE_ID) ?: GeoJsonSource(
+                    SOURCE_ID
+                ).apply {
+                    setGeoJson(
+                        LineString.fromLngLats(List(TOTAL_POINTS) {
+                            Point.fromLngLat(CENTRE_LONG + it * INCREMENT, CENTRE_LAT + it * INCREMENT)
+                        })
+                    )
+
+                    style.addSource(this)
+                }
+
+                style.getLayer(LAYER_ID) ?: LineLayer(LAYER_ID, source.id).apply {
+                    setProperties(
+                        lineCap(Property.LINE_CAP_ROUND),
+                        lineJoin(Property.LINE_JOIN_ROUND),
+                        visibility(Property.VISIBLE),
+                        lineWidth(3f),
+                        lineColor("#FF0000"),
+                        lineDasharray(arrayOf(1f, 1.50f))
+                    )
+                    style.addLayer(this)
+                }
+
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(
+                    CENTRE_LAT,
+                    CENTRE_LONG
+                ), CENTRE_ZOOM
+                ))
         }
     }
 
