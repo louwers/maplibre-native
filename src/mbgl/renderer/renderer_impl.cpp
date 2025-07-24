@@ -25,6 +25,7 @@
 #include <mbgl/renderer/render_target.hpp>
 
 #if MLN_RENDER_BACKEND_METAL
+#include <mbgl/mtl/autoreleasepool.hpp>
 #include <mbgl/mtl/renderer_backend.hpp>
 #include <Metal/MTLCaptureManager.hpp>
 #include <Metal/MTLCaptureScope.hpp>
@@ -93,6 +94,8 @@ void Renderer::Impl::render(const RenderTree& renderTree, const std::shared_ptr<
     assert(updateParameters);
 
 #if MLN_RENDER_BACKEND_METAL
+    mbgl::util::AutoReleasePool pool;
+
     if constexpr (EnableMetalCapture) {
         const auto& mtlBackend = static_cast<mtl::RendererBackend&>(backend);
 

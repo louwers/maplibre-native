@@ -1135,6 +1135,7 @@ if(MLN_WITH_METAL)
     )
     list(APPEND
         INCLUDE_FILES
+            ${PROJECT_SOURCE_DIR}/include/mbgl/mtl/autoreleasepool.hpp
             ${PROJECT_SOURCE_DIR}/include/mbgl/mtl/buffer_resource.hpp
             ${PROJECT_SOURCE_DIR}/include/mbgl/mtl/command_encoder.hpp
             ${PROJECT_SOURCE_DIR}/include/mbgl/mtl/context.hpp
@@ -1176,6 +1177,7 @@ if(MLN_WITH_METAL)
             )
     list(APPEND
         SRC_FILES
+            ${PROJECT_SOURCE_DIR}/src/mbgl/mtl/autoreleasepool.cpp
             ${PROJECT_SOURCE_DIR}/src/mbgl/mtl/buffer_resource.cpp
             ${PROJECT_SOURCE_DIR}/src/mbgl/mtl/command_encoder.cpp
             ${PROJECT_SOURCE_DIR}/src/mbgl/mtl/context.cpp

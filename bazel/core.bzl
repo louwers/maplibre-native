@@ -1025,6 +1025,7 @@ MLN_DRAWABLES_MTL_SOURCE = [
     "src/mbgl/mtl/mtl.cpp",
     "src/mbgl/mtl/offscreen_texture.cpp",
     "src/mbgl/mtl/renderer_backend.cpp",
+    "src/mbgl/mtl/autoreleasepool.cpp",
     "src/mbgl/mtl/texture2d.cpp",
     "src/mbgl/mtl/render_pass.cpp",
     "src/mbgl/mtl/tile_layer_group.cpp",
@@ -1055,6 +1056,7 @@ MLN_DRAWABLES_MTL_SOURCE = [
 ]
 
 MLN_DRAWABLES_MTL_HEADERS = [
+    "include/mbgl/mtl/autoreleasepool.hpp",
     "include/mbgl/mtl/buffer_resource.hpp",
     "include/mbgl/mtl/command_encoder.hpp",
     "include/mbgl/mtl/context.hpp",
