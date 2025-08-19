@@ -57,6 +57,7 @@ jobs:
           fetch-depth: 0
 
       - uses: ./.github/actions/setup-android-ci
+        if: startsWith(runner.name, 'GitHub Actions')
 
       - name: Check code style
         if: matrix.renderer == 'opengl'
@@ -200,7 +201,7 @@ jobs:
       matrix:
         flavor: [opengl, vulkan]
 
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64]
 
     needs:
       - pre_job
