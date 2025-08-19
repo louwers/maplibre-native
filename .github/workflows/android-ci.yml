@@ -35,7 +35,7 @@ jobs:
           files_yaml_from_source_file: .github/changed-files.yml
 
   android-build:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64]
     needs:
       - pre_job
     if: needs.pre_job.outputs.should_skip != 'true'
@@ -136,7 +136,7 @@ jobs:
             platform/android/InstrumentationTests${{ env.renderer }}.apk
 
   android-build-cpp-test:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, X64]
 
     needs:
       - pre_job
@@ -174,12 +174,6 @@ jobs:
         with:
           cmakeVersion: 3.24.1
           ninjaVersion: latest
-
-      - uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ${{ github.job }}
-          append-timestamp: false
-          max-size: 5G
 
       - name: Create data.zip in assets directory
         run: zip -r test/android/app/src/main/assets/data.zip -@ < test/android/app/src/main/assets/to_zip.txt
@@ -230,12 +224,6 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-
-      - uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ${{ github.job }}
-          append-timestamp: false
-          max-size: 5G
 
       - name: Get CMake and Ninja
         uses: lukka/get-cmake@latest
