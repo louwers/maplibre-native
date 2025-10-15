@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import okio.ByteString.Companion.readByteString
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.Style
 import org.maplibre.android.snapshotter.MapSnapshot
 import org.maplibre.android.snapshotter.MapSnapshotter
@@ -27,6 +28,12 @@ class MapSnapshotterLocalStyleActivity : AppCompatActivity() {
         private const val LATITUDE = 52.090737
         private const val LONGITUDE = 5.121420
         private const val ZOOM = 2.0
+        private val statenIsland = LatLngBounds.from(
+            40.64,   // latitudeNorth
+            -74.05,  // longitudeEast
+            40.50,   // latitudeSouth
+            -74.25   // longitudeWest
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,11 +56,9 @@ class MapSnapshotterLocalStyleActivity : AppCompatActivity() {
                             container.measuredHeight.coerceAtMost(1024)
                         )
                             .withStyleBuilder(Style.Builder().fromJson(styleJson))
-                            .withCameraPosition(
-                                CameraPosition.Builder().target(LatLng(LATITUDE, LONGITUDE))
-                                    .zoom(ZOOM).build()
-                            )
                     )
+                    mapSnapshotter.setCameraPosition(mapSnapshotter.getCameraForLatLngBounds(statenIsland, intArrayOf(50, 50, 50, 50)))
+
                     // # --8<-- [end:createMapSnapshotter]
                     // # --8<-- [start:createSnapshot]
                     mapSnapshotter.start({ snapshot ->
@@ -72,4 +77,5 @@ class MapSnapshotterLocalStyleActivity : AppCompatActivity() {
             mapSnapshotter.cancel()
         }
     }
+
 }

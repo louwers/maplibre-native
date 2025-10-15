@@ -395,6 +395,72 @@ open class MapSnapshotter(context: Context, options: Options) {
     external fun setRegion(region: LatLngBounds?)
 
     /**
+     * Get a camera position that fits a provided bounds.
+     *
+     * @param latLngBounds the bounds to set the map with
+     * @return the camera position that fits the bounds
+     */
+    fun getCameraForLatLngBounds(latLngBounds: LatLngBounds): CameraPosition? {
+        return getCameraForLatLngBounds(latLngBounds, intArrayOf(0, 0, 0, 0))
+    }
+
+    /**
+     * Get a camera position that fits a provided bounds and padding.
+     *
+     * @param latLngBounds the bounds to set the map with
+     * @param padding the padding to apply to the bounds (in left, top, right, bottom order)
+     * @return the camera position that fits the bounds and padding
+     */
+    fun getCameraForLatLngBounds(latLngBounds: LatLngBounds, padding: IntArray): CameraPosition? {
+        return getCameraForLatLngBounds(latLngBounds, padding, 0.0, 0.0)
+    }
+
+    /**
+     * Get a camera position that fits a provided bounds, bearing and tilt.
+     *
+     * @param latLngBounds the bounds to set the map with
+     * @param bearing the bearing to transform the camera position with
+     * @param tilt to transform the camera position with
+     * @return the camera position that fits the bounds and given bearing and tilt
+     */
+    fun getCameraForLatLngBounds(
+        latLngBounds: LatLngBounds,
+        bearing: Double,
+        tilt: Double
+    ): CameraPosition? {
+        return getCameraForLatLngBounds(latLngBounds, intArrayOf(0, 0, 0, 0), bearing, tilt)
+    }
+
+    /**
+     * Get a camera position that fits a provided bounds, padding, bearing and tilt.
+     *
+     * @param latLngBounds the bounds to set the map with
+     * @param padding the padding to apply to the bounds (in left, top, right, bottom order)
+     * @param bearing the bearing to transform the camera position with
+     * @param tilt to transform the camera position with
+     * @return the camera position that fits the bounds and padding
+     */
+    fun getCameraForLatLngBounds(
+        latLngBounds: LatLngBounds,
+        padding: IntArray,
+        bearing: Double,
+        tilt: Double
+    ): CameraPosition? {
+        return nativeGetCameraForLatLngBounds(latLngBounds, padding, bearing, tilt)
+    }
+
+    /**
+     * Native method to calculate camera position for bounds.
+     */
+    @Keep
+    external fun nativeGetCameraForLatLngBounds(
+        bounds: LatLngBounds,
+        padding: IntArray,
+        bearing: Double,
+        tilt: Double
+    ): CameraPosition
+
+    /**
      * Updates the snapshotter with a new style url
      *
      * @param styleUrl the style url

@@ -340,6 +340,13 @@ LatLngBounds MapSnapshotter::getRegion() const {
     return impl->getMap().latLngBoundsForCamera(getCameraOptions());
 }
 
+CameraOptions MapSnapshotter::cameraForLatLngBounds(const LatLngBounds& bounds,
+                                                    const EdgeInsets& padding,
+                                                    const std::optional<double>& bearing,
+                                                    const std::optional<double>& pitch) const {
+    return impl->getMap().cameraForLatLngBounds(bounds, padding, bearing, pitch);
+}
+
 style::Style& MapSnapshotter::getStyle() {
     return impl->getMap().getStyle();
 }

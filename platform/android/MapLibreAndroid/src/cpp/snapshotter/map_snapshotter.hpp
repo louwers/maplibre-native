@@ -60,6 +60,8 @@ public:
     void addImages(JNIEnv&, const jni::Array<jni::Object<mbgl::android::Image>>&);
     jni::Local<jni::Object<Layer>> getLayer(JNIEnv&, const jni::String&);
     jni::Local<jni::Object<Source>> getSource(JNIEnv&, const jni::String&);
+    jni::Local<jni::Object<CameraPosition>> getCameraForLatLngBounds(
+        JNIEnv&, const jni::Object<LatLngBounds>&, const jni::Array<jni::jint>&, jni::jdouble, jni::jdouble);
 
     // MapSnapshotterObserver overrides
     void onDidFailLoadingStyle(const std::string&) override;

@@ -60,6 +60,11 @@ public:
     void setRegion(const LatLngBounds&);
     LatLngBounds getRegion() const;
 
+    CameraOptions cameraForLatLngBounds(const LatLngBounds& bounds,
+                                        const EdgeInsets& padding,
+                                        const std::optional<double>& bearing = std::nullopt,
+                                        const std::optional<double>& pitch = std::nullopt) const;
+
     style::Style& getStyle();
     const style::Style& getStyle() const;
 
