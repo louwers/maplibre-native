@@ -2,6 +2,39 @@
 
 Depending on your use case, you may want to support all or just a subset of [Android ABIs](http://developer.android.com/ndk/guides/abis.html). This document covers building an `.aar` file from the MapLibre Native for Android and building `.so` files for specific ABIs. In normal circumstances an application developer will use [APK splits](https://developer.android.com/studio/build/configure-apk-splits.html) to optimize this at application level.
 
+## Publishing to GitHub Packages
+
+MapLibre Native for Android can be published to GitHub Packages using the `android-release-github-packages.yml` workflow. This allows you to publish custom versions with custom artifact names to your own GitHub repository.
+
+### Using the Workflow
+
+The workflow is triggered manually via `workflow_dispatch` and requires two inputs:
+
+- **version**: The version to publish (e.g., `0.0.1`)
+- **artifact_name**: The artifact name/group ID (e.g., `nl.bartlouwers.mln`)
+
+To run the workflow:
+
+1. Go to the Actions tab in your GitHub repository
+2. Select "android-release-github-packages" workflow
+3. Click "Run workflow"
+4. Enter the version and artifact name
+5. Click "Run workflow" button
+
+The workflow will build and publish the Android SDK to GitHub Packages for all renderers (OpenGL and Vulkan) and build types (Release and Debug).
+
+### Implementation Details
+
+The GitHub Packages publishing is implemented as a separate Gradle plugin (`maplibre.gradle-publish-github.gradle.kts`) that is only activated when the `publishToGitHub` Gradle property is set to `true`. This ensures the existing Maven Central publishing workflow remains unchanged.
+
+The plugin supports the following Gradle properties:
+- `-PpublishToGitHub=true` - Enables GitHub Packages publishing
+- `-PgithubPackagesVersion=<version>` - Sets the version for the published artifact
+- `-PgithubPackagesArtifactId=<artifact-id>` - Sets the artifact ID for the published artifact
+- `-PgithubPackagesGroupId=<group-id>` - (Optional) Overrides the group ID
+
+## Building Locally
+
 ##### Build types
 
 With a `BUILDTYPE` var you can specify the build type for the `.so` and `.aar` files:
