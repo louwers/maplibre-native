@@ -1,6 +1,6 @@
 import org.gradle.api.Task
 import org.gradle.kotlin.dsl.get
-import java.util.Locale
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
 
 plugins {
     `maven-publish`
@@ -119,8 +119,8 @@ if (project.hasProperty("publishToGitHub") && project.property("publishToGitHub"
     afterEvaluate {
         configureMavenPublicationGitHub("opengl", "defaultrelease", "", "")
         configureMavenPublicationGitHub("opengl", "defaultdebug", "-debug", " (Debug)", "Debug")
-        configureMavenPublicationGitHub("vulkan", "vulkanrelease", "-vulkan", "(Vulkan)")
-        configureMavenPublicationGitHub("vulkan", "vulkandebug", "-vulkan-debug", "(Vulkan, Debug)", "Debug")
+        configureMavenPublicationGitHub("vulkan", "vulkanrelease", "-vulkan", " (Vulkan)")
+        configureMavenPublicationGitHub("vulkan", "vulkandebug", "-vulkan-debug", " (Vulkan, Debug)", "Debug")
         configureMavenPublicationGitHub("opengl", "openglrelease", "-opengl", " (OpenGL ES)")
         configureMavenPublicationGitHub("opengl", "opengldebug", "-opengl-debug", " (OpenGL ES, Debug)", "Debug")
     }
