@@ -1,0 +1,86 @@
+name: android-release-github-packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 0.0.1)'
+        required: true
+        type: string
+      artifact_name:
+        description: 'Artifact name (e.g., nl.bartlouwers.mln)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  android-build-and-publish-github-packages:
+    runs-on: MapLibre_Native_Ubuntu_24_04_x84_16_core
+    defaults:
+      run:
+        working-directory: platform/android
+    env:
+      JOBS: 8
+      IS_LOCAL_DEVELOPMENT: false
+    strategy:
+      matrix:
+        RENDERER:
+          - vulkan
+          - opengl
+        BUILDTYPE:
+          - Release
+          - Debug
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: npm install
+        run: npm install --ignore-scripts
+
+      - name: Android nitpick
+        run: make run-android-nitpick
+
+      - name: Build package
+        run: RENDERER=${{ matrix.RENDERER }} BUILDTYPE=${{ matrix.BUILDTYPE }} make apackage
+
+      - name: Save buildtype to GITHUB_ENV
+        run: |
+          buildtype=${{ matrix.BUILDTYPE }}
+          # lowercase
+          echo buildtype=${buildtype,,} >> "$GITHUB_ENV"
+
+      - name: Publish to GitHub Packages
+        run: |
+          renderer=${{ matrix.RENDERER }}
+          if [ "$renderer" = "opengl" ]; then
+            ./gradlew :MapLibreAndroid:publishOpengl${{ env.buildtype }}PublicationToGitHubPackagesRepository \
+              -PpublishToGitHub=true \
+              -PgithubPackagesVersion=${{ inputs.version }} \
+              -PgithubPackagesArtifactId=${{ inputs.artifact_name }}
+            ./gradlew :MapLibreAndroid:publishDefault${{ env.buildtype }}PublicationToGitHubPackagesRepository \
+              -PpublishToGitHub=true \
+              -PgithubPackagesVersion=${{ inputs.version }} \
+              -PgithubPackagesArtifactId=${{ inputs.artifact_name }}
+          else
+            ./gradlew :MapLibreAndroid:publishVulkan${{ env.buildtype }}PublicationToGitHubPackagesRepository \
+              -PpublishToGitHub=true \
+              -PgithubPackagesVersion=${{ inputs.version }} \
+              -PgithubPackagesArtifactId=${{ inputs.artifact_name }}
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
