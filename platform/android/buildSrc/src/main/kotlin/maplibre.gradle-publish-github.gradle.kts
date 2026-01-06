@@ -123,9 +123,7 @@ if (project.hasProperty("publishToGitHub") && project.property("publishToGitHub"
         configureMavenPublicationGitHub("vulkan", "vulkandebug", "-vulkan-debug", " (Vulkan, Debug)", "Debug")
         configureMavenPublicationGitHub("opengl", "openglrelease", "-opengl", " (OpenGL ES)")
         configureMavenPublicationGitHub("opengl", "opengldebug", "-opengl-debug", " (OpenGL ES, Debug)", "Debug")
-    }
-
-    afterEvaluate {
+        
         android.libraryVariants.forEach { variant ->
             tasks.named("androidJavadocs", Javadoc::class.java).configure {
                 doFirst {

@@ -59,7 +59,7 @@ jobs:
       - name: Save buildtype to GITHUB_ENV
         run: |
           buildtype=${{ matrix.BUILDTYPE }}
-          # lowercase
+          # Convert buildtype to lowercase for Gradle task names
           echo buildtype=${buildtype,,} >> "$GITHUB_ENV"
 
       - name: Publish to GitHub Packages
