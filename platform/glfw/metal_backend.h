@@ -9,7 +9,7 @@
 
 class MetalBackend final : public mbgl::mtl::RendererBackend, public mbgl::gfx::Renderable {
 public:
-    MetalBackend(NSWindow *window);
+    MetalBackend(NSWindow *window, bool capFrameRate);
 
     mbgl::gfx::Renderable &getDefaultRenderable() override;
     void activate() override;

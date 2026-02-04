@@ -5,6 +5,7 @@
 
 #include <Metal/Metal.hpp>
 #include <QuartzCore/CAMetalLayer.hpp>
+#import <QuartzCore/CAMetalLayer.h>
 
 namespace mbgl {
 
@@ -12,12 +13,13 @@ using namespace mtl;
 
 class MetalRenderableResource final: public mtl::RenderableResource {
 public:
-    MetalRenderableResource(MetalBackend &backend):
+    MetalRenderableResource(MetalBackend &backend, bool capFrameRate):
     rendererBackend(backend),
     commandQueue(NS::TransferPtr(backend.getDevice()->newCommandQueue())),
     swapchain(NS::TransferPtr(CA::MetalLayer::layer()))
     {
         swapchain->setDevice(backend.getDevice().get());
+        ((__bridge CAMetalLayer*)swapchain.get()).displaySyncEnabled = capFrameRate;
     }
 
     void setBackendSize(mbgl::Size size_) {
@@ -115,9 +117,9 @@ private:
 
 } // namespace mbgl
 
-MetalBackend::MetalBackend(NSWindow *window):
+MetalBackend::MetalBackend(NSWindow *window, bool capFrameRate):
 mbgl::mtl::RendererBackend(mbgl::gfx::ContextMode::Unique),
-mbgl::gfx::Renderable(mbgl::Size{0, 0}, std::make_unique<mbgl::MetalRenderableResource>(*this))
+mbgl::gfx::Renderable(mbgl::Size{0, 0}, std::make_unique<mbgl::MetalRenderableResource>(*this, capFrameRate))
 {
     window.contentView.layer = (__bridge CALayer *)getDefaultRenderable().getResource<mbgl::MetalRenderableResource>().getSwapchain().get();
     window.contentView.wantsLayer = YES;

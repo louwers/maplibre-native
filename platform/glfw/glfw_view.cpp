@@ -297,7 +297,7 @@ GLFWView::GLFWView(bool fullscreen_,
     // https://www.glfw.org/docs/latest/quick.html#quick_swap_buffers
 
 #if defined(MLN_RENDER_BACKEND_OPENGL)
-    glfwSwapInterval(1);
+    if (!benchmark) glfwSwapInterval(1);
 #endif
 
     glfwGetWindowSize(window, &width, &height);
