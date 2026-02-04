@@ -136,6 +136,7 @@ private:
     float pixelRatio;
     std::optional<std::string> localIdeographFontFamily;
 
+    ThreadPoolHandle threadPoolHandle;
     TaggedScheduler threadPool;
     const MailboxData mailboxData;
 

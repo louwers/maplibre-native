@@ -16,8 +16,7 @@ using FramebufferID = uint32_t;
 
 class RendererBackend : public gfx::RendererBackend {
 public:
-    RendererBackend(gfx::ContextMode);
-    RendererBackend(gfx::ContextMode, const TaggedScheduler&);
+    RendererBackend(gfx::ContextMode, const ThreadPoolHandle&, const TaggedScheduler&);
     ~RendererBackend() override;
 
     /// Called prior to rendering to update the internally assumed OpenGL state.

@@ -47,14 +47,14 @@ static Immutable<style::GeoJSONOptions> convertGeoJSONOptions(jni::JNIEnv& env, 
 
 GeoJSONSource::GeoJSONSource(jni::JNIEnv& env, const jni::String& sourceId, const jni::Object<>& options)
     : Source(env,
-             std::make_unique<mbgl::style::GeoJSONSource>(jni::Make<std::string>(env, sourceId),
-                                                          convertGeoJSONOptions(env, options))),
-      converter(std::make_unique<Actor<FeatureConverter>>(Scheduler::GetBackground(),
+             std::make_unique<mbgl::style::GeoJSONSource>(
+                 threadPoolHandle, jni::Make<std::string>(env, sourceId), convertGeoJSONOptions(env, options))),
+      converter(std::make_unique<Actor<FeatureConverter>>(threadPoolHandle.get(),
                                                           source.as<style::GeoJSONSource>()->impl().getOptions())) {}
 
 GeoJSONSource::GeoJSONSource(jni::JNIEnv& env, mbgl::style::Source& coreSource, AndroidRendererFrontend* frontend)
     : Source(env, coreSource, createJavaPeer(env), frontend),
-      converter(std::make_unique<Actor<FeatureConverter>>(Scheduler::GetBackground(),
+      converter(std::make_unique<Actor<FeatureConverter>>(threadPoolHandle.get(),
                                                           source.as<style::GeoJSONSource>()->impl().getOptions())) {}
 
 GeoJSONSource::~GeoJSONSource() = default;

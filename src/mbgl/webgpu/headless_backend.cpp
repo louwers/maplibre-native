@@ -107,8 +107,12 @@ public:
     Size framebufferSize;
 };
 
-HeadlessBackend::HeadlessBackend(Size size_, SwapBehaviour swapBehaviour_, gfx::ContextMode mode)
-    : webgpu::RendererBackend(mode),
+HeadlessBackend::HeadlessBackend(const ThreadPoolHandle& threadPoolHandle,
+                                 Size size_,
+                                 SwapBehaviour swapBehaviour_,
+                                 gfx::ContextMode mode)
+    : webgpu::RendererBackend(
+          mode, threadPoolHandle, TaggedScheduler(threadPoolHandle.get(), util::SimpleIdentity::Empty)),
       gfx::HeadlessBackend(size_),
       impl(std::make_unique<Impl>()) {
     static_cast<void>(swapBehaviour_);
@@ -376,8 +380,11 @@ namespace gfx {
 
 template <>
 std::unique_ptr<gfx::HeadlessBackend> Backend::Create<Backend::Type::WebGPU>(
-    Size size, gfx::Renderable::SwapBehaviour swapBehaviour, gfx::ContextMode contextMode) {
-    return std::make_unique<webgpu::HeadlessBackend>(size, swapBehaviour, contextMode);
+    const ThreadPoolHandle& threadPoolHandle,
+    Size size,
+    gfx::Renderable::SwapBehaviour swapBehaviour,
+    gfx::ContextMode contextMode) {
+    return std::make_unique<webgpu::HeadlessBackend>(threadPoolHandle, size, swapBehaviour, contextMode);
 }
 
 } // namespace gfx

@@ -21,6 +21,7 @@
 #include <mbgl/style/style_impl.hpp>
 #include <mbgl/test/stub_file_source.hpp>
 #include <mbgl/test/stub_layer_observer.hpp>
+#include <mbgl/test/test_thread_pool.hpp>
 #include <mbgl/test/util.hpp>
 #include <mbgl/util/color.hpp>
 #include <mbgl/util/io.hpp>
@@ -292,7 +293,10 @@ TEST(Layer, DuplicateLayer) {
 
     // Setup style
     auto fileSource = std::make_shared<StubFileSource>();
-    Style::Impl style{fileSource, 1.0, {Scheduler::GetBackground(), {}}};
+    Style::Impl style{fileSource,
+                      1.0,
+                      TaggedScheduler(test::getThreadPoolHandle().get(), util::SimpleIdentity::Empty),
+                      test::getThreadPoolHandle()};
     style.loadJSON(util::read_file("test/fixtures/resources/style-unused-sources.json"));
 
     // Add initial layer
@@ -313,7 +317,10 @@ TEST(Layer, IncompatibleLayer) {
 
     // Setup style
     auto fileSource = std::make_shared<StubFileSource>();
-    Style::Impl style{fileSource, 1.0, {Scheduler::GetBackground(), {}}};
+    Style::Impl style{fileSource,
+                      1.0,
+                      TaggedScheduler(test::getThreadPoolHandle().get(), util::SimpleIdentity::Empty),
+                      test::getThreadPoolHandle()};
     style.loadJSON(util::read_file("test/fixtures/resources/style-unused-sources.json"));
 
     // Try to add duplicate

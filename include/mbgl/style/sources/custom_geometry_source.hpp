@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mbgl/actor/scheduler.hpp>
 #include <mbgl/style/source.hpp>
 #include <mbgl/util/geo.hpp>
 #include <mbgl/util/geojson.hpp>
@@ -12,7 +13,6 @@ class OverscaledTileID;
 class CanonicalTileID;
 template <class T>
 class Actor;
-class ThreadPool;
 
 namespace style {
 
@@ -40,6 +40,9 @@ public:
 
 public:
     CustomGeometrySource(std::string id, const CustomGeometrySource::Options& options);
+    CustomGeometrySource(std::string id,
+                         const CustomGeometrySource::Options& options,
+                         const ThreadPoolHandle& threadPoolHandle);
     ~CustomGeometrySource() final;
     void loadDescription(FileSource&) final;
     void setTileData(const CanonicalTileID&, const GeoJSON&);
@@ -55,7 +58,7 @@ protected:
     Mutable<Source::Impl> createMutable() const noexcept final;
 
 private:
-    std::shared_ptr<ThreadPool> threadPool;
+    ThreadPoolHandle threadPoolHandle;
     std::unique_ptr<Actor<CustomTileLoader>> loader;
     mapbox::base::WeakPtrFactory<Source> weakFactory{this};
     // Do not add members here, see `WeakPtrFactory`

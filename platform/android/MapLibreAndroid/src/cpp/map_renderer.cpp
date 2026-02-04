@@ -45,7 +45,7 @@ MapRenderer::MapRenderer(jni::JNIEnv& _env,
       pixelRatio(pixelRatio_),
       localIdeographFontFamily(localIdeographFontFamily_ ? jni::Make<std::string>(_env, localIdeographFontFamily_)
                                                          : std::optional<std::string>{}),
-      threadPool(Scheduler::GetBackground(), {}),
+      threadPool(threadPoolHandle.get(), {}),
       mailboxData(this) {}
 
 MapRenderer::MailboxData::MailboxData(Scheduler* scheduler_)

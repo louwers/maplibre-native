@@ -3,6 +3,7 @@
 #include <mbgl/actor/actor_ref.hpp>
 #include <mbgl/actor/scheduler.hpp>
 #include <mbgl/platform/settings.hpp>
+#include <mbgl/test/test_thread_pool.hpp>
 #include <mbgl/test/util.hpp>
 #include <mbgl/util/run_loop.hpp>
 #include <mbgl/util/timer.hpp>
@@ -140,7 +141,7 @@ TEST(Thread, Concurrency) {
         settings.set(platform::EXPERIMENTAL_THREAD_PRIORITY_WORKER, 0.5);
     }
 
-    Actor<TestWorker> poolWorker(Scheduler::GetBackground());
+    Actor<TestWorker> poolWorker(test::getThreadPoolHandle().get());
     auto poolWorkerRef = poolWorker.self();
 
     Thread<TestWorker> threadedObject("Test");
@@ -165,7 +166,7 @@ TEST(Thread, Concurrency) {
 TEST(Thread, ThreadPoolMessaging) {
     auto loop = std::make_shared<RunLoop>();
 
-    Actor<TestWorker> poolWorker(Scheduler::GetBackground());
+    Actor<TestWorker> poolWorker(test::getThreadPoolHandle().get());
     auto poolWorkerRef = poolWorker.self();
 
     Thread<TestWorker> threadedObject("Test");
@@ -336,7 +337,7 @@ TEST(Thread, DeleteBeforeChildStarts) {
 }
 
 TEST(Thread, PoolWait) {
-    auto pool = Scheduler::GetBackground();
+    auto pool = test::getThreadPoolHandle().get();
 
     constexpr int threadCount = 10;
     for (int i = 0; i < threadCount; ++i) {
@@ -347,7 +348,7 @@ TEST(Thread, PoolWait) {
 }
 
 TEST(Thread, PoolWaitRecursiveAdd) {
-    auto pool = Scheduler::GetBackground();
+    auto pool = test::getThreadPoolHandle().get();
 
     pool->schedule([&] {
         // Scheduled tasks can add more tasks
@@ -362,7 +363,7 @@ TEST(Thread, PoolWaitRecursiveAdd) {
 }
 
 TEST(Thread, PoolWaitAdd) {
-    auto pool = Scheduler::GetBackground();
+    auto pool = test::getThreadPoolHandle().get();
     auto seq = Scheduler::GetSequenced();
 
     // add new tasks every few milliseconds
@@ -398,7 +399,7 @@ TEST(Thread, PoolWaitAdd) {
 
 TEST(Thread, PoolWaitException) {
     const auto id = util::SimpleIdentity{};
-    auto pool = Scheduler::GetBackground();
+    auto pool = test::getThreadPoolHandle().get();
 
     std::atomic<int> caught{0};
     pool->setExceptionHandler([&](const auto) { caught++; });
@@ -422,7 +423,7 @@ TEST(Thread, PoolWaitException) {
 
 #if defined(NDEBUG)
 TEST(Thread, WrongThread) {
-    auto pool = Scheduler::GetBackground();
+    auto pool = test::getThreadPoolHandle().get();
 
     // Asserts in debug builds, silently ignored in release.
     pool->schedule([&] { pool->waitForEmpty(); });
@@ -444,8 +445,8 @@ std::function<void()> makeCounterThread(TaggedScheduler& pool,
 }
 
 TEST(Thread, TaggedPools) {
-    TaggedScheduler poolTag1{Scheduler::GetBackground(), {}};
-    TaggedScheduler poolTag2{Scheduler::GetBackground(), {}};
+    TaggedScheduler poolTag1{test::getThreadPoolHandle().get(), {}};
+    TaggedScheduler poolTag2{test::getThreadPoolHandle().get(), {}};
 
     std::atomic<bool> stopTasks1{false};
     std::atomic<bool> stopTasks2{false};

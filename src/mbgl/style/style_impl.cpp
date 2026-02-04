@@ -28,8 +28,13 @@
 namespace mbgl {
 namespace style {
 
-Style::Impl::Impl(std::shared_ptr<FileSource> fileSource_, float pixelRatio, const TaggedScheduler& threadPool_)
+Style::Impl::Impl(std::shared_ptr<FileSource> fileSource_,
+                  float pixelRatio,
+                  const TaggedScheduler& threadPool_,
+                  const ThreadPoolHandle& threadPoolHandle_)
     : fileSource(std::move(fileSource_)),
+      threadPool(threadPool_),
+      threadPoolHandle(threadPoolHandle_),
       spriteLoader(std::make_unique<SpriteLoader>(pixelRatio, threadPool_)),
       light(std::make_unique<Light>()),
       observer(&nullObserver) {
@@ -85,7 +90,7 @@ void Style::Impl::loadURL(const std::string& url_) {
 }
 
 void Style::Impl::parse(const std::string& json_) {
-    Parser parser;
+    Parser parser(threadPoolHandle);
 
     if (auto error = parser.parse(json_)) {
         std::string message = "Failed to parse style: " + util::toString(error);

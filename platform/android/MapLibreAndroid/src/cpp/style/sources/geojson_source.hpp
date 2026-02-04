@@ -78,7 +78,7 @@ private:
     jni::Local<jni::Object<Source>> createJavaPeer(jni::JNIEnv&);
     std::unique_ptr<Update> awaitingUpdate;
     std::unique_ptr<Update> update;
-    std::shared_ptr<ThreadPool> threadPool;
+    ThreadPoolHandle threadPoolHandle;
     std::unique_ptr<Actor<FeatureConverter>> converter;
 
     template <class JNIType>

@@ -34,7 +34,8 @@ public:
           map(frontend,
               MapObserver::nullObserver(),
               MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
-              ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets")) {
+              ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"),
+              frontend.getThreadPoolHandle()) {
         map.jumpTo(cameraOptions);
 
         map.setDebug(MapDebugOptions::TileBorders);

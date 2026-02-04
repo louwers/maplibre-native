@@ -95,8 +95,10 @@ bool checkAvailability(const std::vector<T>& availableValues,
 
 } // namespace
 
-RendererBackend::RendererBackend(const gfx::ContextMode contextMode_)
-    : gfx::RendererBackend(contextMode_),
+RendererBackend::RendererBackend(const gfx::ContextMode contextMode_,
+                                 const ThreadPoolHandle& threadPoolHandle_,
+                                 const TaggedScheduler& threadPool_)
+    : gfx::RendererBackend(contextMode_, threadPoolHandle_, threadPool_),
       allocator(nullptr) {}
 
 RendererBackend::~RendererBackend() {

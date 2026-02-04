@@ -1,6 +1,7 @@
 #include <mbgl/actor/actor.hpp>
 
 #include <mbgl/actor/scheduler.hpp>
+#include <mbgl/test/test_thread_pool.hpp>
 #include <mbgl/test/util.hpp>
 
 #include <future>
@@ -25,7 +26,7 @@ TEST(ActorRef, CanOutliveActor) {
     bool died = false;
 
     ActorRef<TestActorRef> test = [&]() {
-        return Actor<TestActorRef>(Scheduler::GetBackground(), std::ref(died)).self();
+        return Actor<TestActorRef>(test::getThreadPoolHandle().get(), std::ref(died)).self();
     }();
 
     EXPECT_TRUE(died);
@@ -43,7 +44,7 @@ TEST(ActorRef, Ask) {
         int echo(int i) { return i; }
     };
 
-    Actor<TestActorRef> actor(Scheduler::GetBackground());
+    Actor<TestActorRef> actor(test::getThreadPoolHandle().get());
     ActorRef<TestActorRef> ref = actor.self();
 
     EXPECT_EQ(20, ref.ask(&TestActorRef::gimme).get());
@@ -63,7 +64,7 @@ TEST(ActorRef, AskVoid) {
     };
 
     bool executed = false;
-    Actor<TestActorRef> actor(Scheduler::GetBackground(), executed);
+    Actor<TestActorRef> actor(test::getThreadPoolHandle().get(), executed);
     ActorRef<TestActorRef> ref = actor.self();
 
     ref.ask(&TestActorRef::doIt).get();
@@ -86,7 +87,7 @@ TEST(ActorRef, AskOnDestroyedActor) {
     };
     bool died = false;
 
-    auto actor = std::make_unique<Actor<TestActorRef>>(Scheduler::GetBackground(), died);
+    auto actor = std::make_unique<Actor<TestActorRef>>(test::getThreadPoolHandle().get(), died);
     ActorRef<TestActorRef> ref = actor->self();
 
     actor.reset();

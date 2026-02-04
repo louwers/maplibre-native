@@ -26,7 +26,7 @@ class Context;
 
 class RendererBackend : public gfx::RendererBackend {
 public:
-    explicit RendererBackend(gfx::ContextMode);
+    RendererBackend(gfx::ContextMode, const ThreadPoolHandle&, const TaggedScheduler&);
     ~RendererBackend() override;
 
     // getDefaultRenderable() is pure virtual - must be implemented by platform backends

@@ -16,10 +16,12 @@ namespace gfx {
 class HeadlessBackend : public gfx::Renderable {
 public:
     // Factory.
-    static std::unique_ptr<HeadlessBackend> Create(const Size size = {256, 256},
+    static std::unique_ptr<HeadlessBackend> Create(const ThreadPoolHandle& threadPoolHandle,
+                                                   const Size size = {256, 256},
                                                    SwapBehaviour swapBehavior = SwapBehaviour::NoFlush,
                                                    const gfx::ContextMode contextMode = gfx::ContextMode::Unique) {
-        return Backend::Create<HeadlessBackend, Size, SwapBehaviour, gfx::ContextMode>(size, swapBehavior, contextMode);
+        return Backend::Create<HeadlessBackend, const ThreadPoolHandle&, Size, SwapBehaviour, gfx::ContextMode>(
+            threadPoolHandle, size, swapBehavior, contextMode);
     }
 
     virtual PremultipliedImage readStillImage() = 0;

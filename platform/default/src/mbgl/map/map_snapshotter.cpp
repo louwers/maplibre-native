@@ -57,7 +57,9 @@ private:
 class SnapshotterRenderer final : public RendererObserver {
 public:
     SnapshotterRenderer(Size size, float pixelRatio, const std::optional<std::string>& localFontFamily)
-        : frontend(size,
+        : threadPoolHandle(ThreadPoolHandle::create()),
+          frontend(threadPoolHandle,
+                   size,
                    pixelRatio,
                    gfx::HeadlessBackend::SwapBehaviour::NoFlush,
                    gfx::ContextMode::Unique,
@@ -129,7 +131,10 @@ public:
 
     const TaggedScheduler& getThreadPool() const { return frontend.getThreadPool(); }
 
+    const ThreadPoolHandle& getThreadPoolHandle() const { return threadPoolHandle; }
+
 private:
+    ThreadPoolHandle threadPoolHandle;
     PremultipliedImage stillImage;
     bool hasPendingStillImageRequest = false;
     std::shared_ptr<RendererObserver> rendererObserver;
@@ -171,6 +176,10 @@ public:
         return renderer->actor().ask(&SnapshotterRenderer::getThreadPool).get();
     }
 
+    const ThreadPoolHandle& getThreadPoolHandle() const {
+        return renderer->actor().ask(&SnapshotterRenderer::getThreadPoolHandle).get();
+    }
+
 private:
     std::shared_ptr<UpdateParameters> updateParameters;
     const std::unique_ptr<util::Thread<SnapshotterRenderer>> renderer;
@@ -190,6 +199,7 @@ public:
               *this,
               MapOptions().withMapMode(MapMode::Static).withSize(size).withPixelRatio(pixelRatio),
               resourceOptions,
+              frontend.getThreadPoolHandle(),
               clientOptions),
           region(LatLngBounds::empty()),
           regionInsets{0, 0, 0, 0} {}

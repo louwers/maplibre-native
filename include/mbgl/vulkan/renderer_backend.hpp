@@ -33,7 +33,7 @@ namespace vulkan {
 
 class RendererBackend : public gfx::RendererBackend {
 public:
-    RendererBackend(gfx::ContextMode);
+    RendererBackend(gfx::ContextMode, const ThreadPoolHandle&, const TaggedScheduler&);
     ~RendererBackend() override;
 
     /// One-time shader initialization

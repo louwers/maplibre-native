@@ -48,10 +48,12 @@ public:
     std::unique_ptr<gfx::OffscreenTexture> offscreenTexture;
 };
 
-HeadlessBackend::HeadlessBackend(const Size size_,
+HeadlessBackend::HeadlessBackend(const ThreadPoolHandle& threadPoolHandle,
+                                 const Size size_,
                                  gfx::HeadlessBackend::SwapBehaviour swapBehaviour_,
                                  const gfx::ContextMode contextMode_)
-    : mbgl::mtl::RendererBackend(contextMode_),
+    : mbgl::mtl::RendererBackend(
+          contextMode_, threadPoolHandle, TaggedScheduler(threadPoolHandle.get(), util::SimpleIdentity::Empty)),
       mbgl::gfx::HeadlessBackend(size_),
       swapBehaviour(swapBehaviour_) {}
 
@@ -100,8 +102,11 @@ namespace gfx {
 
 template <>
 std::unique_ptr<gfx::HeadlessBackend> Backend::Create<gfx::Backend::Type::Metal>(
-    const Size size, gfx::HeadlessBackend::SwapBehaviour swapBehavior, const gfx::ContextMode contextMode) {
-    return std::make_unique<mtl::HeadlessBackend>(size, swapBehavior, contextMode);
+    const ThreadPoolHandle& threadPoolHandle,
+    const Size size,
+    gfx::HeadlessBackend::SwapBehaviour swapBehavior,
+    const gfx::ContextMode contextMode) {
+    return std::make_unique<mtl::HeadlessBackend>(threadPoolHandle, size, swapBehavior, contextMode);
 }
 
 } // namespace gfx

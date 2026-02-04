@@ -10,8 +10,11 @@
 namespace mbgl {
 namespace style {
 
-Style::Style(std::shared_ptr<FileSource> fileSource, float pixelRatio, const TaggedScheduler& threadPool_)
-    : impl(std::make_unique<Impl>(std::move(fileSource), pixelRatio, threadPool_)) {}
+Style::Style(std::shared_ptr<FileSource> fileSource,
+             float pixelRatio,
+             const TaggedScheduler& threadPool_,
+             const ThreadPoolHandle& threadPoolHandle_)
+    : impl(std::make_unique<Impl>(std::move(fileSource), pixelRatio, threadPool_, threadPoolHandle_)) {}
 
 Style::~Style() = default;
 

@@ -36,8 +36,10 @@
 namespace mbgl {
 namespace mtl {
 
-RendererBackend::RendererBackend(const gfx::ContextMode contextMode_)
-    : gfx::RendererBackend(contextMode_),
+RendererBackend::RendererBackend(const gfx::ContextMode contextMode_,
+                                 const ThreadPoolHandle& threadPoolHandle_,
+                                 const TaggedScheduler& threadPool_)
+    : gfx::RendererBackend(contextMode_, threadPoolHandle_, threadPool_),
       device(NS::TransferPtr(MTL::CreateSystemDefaultDevice())),
       commandQueue(NS::TransferPtr(device->newCommandQueue())) {
     assert(device);

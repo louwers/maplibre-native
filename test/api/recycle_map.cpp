@@ -26,7 +26,8 @@ TEST(API, RecycleMapUpdateImages) {
         frontend,
         MapObserver::nullObserver(),
         std::make_shared<StubFileSource>(ResourceOptions::Default(), ClientOptions()),
-        MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()));
+        MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
+        frontend.getThreadPoolHandle());
 
     EXPECT_TRUE(map);
 

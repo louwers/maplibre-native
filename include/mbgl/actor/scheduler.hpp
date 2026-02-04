@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <type_traits>
 
 namespace mbgl {
@@ -84,14 +85,6 @@ public:
     static Scheduler* GetCurrent(bool init = true);
     static void SetCurrent(Scheduler*);
 
-    /// Get the scheduler for asynchronous tasks. This method
-    /// will lazily initialize a shared worker pool when ran
-    /// from the first time.
-    /// The scheduled tasks might run in parallel on different
-    /// threads.
-    /// TODO : Rename to GetPool()
-    [[nodiscard]] static std::shared_ptr<Scheduler> GetBackground();
-
     /// Get the *sequenced* scheduler for asynchronous tasks.
     /// Unlike the method above, the returned scheduler
     /// (once stored) represents a single thread, thus each
@@ -122,13 +115,45 @@ private:
     }
 };
 
+/// @brief ThreadPoolHandle provides lazy-initialized access to a shared background thread pool.
+/// Multiple components can share the same handle, and the underlying ThreadPool
+/// will be created on first use and destroyed when all references are released.
+/// This class is lightweight, copyable, and thread-safe.
+class ThreadPoolHandle {
+public:
+    /// Creates a new handle with its own internal state.
+
+    /// Copy constructor - shares the same underlying pool
+    ThreadPoolHandle(const ThreadPoolHandle&) = default;
+    ThreadPoolHandle& operator=(const ThreadPoolHandle&) = default;
+
+    /// Move constructor
+    ThreadPoolHandle(ThreadPoolHandle&&) noexcept = default;
+    ThreadPoolHandle& operator=(ThreadPoolHandle&&) noexcept = default;
+
+    /// Get a shared_ptr to the scheduler. Creates the ThreadPool if needed.
+    /// Thread-safe - can be called from multiple threads.
+    std::shared_ptr<Scheduler> get() const;
+
+    static ThreadPoolHandle create();
+
+private:
+    struct Impl {
+        std::weak_ptr<Scheduler> weak;
+        mutable std::mutex mtx;
+    };
+    std::shared_ptr<Impl> impl;
+
+    ThreadPoolHandle();
+};
+
 /// @brief A TaggedScheduler pairs a scheduler with an identifier. Tasklets submitted via a TaggedScheduler
 /// are bucketed with the tag to enable queries on tasks related to that tag. This allows multiple map
 /// instances to all use the same scheduler and await processing of all their tasks prior to map deletion.
 class TaggedScheduler {
 public:
     TaggedScheduler() = delete;
-    TaggedScheduler(std::shared_ptr<Scheduler> scheduler_, const util::SimpleIdentity tag_)
+    explicit TaggedScheduler(std::shared_ptr<Scheduler> scheduler_, const util::SimpleIdentity tag_)
         : tag(tag_),
           scheduler(std::move(scheduler_)) {}
     TaggedScheduler(const TaggedScheduler&) = default;

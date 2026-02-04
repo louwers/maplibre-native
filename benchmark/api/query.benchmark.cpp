@@ -33,7 +33,8 @@ public:
     Map map{frontend,
             MapObserver::nullObserver(),
             MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
-            ResourceOptions().withCachePath("benchmark/fixtures/api/cache.db").withAssetPath(".").withApiKey("foobar")};
+            ResourceOptions().withCachePath("benchmark/fixtures/api/cache.db").withAssetPath(".").withApiKey("foobar"),
+            frontend.getThreadPoolHandle()};
     ScreenBox box{{0, 0}, {1000, 1000}};
 };
 

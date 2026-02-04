@@ -149,7 +149,7 @@ OfflineRegionStatus OfflineDownload::getStatus() const {
         return *result;
     }
 
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(*styleResponse->data);
 
     result->requiredResourceCountIsPrecise = true;
@@ -251,7 +251,7 @@ void OfflineDownload::activateDownload() {
     ensureResource(std::move(styleResource), [&](const Response& styleResponse) {
         status.requiredResourceCountIsPrecise = true;
 
-        style::Parser parser;
+        style::Parser parser(ThreadPoolHandle::create());
         parser.parse(*styleResponse.data);
 
         auto tileServerOptions = onlineFileSource.getResourceOptions().tileServerOptions();

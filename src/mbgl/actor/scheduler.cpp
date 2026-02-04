@@ -32,16 +32,20 @@ Scheduler* Scheduler::GetCurrent(bool init) {
     return localScheduler;
 }
 
-// static
-std::shared_ptr<Scheduler> Scheduler::GetBackground() {
-    static std::weak_ptr<Scheduler> weak;
-    static std::mutex mtx;
+ThreadPoolHandle::ThreadPoolHandle()
+    : impl(std::make_shared<Impl>()) {}
 
-    std::scoped_lock lock(mtx);
-    std::shared_ptr<Scheduler> scheduler = weak.lock();
+// static
+ThreadPoolHandle ThreadPoolHandle::create() {
+    return ThreadPoolHandle{};
+}
+
+std::shared_ptr<Scheduler> ThreadPoolHandle::get() const {
+    std::scoped_lock lock(impl->mtx);
+    std::shared_ptr<Scheduler> scheduler = impl->weak.lock();
 
     if (!scheduler) {
-        weak = scheduler = std::make_shared<ThreadPool>();
+        impl->weak = scheduler = std::make_shared<ThreadPool>();
     }
 
     return scheduler;

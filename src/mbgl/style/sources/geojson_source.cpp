@@ -21,8 +21,14 @@ Immutable<GeoJSONOptions> GeoJSONOptions::defaultOptions() {
 }
 
 GeoJSONSource::GeoJSONSource(std::string id, Immutable<GeoJSONOptions> options)
+    : GeoJSONSource(std::move(id), ThreadPoolHandle::create(), std::move(options)) {}
+
+GeoJSONSource::GeoJSONSource(std::string id,
+                             const ThreadPoolHandle& threadPoolHandle_,
+                             Immutable<GeoJSONOptions> options)
     : Source(makeMutable<Impl>(std::move(id), std::move(options))),
-      sequencedScheduler(Scheduler::GetSequenced()) {}
+      sequencedScheduler(Scheduler::GetSequenced()),
+      threadPoolHandle(threadPoolHandle_) {}
 
 GeoJSONSource::~GeoJSONSource() = default;
 
@@ -79,7 +85,7 @@ void GeoJSONSource::loadDescription(FileSource& fileSource) {
         } else {
             // Note: This task appears to be safe enough to schedule on the generic background queue.
             // This task does not reference other objects who's lifetimes are coupled with a map.
-            Scheduler::GetBackground()->scheduleAndReplyValue(
+            threadPoolHandle.get()->scheduleAndReplyValue(
                 util::SimpleIdentity::Empty,
                 /* makeImplInBackground */
                 [currentImpl = baseImpl,

@@ -917,7 +917,7 @@ TestOperations parseTestOperations(TestMetadata& metadata) {
             result.emplace_back([sourceName, json = serializeJsonValue(operationArray[2])](TestContext& ctx) {
                 mbgl::style::conversion::Error error;
                 auto converted = mbgl::style::conversion::convertJSON<std::unique_ptr<mbgl::style::Source>>(
-                    json, error, sourceName);
+                    json, error, sourceName, mbgl::ThreadPoolHandle::create());
                 if (!converted) {
                     ctx.getMetadata().errorMessage = std::string("Unable to convert source: ") + error.message;
                     return false;

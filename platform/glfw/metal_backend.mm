@@ -1,5 +1,6 @@
 #include "metal_backend.h"
 
+#include <mbgl/actor/scheduler.hpp>
 #include <mbgl/mtl/mtl_fwd.hpp>
 #include <mbgl/mtl/renderable_resource.hpp>
 
@@ -116,7 +117,9 @@ private:
 } // namespace mbgl
 
 MetalBackend::MetalBackend(NSWindow *window):
-mbgl::mtl::RendererBackend(mbgl::gfx::ContextMode::Unique),
+mbgl::mtl::RendererBackend(mbgl::gfx::ContextMode::Unique,
+                          mbgl::ThreadPoolHandle::create(),
+                          mbgl::TaggedScheduler(mbgl::ThreadPoolHandle::create().get(), mbgl::util::SimpleIdentity::Empty)),
 mbgl::gfx::Renderable(mbgl::Size{0, 0}, std::make_unique<mbgl::MetalRenderableResource>(*this))
 {
     window.contentView.layer = (__bridge CALayer *)getDefaultRenderable().getResource<mbgl::MetalRenderableResource>().getSwapchain().get();

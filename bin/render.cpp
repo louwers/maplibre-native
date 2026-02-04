@@ -113,7 +113,8 @@ int main(int argc, char* argv[]) {
             .withCachePath(cache_file)
             .withAssetPath(asset_root)
             .withApiKey(apikey)
-            .withTileServerOptions(mapTilerConfiguration));
+            .withTileServerOptions(mapTilerConfiguration),
+        frontend.getThreadPoolHandle());
 
     if (style.find("://") == std::string::npos) {
         style = std::string("file://") + style;

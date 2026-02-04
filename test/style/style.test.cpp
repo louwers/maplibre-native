@@ -2,6 +2,7 @@
 #include <mbgl/test/util.hpp>
 #include <mbgl/test/stub_file_source.hpp>
 #include <mbgl/test/fixture_log_observer.hpp>
+#include <mbgl/test/test_thread_pool.hpp>
 
 #include <mbgl/style/style_impl.hpp>
 #include <mbgl/style/source_impl.hpp>
@@ -25,7 +26,10 @@ TEST(Style, Properties) {
     util::RunLoop loop;
 
     auto fileSource = std::make_shared<StubFileSource>();
-    Style::Impl style{fileSource, 1.0, {Scheduler::GetBackground(), {}}};
+    Style::Impl style{fileSource,
+                      1.0,
+                      TaggedScheduler(test::getThreadPoolHandle().get(), util::SimpleIdentity::Empty),
+                      test::getThreadPoolHandle()};
 
     style.loadJSON(R"STYLE({"name": "Test"})STYLE");
     ASSERT_EQ("Test", style.getName());
@@ -75,7 +79,10 @@ TEST(Style, DuplicateSource) {
     util::RunLoop loop;
 
     auto fileSource = std::make_shared<StubFileSource>();
-    Style::Impl style{fileSource, 1.0, {Scheduler::GetBackground(), {}}};
+    Style::Impl style{fileSource,
+                      1.0,
+                      TaggedScheduler(test::getThreadPoolHandle().get(), util::SimpleIdentity::Empty),
+                      test::getThreadPoolHandle()};
 
     style.loadJSON(util::read_file("test/fixtures/resources/style-unused-sources.json"));
 
@@ -95,7 +102,10 @@ TEST(Style, RemoveSourceInUse) {
     FixtureLog log;
 
     auto fileSource = std::make_shared<StubFileSource>();
-    Style::Impl style{fileSource, 1.0, {Scheduler::GetBackground(), {}}};
+    Style::Impl style{fileSource,
+                      1.0,
+                      TaggedScheduler(test::getThreadPoolHandle().get(), util::SimpleIdentity::Empty),
+                      test::getThreadPoolHandle()};
 
     style.loadJSON(util::read_file("test/fixtures/resources/style-unused-sources.json"));
     style.addSource(std::make_unique<VectorSource>("sourceId", "mptiler://tiles/contours"));
@@ -125,7 +135,10 @@ TEST(Style, LoadJSONCancelsPendingLoadURL) {
 
     auto fileSource = std::make_shared<::StubFileSource>(
         ResourceOptions::Default(), ClientOptions(), StubFileSource::ResponseType::Manual);
-    Style::Impl style{fileSource, 1.0, {Scheduler::GetBackground(), {}}};
+    Style::Impl style{fileSource,
+                      1.0,
+                      TaggedScheduler(test::getThreadPoolHandle().get(), util::SimpleIdentity::Empty),
+                      test::getThreadPoolHandle()};
 
     // Start loading a URL (this will be pending)
     auto url = "http://some-url";
@@ -160,7 +173,10 @@ TEST(Style, LoadJSONCancelsPendingLoadURL) {
 TEST(Style, SourceImplsOrder) {
     util::RunLoop loop;
     auto fileSource = std::make_shared<StubFileSource>();
-    Style::Impl style{fileSource, 1.0, {Scheduler::GetBackground(), {}}};
+    Style::Impl style{fileSource,
+                      1.0,
+                      TaggedScheduler(test::getThreadPoolHandle().get(), util::SimpleIdentity::Empty),
+                      test::getThreadPoolHandle()};
 
     style.addSource(std::make_unique<VectorSource>("c", "mptiler://tiles/contours"));
     style.addSource(std::make_unique<VectorSource>("b", "mptiler://tiles/contours"));
@@ -182,7 +198,10 @@ TEST(Style, SourceImplsOrder) {
 TEST(Style, AddRemoveImage) {
     util::RunLoop loop;
     auto fileSource = std::make_shared<StubFileSource>();
-    Style::Impl style{fileSource, 1.0, {Scheduler::GetBackground(), {}}};
+    Style::Impl style{fileSource,
+                      1.0,
+                      TaggedScheduler(test::getThreadPoolHandle().get(), util::SimpleIdentity::Empty),
+                      test::getThreadPoolHandle()};
     style.addImage(std::make_unique<style::Image>("one", PremultipliedImage({16, 16}), 2.0f));
     style.addImage(std::make_unique<style::Image>("two", PremultipliedImage({16, 16}), 2.0f));
     style.addImage(std::make_unique<style::Image>("three", PremultipliedImage({16, 16}), 2.0f));
@@ -199,7 +218,10 @@ TEST(Style, AddRemoveRemoveImage) {
     // regression test for https://github.com/mapbox/mapbox-gl-native/pull/16391
     util::RunLoop loop;
     auto fileSource = std::make_shared<StubFileSource>();
-    Style::Impl style{fileSource, 1.0, {Scheduler::GetBackground(), {}}};
+    Style::Impl style{fileSource,
+                      1.0,
+                      TaggedScheduler(test::getThreadPoolHandle().get(), util::SimpleIdentity::Empty),
+                      test::getThreadPoolHandle()};
     style.addImage(std::make_unique<style::Image>("one", PremultipliedImage({16, 16}), 2.0f));
     style.addImage(std::make_unique<style::Image>("two", PremultipliedImage({16, 16}), 2.0f));
     style.addImage(std::make_unique<style::Image>("three", PremultipliedImage({16, 16}), 2.0f));

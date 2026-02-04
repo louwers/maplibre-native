@@ -7,6 +7,7 @@
 #include <mbgl/storage/database_file_source.hpp>
 #include <mbgl/storage/file_source_manager.hpp>
 #include <mbgl/style/style.hpp>
+#include <mbgl/actor/scheduler.hpp>
 #include <mbgl/util/action_journal.hpp>
 #include <mbgl/util/action_journal_options.hpp>
 #include <mbgl/util/logging.hpp>
@@ -148,10 +149,13 @@ int main(int argc, char* argv[]) {
         mbgl::Log::Info(mbgl::Event::General, "Action journal enabled. Logs will be written to: " + actionJournalDir);
     }
 
+    auto threadPoolHandle = mbgl::ThreadPoolHandle::create();
+
     mbgl::Map map(rendererFrontend,
                   *view,
                   mbgl::MapOptions().withSize(view->getSize()).withPixelRatio(view->getPixelRatio()),
                   resourceOptions,
+                  threadPoolHandle,
                   clientOptions,
                   actionJournalOptions);
 

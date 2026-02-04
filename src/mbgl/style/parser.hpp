@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mbgl/actor/scheduler.hpp>
 #include <mbgl/style/layer.hpp>
 #include <mbgl/style/sprite.hpp>
 #include <mbgl/style/source.hpp>
@@ -26,6 +27,7 @@ using StyleParseResult = std::exception_ptr;
 
 class Parser {
 public:
+    Parser(const ThreadPoolHandle& threadPoolHandle_);
     ~Parser();
 
     StyleParseResult parse(const std::string&);
@@ -59,6 +61,7 @@ private:
     void parseLayers(const JSValue&);
     void parseLayer(const std::string& id, const JSValue&, std::unique_ptr<Layer>&);
 
+    ThreadPoolHandle threadPoolHandle;
     std::unordered_map<std::string, std::pair<const JSValue&, std::unique_ptr<Layer>>> layersMap;
 
     // Store a stack of layer IDs we're parsing right now. This is to prevent reference cycles.

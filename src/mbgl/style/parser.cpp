@@ -26,6 +26,9 @@
 namespace mbgl {
 namespace style {
 
+Parser::Parser(const ThreadPoolHandle& threadPoolHandle_)
+    : threadPoolHandle(threadPoolHandle_) {}
+
 Parser::~Parser() = default;
 
 StyleParseResult Parser::parse(const std::string& json) {
@@ -247,7 +250,7 @@ void Parser::parseSources(const JSValue& value) {
 
         conversion::Error error;
         std::optional<std::unique_ptr<Source>> source = conversion::convert<std::unique_ptr<Source>>(
-            property.value, error, id);
+            property.value, error, id, threadPoolHandle);
         if (!source) {
             Log::Warning(Event::ParseStyle, error.message);
             continue;

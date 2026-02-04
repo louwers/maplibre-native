@@ -3,6 +3,7 @@
 #include <mbgl/renderer/image_manager.hpp>
 #include <mbgl/style/style.hpp>
 #include <mbgl/test/fake_file_source.hpp>
+#include <mbgl/test/test_thread_pool.hpp>
 #include <mbgl/text/glyph_manager.hpp>
 #include <mbgl/util/run_loop.hpp>
 #include <mbgl/gfx/dynamic_texture_atlas.hpp>
@@ -33,7 +34,7 @@ public:
     style::Style style;
 
     VectorTileTest()
-        : threadPool(Scheduler::GetBackground(), uniqueID),
+        : threadPool(test::getThreadPoolHandle().get(), uniqueID),
           tileParameters{.pixelRatio = 1.0,
                          .debugOptions = MapDebugOptions(),
                          .transformState = transformState,
@@ -45,7 +46,7 @@ public:
                          .prefetchZoomDelta = 0,
                          .threadPool = threadPool,
                          .dynamicTextureAtlas = dynamicTextureAtlas},
-          style{fileSource, 1, threadPool} {}
+          style{fileSource, 1, threadPool, test::getThreadPoolHandle()} {}
 
     ~VectorTileTest() {
         // Ensure that deferred releases are complete before cleaning up

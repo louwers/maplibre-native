@@ -47,7 +47,8 @@ void logStyleDependencies(EventSeverity severity, Event event, const style::Styl
 Map::Impl::Impl(RendererFrontend& frontend_,
                 MapObserver& observer_,
                 std::shared_ptr<FileSource> fileSource_,
-                const MapOptions& mapOptions)
+                const MapOptions& mapOptions,
+                const ThreadPoolHandle& threadPoolHandle)
     : observer(observer_),
       rendererFrontend(frontend_),
       transform(*this, mapOptions.constrainMode(), mapOptions.viewportMode()),
@@ -55,7 +56,7 @@ Map::Impl::Impl(RendererFrontend& frontend_,
       pixelRatio(mapOptions.pixelRatio()),
       crossSourceCollisions(mapOptions.crossSourceCollisions()),
       fileSource(std::move(fileSource_)),
-      style(std::make_unique<style::Style>(fileSource, pixelRatio, frontend_.getThreadPool())),
+      style(std::make_unique<style::Style>(fileSource, pixelRatio, frontend_.getThreadPool(), threadPoolHandle)),
       annotationManager(*style) {
     transform.setNorthOrientation(mapOptions.northOrientation());
     style->impl->setObserver(this);
@@ -321,7 +322,7 @@ bool Map::Impl::isRenderingStatsViewEnabled() const {
 void Map::Impl::enableRenderingStatsView(bool value) {
     if (value) {
         if (!renderingStatsView) {
-            renderingStatsView = std::make_unique<gfx::RenderingStatsView>();
+            renderingStatsView = std::make_unique<gfx::RenderingStatsView>(ThreadPoolHandle::create());
             if (style) {
                 renderingStatsView->create(*style);
             }

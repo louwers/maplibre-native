@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <sstream>
 #include <iomanip>
+#include "mbgl/actor/scheduler.hpp"
 
 namespace mbgl {
 namespace gfx {
@@ -132,7 +133,7 @@ void RenderingStatsView::create(style::Style& style) {
             source->setTileData(tileID, features);
         };
 
-        style.addSource(std::make_unique<style::CustomGeometrySource>(sourceID, sourceOptions));
+        style.addSource(std::make_unique<style::CustomGeometrySource>(sourceID, sourceOptions, threadPoolHandle));
     }
 
     if (!style.getLayer(layerID)) {

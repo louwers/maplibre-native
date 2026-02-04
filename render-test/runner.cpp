@@ -704,6 +704,7 @@ TestRunner::Impl::Impl(const TestMetadata& metadata,
               .withPixelRatio(metadata.pixelRatio)
               .withCrossSourceCollisions(metadata.crossSourceCollisions),
           resourceOptions,
+          frontend.getThreadPoolHandle(),
           clientOptions) {
     if (metadata.maxPitch) {
         map.setBounds(BoundOptions().withMaxPitch(*metadata.maxPitch));

@@ -23,7 +23,10 @@ class Layer;
 
 class Style {
 public:
-    Style(std::shared_ptr<FileSource>, float pixelRatio, const TaggedScheduler& threadPool_);
+    Style(std::shared_ptr<FileSource>,
+          float pixelRatio,
+          const TaggedScheduler& threadPool_,
+          const ThreadPoolHandle& threadPoolHandle_);
     ~Style();
 
     void loadJSON(const std::string&);

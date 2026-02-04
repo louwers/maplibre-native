@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mbgl/actor/scheduler.hpp>
 #include <mbgl/util/chrono.hpp>
 #include <mbgl/map/bound_options.hpp>
 #include <mbgl/map/map_observer.hpp>
@@ -42,6 +43,7 @@ public:
                  MapObserver&,
                  const MapOptions&,
                  const ResourceOptions&,
+                 const ThreadPoolHandle&,
                  const ClientOptions& = ClientOptions(),
                  const util::ActionJournalOptions& = util::ActionJournalOptions());
     ~Map();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mbgl/actor/scheduler.hpp>
 #include <mbgl/style/source.hpp>
 #include <mbgl/style/conversion.hpp>
 
@@ -15,7 +16,8 @@ struct Converter<std::unique_ptr<Source>> {
 public:
     std::optional<std::unique_ptr<Source>> operator()(const Convertible& value,
                                                       Error& error,
-                                                      const std::string& id) const;
+                                                      const std::string& id,
+                                                      const ThreadPoolHandle& threadPoolHandle) const;
 };
 
 } // namespace conversion

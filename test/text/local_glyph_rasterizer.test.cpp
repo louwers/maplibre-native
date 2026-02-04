@@ -45,7 +45,8 @@ public:
     MapAdapter map{frontend,
                    MapObserver::nullObserver(),
                    fileSource,
-                   MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize())};
+                   MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
+                   frontend.getThreadPoolHandle()};
 
     void checkRendering(const char* name, double imageMatchPixelsThreshold = 0.015, double pixelMatchThreshold = 0.1) {
         test::checkImage(std::string("test/fixtures/local_glyphs/") + name,

@@ -39,7 +39,10 @@ class Style::Impl : public SpriteLoaderObserver,
                     public LightObserver,
                     public util::noncopyable {
 public:
-    Impl(std::shared_ptr<FileSource>, float pixelRatio, const TaggedScheduler& threadPool_);
+    Impl(std::shared_ptr<FileSource>,
+         float pixelRatio,
+         const TaggedScheduler& threadPool_,
+         const ThreadPoolHandle& threadPoolHandle_);
     ~Impl() override;
 
     void loadJSON(const std::string&);
@@ -107,6 +110,8 @@ private:
     void parse(const std::string&);
 
     std::shared_ptr<FileSource> fileSource;
+    TaggedScheduler threadPool;
+    ThreadPoolHandle threadPoolHandle;
 
     std::string url;
     std::string json;

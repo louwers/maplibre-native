@@ -33,11 +33,24 @@ public:
                      gfx::ContextMode mode = gfx::ContextMode::Unique,
                      const std::optional<std::string>& localFontFamily = std::nullopt,
                      bool invalidateOnUpdate_ = true);
+    HeadlessFrontend(const ThreadPoolHandle&,
+                     float pixelRatio_,
+                     gfx::HeadlessBackend::SwapBehaviour swapBehavior = gfx::HeadlessBackend::SwapBehaviour::NoFlush,
+                     gfx::ContextMode mode = gfx::ContextMode::Unique,
+                     const std::optional<std::string>& localFontFamily = std::nullopt);
+    HeadlessFrontend(const ThreadPoolHandle&,
+                     Size,
+                     float pixelRatio_,
+                     gfx::HeadlessBackend::SwapBehaviour swapBehavior = gfx::HeadlessBackend::SwapBehaviour::NoFlush,
+                     gfx::ContextMode mode = gfx::ContextMode::Unique,
+                     const std::optional<std::string>& localFontFamily = std::nullopt,
+                     bool invalidateOnUpdate_ = true);
     ~HeadlessFrontend() override;
 
     void reset() override;
     void update(std::shared_ptr<UpdateParameters>) override;
     const TaggedScheduler& getThreadPool() const override;
+    const ThreadPoolHandle& getThreadPoolHandle() const;
     void setObserver(RendererObserver&) override;
 
     double getFrameTime() const;
@@ -63,6 +76,7 @@ public:
     std::optional<TransformState> getTransformState() const;
 
 private:
+    ThreadPoolHandle threadPoolHandle;
     Size size;
     float pixelRatio;
 

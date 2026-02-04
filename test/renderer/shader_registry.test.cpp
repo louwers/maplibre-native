@@ -50,7 +50,8 @@ public:
                   std::make_shared<MainResourceLoader>(
                       ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"),
                       ClientOptions()),
-                  MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()).withPixelRatio(pixelRatio)) {}
+                  MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()).withPixelRatio(pixelRatio),
+                  frontend.getThreadPoolHandle()) {}
 
 public:
     HeadlessFrontend frontend;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mbgl/actor/scheduler.hpp>
 #include <mbgl/style/expression/expression.hpp>
 #include <mbgl/style/source.hpp>
 #include <mbgl/tile/tile_id.hpp>
@@ -13,7 +14,6 @@
 namespace mbgl {
 
 class AsyncRequest;
-class Scheduler;
 namespace style {
 
 struct GeoJSONOptions {
@@ -60,7 +60,10 @@ public:
 // NOTE: Any derived class must invalidate `weakFactory` in the destructor
 class GeoJSONSource final : public Source {
 public:
-    GeoJSONSource(std::string id, Immutable<GeoJSONOptions> = GeoJSONOptions::defaultOptions());
+    GeoJSONSource(std::string id, Immutable<GeoJSONOptions> options = GeoJSONOptions::defaultOptions());
+    GeoJSONSource(std::string id,
+                  const ThreadPoolHandle& threadPoolHandle,
+                  Immutable<GeoJSONOptions> = GeoJSONOptions::defaultOptions());
     ~GeoJSONSource() final;
 
     void setURL(const std::string& url);
@@ -89,6 +92,7 @@ private:
     std::unique_ptr<AsyncRequest> req;
     std::atomic<uint64_t> requestGeneration{0};
     std::shared_ptr<Scheduler> sequencedScheduler;
+    ThreadPoolHandle threadPoolHandle;
     mapbox::base::WeakPtrFactory<Source> weakFactory{this};
     // Do not add members here, see `WeakPtrFactory`
 };

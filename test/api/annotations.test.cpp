@@ -35,7 +35,8 @@ public:
     MapAdapter map{frontend,
                    MapObserver::nullObserver(),
                    std::make_shared<StubFileSource>(),
-                   MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize())};
+                   MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
+                   frontend.getThreadPoolHandle()};
 
     void checkRendering(const char* name) {
 #if WIN32

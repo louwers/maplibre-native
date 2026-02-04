@@ -1,6 +1,7 @@
 #include <mbgl/test/util.hpp>
 #include <mbgl/test/fixture_log_observer.hpp>
 #include <mbgl/test/stub_file_source.hpp>
+#include <mbgl/test/test_thread_pool.hpp>
 
 #include <mbgl/sprite/sprite_loader.hpp>
 #include <mbgl/sprite/sprite_loader_observer.hpp>
@@ -34,7 +35,7 @@ std::string defaultSpritePath = "test/fixtures/resources/sprite";
 class SpriteLoaderTest {
 public:
     SpriteLoaderTest(float pixelRatio = 1)
-        : threadPool(Scheduler::GetBackground(), uniqueID),
+        : threadPool(test::getThreadPoolHandle().get(), uniqueID),
           spriteLoader(pixelRatio, threadPool) {}
 
     ~SpriteLoaderTest() {

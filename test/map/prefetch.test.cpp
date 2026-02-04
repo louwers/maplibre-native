@@ -35,8 +35,11 @@ TEST(Map, PrefetchTiles) {
     };
 
     HeadlessFrontend frontend{{512, 512}, 1};
-    MapAdapter map(
-        frontend, observer, fileSource, MapOptions().withMapMode(MapMode::Continuous).withSize(frontend.getSize()));
+    MapAdapter map(frontend,
+                   observer,
+                   fileSource,
+                   MapOptions().withMapMode(MapMode::Continuous).withSize(frontend.getSize()),
+                   frontend.getThreadPoolHandle());
 
     std::vector<int> tiles;
 

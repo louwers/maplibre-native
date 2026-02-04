@@ -2,6 +2,7 @@
 #include <mbgl/test/stub_file_source.hpp>
 #include <mbgl/test/stub_render_source_observer.hpp>
 #include <mbgl/test/stub_style_observer.hpp>
+#include <mbgl/test/test_thread_pool.hpp>
 #include <mbgl/test/util.hpp>
 
 #include <mbgl/style/layers/circle_layer.hpp>
@@ -84,8 +85,8 @@ public:
     };
 
     SourceTest()
-        : threadPool(Scheduler::GetBackground(), uniqueID),
-          style{fileSource, 1, threadPool} {
+        : threadPool(test::getThreadPoolHandle().get(), uniqueID),
+          style{fileSource, 1, threadPool, test::getThreadPoolHandle()} {
         // Squelch logging.
         Log::setObserver(std::make_unique<Log::NullObserver>());
 

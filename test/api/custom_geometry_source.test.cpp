@@ -23,7 +23,8 @@ TEST(CustomGeometrySource, Grid) {
     Map map(frontend,
             MapObserver::nullObserver(),
             MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
-            ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"));
+            ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"),
+            frontend.getThreadPoolHandle());
     map.getStyle().loadJSON(util::read_file("test/fixtures/api/water.json"));
     map.jumpTo(CameraOptions().withCenter(LatLng{37.8, -122.5}).withZoom(10.0));
 

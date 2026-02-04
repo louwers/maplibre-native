@@ -15,9 +15,15 @@ namespace mbgl {
 namespace style {
 
 CustomGeometrySource::CustomGeometrySource(std::string id, const CustomGeometrySource::Options& options)
+    : CustomGeometrySource(std::move(id), options, ThreadPoolHandle::create()) {}
+
+CustomGeometrySource::CustomGeometrySource(std::string id,
+                                           const CustomGeometrySource::Options& options,
+                                           const ThreadPoolHandle& threadPoolHandle_)
     : Source(makeMutable<CustomGeometrySource::Impl>(std::move(id), options)),
+      threadPoolHandle(threadPoolHandle_),
       loader(std::make_unique<Actor<CustomTileLoader>>(
-          Scheduler::GetBackground(), options.fetchTileFunction, options.cancelTileFunction)) {}
+          threadPoolHandle.get(), options.fetchTileFunction, options.cancelTileFunction)) {}
 
 CustomGeometrySource::~CustomGeometrySource() = default;
 

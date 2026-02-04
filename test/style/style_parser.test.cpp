@@ -43,7 +43,7 @@ TEST_P(StyleParserTest, ParseStyle) {
     ASSERT_FALSE(infoDoc.HasParseError());
     ASSERT_TRUE(infoDoc.IsObject());
 
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     if (auto error = parser.parse(util::read_file(base + ".style.json"))) {
         Log::Error(Event::ParseStyle, "Failed to parse style: " + util::toString(error));
     }
@@ -130,7 +130,7 @@ INSTANTIATE_TEST_SUITE_P(StyleParser, StyleParserTest, ::testing::ValuesIn([] {
                          }()));
 
 TEST(StyleParser, SpriteAsString) {
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(R"({
         "version": 8,
         "sprite": "https://example.com/default/markers"
@@ -142,7 +142,7 @@ TEST(StyleParser, SpriteAsString) {
 }
 
 TEST(StyleParser, SpriteAsArrayEmpty) {
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(R"({
         "version": 8,
         "sprite": []
@@ -152,7 +152,7 @@ TEST(StyleParser, SpriteAsArrayEmpty) {
 }
 
 TEST(StyleParser, SpriteAsArraySingle) {
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(R"({
         "version": 8,
         "sprite": [{
@@ -167,7 +167,7 @@ TEST(StyleParser, SpriteAsArraySingle) {
 }
 
 TEST(StyleParser, SpriteAsArrayMultiple) {
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(R"({
         "version": 8,
         "sprite": [{
@@ -187,7 +187,7 @@ TEST(StyleParser, SpriteAsArrayMultiple) {
 }
 
 TEST(StyleParser, FontStacks) {
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(util::read_file("test/fixtures/style_parser/font_stacks.json"));
     std::set<mbgl::FontStack> expected = {
         {"a"},
@@ -199,7 +199,7 @@ TEST(StyleParser, FontStacks) {
 }
 
 TEST(StyleParser, FontStacksNoTextField) {
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(R"({
         "version": 8,
         "layers": [{
@@ -216,7 +216,7 @@ TEST(StyleParser, FontStacksNoTextField) {
 }
 
 TEST(StyleParser, FontStacksCaseExpression) {
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(R"({
         "version": 8,
         "layers": [{
@@ -237,7 +237,7 @@ TEST(StyleParser, FontStacksCaseExpression) {
 }
 
 TEST(StyleParser, FontStacksMatchExpression) {
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(R"({
         "version": 8,
         "layers": [{
@@ -258,7 +258,7 @@ TEST(StyleParser, FontStacksMatchExpression) {
 }
 
 TEST(StyleParser, FontStacksStepExpression) {
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(R"({
         "version": 8,
         "layers": [{
@@ -280,7 +280,7 @@ TEST(StyleParser, FontStacksStepExpression) {
 
 TEST(StyleParser, FontStacksGetExpression) {
     // Invalid style, but not currently validated.
-    style::Parser parser;
+    style::Parser parser(ThreadPoolHandle::create());
     parser.parse(R"({
         "version": 8,
         "layers": [{

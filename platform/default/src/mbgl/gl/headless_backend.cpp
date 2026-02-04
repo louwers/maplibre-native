@@ -41,10 +41,12 @@ public:
     gl::Framebuffer framebuffer;
 };
 
-HeadlessBackend::HeadlessBackend(const Size size_,
+HeadlessBackend::HeadlessBackend(const ThreadPoolHandle& threadPoolHandle,
+                                 const Size size_,
                                  gfx::HeadlessBackend::SwapBehaviour swapBehaviour_,
                                  const gfx::ContextMode contextMode_)
-    : mbgl::gl::RendererBackend(contextMode_),
+    : mbgl::gl::RendererBackend(
+          contextMode_, threadPoolHandle, TaggedScheduler(threadPoolHandle.get(), util::SimpleIdentity::Empty)),
       mbgl::gfx::HeadlessBackend(size_),
       swapBehaviour(swapBehaviour_) {}
 
@@ -128,10 +130,13 @@ namespace gfx {
 
 template <>
 std::unique_ptr<gfx::HeadlessBackend> Backend::Create<gfx::Backend::Type::OpenGL>(
-    const Size size, gfx::Renderable::SwapBehaviour swapBehavior, const gfx::ContextMode contextMode) {
+    const ThreadPoolHandle& threadPoolHandle,
+    const Size size,
+    gfx::Renderable::SwapBehaviour swapBehavior,
+    const gfx::ContextMode contextMode) {
     MLN_TRACE_FUNC();
 
-    return std::make_unique<gl::HeadlessBackend>(size, swapBehavior, contextMode);
+    return std::make_unique<gl::HeadlessBackend>(threadPoolHandle, size, swapBehavior, contextMode);
 }
 
 } // namespace gfx

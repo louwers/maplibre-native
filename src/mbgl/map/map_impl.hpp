@@ -38,7 +38,7 @@ struct StillImageRequest {
 
 class Map::Impl final : public TransformObserver, public style::Observer, public RendererObserver {
 public:
-    Impl(RendererFrontend&, MapObserver&, std::shared_ptr<FileSource>, const MapOptions&);
+    Impl(RendererFrontend&, MapObserver&, std::shared_ptr<FileSource>, const MapOptions&, const ThreadPoolHandle&);
     ~Impl() final;
 
     // TransformObserver

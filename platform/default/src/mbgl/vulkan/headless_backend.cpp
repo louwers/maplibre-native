@@ -31,10 +31,12 @@ public:
     }
 };
 
-HeadlessBackend::HeadlessBackend(const Size size_,
+HeadlessBackend::HeadlessBackend(const ThreadPoolHandle& threadPoolHandle,
+                                 const Size size_,
                                  gfx::HeadlessBackend::SwapBehaviour,
                                  const gfx::ContextMode contextMode_)
-    : mbgl::vulkan::RendererBackend(contextMode_),
+    : mbgl::vulkan::RendererBackend(
+          contextMode_, threadPoolHandle, TaggedScheduler(threadPoolHandle.get(), util::SimpleIdentity::Empty)),
       mbgl::gfx::HeadlessBackend(size_) {
     init();
 }
@@ -111,8 +113,11 @@ namespace gfx {
 
 template <>
 std::unique_ptr<gfx::HeadlessBackend> Backend::Create<gfx::Backend::Type::Vulkan>(
-    const Size size, gfx::Renderable::SwapBehaviour swapBehavior, const gfx::ContextMode contextMode) {
-    return std::make_unique<vulkan::HeadlessBackend>(size, swapBehavior, contextMode);
+    const ThreadPoolHandle& threadPoolHandle,
+    const Size size,
+    gfx::Renderable::SwapBehaviour swapBehavior,
+    const gfx::ContextMode contextMode) {
+    return std::make_unique<vulkan::HeadlessBackend>(threadPoolHandle, size, swapBehavior, contextMode);
 }
 
 } // namespace gfx

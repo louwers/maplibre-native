@@ -32,6 +32,7 @@ Map::Map(RendererFrontend& frontend,
          MapObserver& observer,
          const MapOptions& mapOptions,
          const ResourceOptions& resourceOptions,
+         const ThreadPoolHandle& threadPoolHandle,
          const ClientOptions& clientOptions,
          const util::ActionJournalOptions& actionJournalOptions)
     : impl(std::make_unique<Impl>(frontend,
@@ -40,7 +41,8 @@ Map::Map(RendererFrontend& frontend,
                                       ? std::shared_ptr<FileSource>(FileSourceManager::get()->getFileSource(
                                             ResourceLoader, resourceOptions, clientOptions))
                                       : nullptr,
-                                  mapOptions)) {
+                                  mapOptions,
+                                  threadPoolHandle)) {
     if (actionJournalOptions.enabled()) {
         impl->actionJournal = std::make_unique<util::ActionJournal>(*this, actionJournalOptions);
     }

@@ -1,6 +1,7 @@
 #include <mbgl/test/util.hpp>
 #include <mbgl/test/fake_file_source.hpp>
 #include <mbgl/test/stub_tile_observer.hpp>
+#include <mbgl/test/test_thread_pool.hpp>
 #include <mbgl/style/sources/custom_geometry_source.hpp>
 #include <mbgl/tile/custom_geometry_tile.hpp>
 #include <mbgl/style/custom_tile_loader.hpp>
@@ -45,9 +46,9 @@ public:
                          .imageManager = imageManager,
                          .glyphManager = glyphManager,
                          .prefetchZoomDelta = 0,
-                         .threadPool = {Scheduler::GetBackground(), uniqueID},
+                         .threadPool = TaggedScheduler(test::getThreadPoolHandle().get(), uniqueID),
                          .dynamicTextureAtlas = dynamicTextureAtlas},
-          style{fileSource, 1, tileParameters.threadPool} {}
+          style{fileSource, 1, tileParameters.threadPool, test::getThreadPoolHandle()} {}
 };
 
 TEST(CustomGeometryTile, InvokeFetchTile) {

@@ -23,7 +23,8 @@ TEST(API, RenderWithoutCallback) {
     auto map = std::make_unique<MapAdapter>(frontend,
                                             MapObserver::nullObserver(),
                                             std::make_shared<StubFileSource>(),
-                                            MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()));
+                                            MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
+                                            frontend.getThreadPoolHandle());
     map->renderStill(nullptr);
 
     // Force Map thread to join.

@@ -958,7 +958,8 @@ TEST(OfflineDownload, ResourceOfflineUsageUnset) {
     MapAdapter map{frontend,
                    mapObserver,
                    stubfileSource,
-                   MapOptions().withMapMode(MapMode::Continuous).withSize(frontend.getSize())};
+                   MapOptions().withMapMode(MapMode::Continuous).withSize(frontend.getSize()),
+                   frontend.getThreadPoolHandle()};
 
     map.getStyle().loadURL("http://127.0.0.1:3000/inline_source.style.json");
     map.jumpTo(CameraOptions().withCenter(LatLng{0.0, 0.0}).withZoom(0));

@@ -2,6 +2,7 @@
 
 #include <mbgl/actor/actor_ref.hpp>
 #include <mbgl/actor/scheduler.hpp>
+#include <mbgl/test/test_thread_pool.hpp>
 #include <mbgl/test/util.hpp>
 #include <mbgl/util/run_loop.hpp>
 
@@ -105,7 +106,8 @@ TEST(AsyncTask, RequestCoalescingMultithreaded) {
     unsigned count = 0, numThreads = 25;
     AsyncTask async([&count] { ++count; });
 
-    TaggedScheduler retainer = {Scheduler::GetBackground(), id};
+    auto handle = ThreadPoolHandle::create();
+    TaggedScheduler retainer(handle.get(), id);
     auto mailbox = std::make_shared<Mailbox>(retainer);
 
     TestWorker worker(&async);
@@ -135,7 +137,8 @@ TEST(AsyncTask, ThreadSafety) {
 
     AsyncTask async([&count] { ++count; });
 
-    TaggedScheduler retainer = {Scheduler::GetBackground(), id};
+    auto handle = ThreadPoolHandle::create();
+    TaggedScheduler retainer(handle.get(), id);
     auto mailbox = std::make_shared<Mailbox>(retainer);
 
     TestWorker worker(&async);
@@ -169,7 +172,7 @@ TEST(AsyncTask, scheduleAndReplyValue) {
         loop.stop();
     };
 
-    std::shared_ptr<Scheduler> sheduler = Scheduler::GetBackground();
+    std::shared_ptr<Scheduler> sheduler = ThreadPoolHandle::create().get();
     sheduler->scheduleAndReplyValue(util::SimpleIdentity::Empty, runInBackground, onResult);
     loop.run();
 }

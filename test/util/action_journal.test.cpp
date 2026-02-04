@@ -31,8 +31,9 @@ public:
                    MapObserver& observer,
                    std::shared_ptr<FileSource> fileSource,
                    const MapOptions& options,
+                   const ThreadPoolHandle& threadPoolHandle,
                    const util::ActionJournalOptions& actionJournalOptions)
-            : Map(std::make_unique<Map::Impl>(frontend, observer, std::move(fileSource), options),
+            : Map(std::make_unique<Map::Impl>(frontend, observer, std::move(fileSource), options, threadPoolHandle),
                   actionJournalOptions) {}
 
         Map::Impl& getImpl() { return *impl; }
@@ -63,8 +64,12 @@ public:
         fileSource = std::make_shared<StubFileSource>(ResourceOptions::Default(),
                                                       ClientOptions().withName("ActionJournalTest").withVersion("1.0"));
         frontend = std::make_unique<HeadlessFrontend>(1.0f);
-        map = std::make_unique<MapAdapter>(
-            *frontend, observer, fileSource, MapOptions().withMapMode(mode).withSize(frontend->getSize()), options);
+        map = std::make_unique<MapAdapter>(*frontend,
+                                           observer,
+                                           fileSource,
+                                           MapOptions().withMapMode(mode).withSize(frontend->getSize()),
+                                           frontend->getThreadPoolHandle(),
+                                           options);
     }
 
     std::filesystem::path getDirectoryPath() {

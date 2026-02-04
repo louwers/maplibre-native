@@ -131,7 +131,8 @@ std::optional<std::unique_ptr<Source>> convertVectorSource(const std::string& id
 
 std::optional<std::unique_ptr<Source>> convertGeoJSONSource(const std::string& id,
                                                             const Convertible& value,
-                                                            Error& error) {
+                                                            Error& error,
+                                                            const ThreadPoolHandle& threadPoolHandle) {
     auto dataValue = objectMember(value, "data");
     if (!dataValue) {
         error.message = "GeoJSON source must have a data value";
@@ -143,7 +144,7 @@ std::optional<std::unique_ptr<Source>> convertGeoJSONSource(const std::string& i
         options = makeMutable<GeoJSONOptions>(std::move(*converted));
     }
 
-    auto result = std::make_unique<GeoJSONSource>(id, std::move(options));
+    auto result = std::make_unique<GeoJSONSource>(id, threadPoolHandle, std::move(options));
 
     if (isObject(*dataValue)) {
         auto geoJSON = convert<GeoJSON>(*dataValue, error);
@@ -204,9 +205,8 @@ std::optional<std::unique_ptr<Source>> convertImageSource(const std::string& id,
 }
 } // namespace
 
-std::optional<std::unique_ptr<Source>> Converter<std::unique_ptr<Source>>::operator()(const Convertible& value,
-                                                                                      Error& error,
-                                                                                      const std::string& id) const {
+std::optional<std::unique_ptr<Source>> Converter<std::unique_ptr<Source>>::operator()(
+    const Convertible& value, Error& error, const std::string& id, const ThreadPoolHandle& threadPoolHandle) const {
     if (!isObject(value)) {
         error.message = "source must be an object";
         return std::nullopt;
@@ -231,7 +231,7 @@ std::optional<std::unique_ptr<Source>> Converter<std::unique_ptr<Source>>::opera
     } else if (tname == "vector") {
         return convertVectorSource(id, value, error);
     } else if (tname == "geojson") {
-        return convertGeoJSONSource(id, value, error);
+        return convertGeoJSONSource(id, value, error, threadPoolHandle);
     } else if (tname == "image") {
         return convertImageSource(id, value, error);
     } else {

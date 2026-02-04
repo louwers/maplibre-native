@@ -64,12 +64,13 @@ public:
           map(frontend,
               observer,
               fileSource,
-              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio)) {}
+              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio),
+              frontend.getThreadPoolHandle()) {}
 
     explicit MapTest(MapOptions options)
         : fileSource(std::make_shared<FileSource>()),
           frontend(options.pixelRatio()),
-          map(frontend, observer, fileSource, options.withSize(frontend.getSize())) {}
+          map(frontend, observer, fileSource, options.withSize(frontend.getSize()), frontend.getThreadPoolHandle()) {}
 
     template <typename T = FileSource>
     MapTest(const std::string& cachePath,
@@ -83,7 +84,8 @@ public:
           map(frontend,
               observer,
               fileSource,
-              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio)) {}
+              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio),
+              frontend.getThreadPoolHandle()) {}
 
     template <typename T = FileSource>
     MapTest(const ResourceOptions& resourceOptions,
@@ -95,7 +97,8 @@ public:
           map(frontend,
               observer,
               fileSource,
-              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio)) {}
+              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio),
+              frontend.getThreadPoolHandle()) {}
 };
 
 TEST(Map, RendererState) {
@@ -889,7 +892,8 @@ TEST(Map, TEST_DISABLED_ON_CI(ContinuousRendering)) {
     Map map(frontend,
             observer,
             MapOptions().withMapMode(MapMode::Continuous).withSize(frontend.getSize()),
-            ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"));
+            ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"),
+            frontend.getThreadPoolHandle());
     map.getStyle().loadJSON(util::read_file("test/fixtures/api/water.json"));
 
     runLoop.run();
@@ -1814,7 +1818,8 @@ TEST(Map, ObserveTileLifecycle) {
         observer,
         std::make_shared<MainResourceLoader>(
             ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"), ClientOptions()),
-        MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()));
+        MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
+        frontend.getThreadPoolHandle());
 
     map.getStyle().loadJSON(util::read_file("test/fixtures/api/water.json"));
     auto layer = std::make_unique<FillLayer>("landcover", "mapbox");

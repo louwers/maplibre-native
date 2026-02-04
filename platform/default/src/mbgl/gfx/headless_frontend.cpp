@@ -15,7 +15,7 @@ HeadlessFrontend::HeadlessFrontend(float pixelRatio_,
                                    gfx::HeadlessBackend::SwapBehaviour swapBehavior,
                                    const gfx::ContextMode contextMode,
                                    const std::optional<std::string>& localFontFamily)
-    : HeadlessFrontend({256, 256}, pixelRatio_, swapBehavior, contextMode, localFontFamily) {}
+    : HeadlessFrontend(ThreadPoolHandle::create(), pixelRatio_, swapBehavior, contextMode, localFontFamily) {}
 
 HeadlessFrontend::HeadlessFrontend(Size size_,
                                    float pixelRatio_,
@@ -23,10 +23,34 @@ HeadlessFrontend::HeadlessFrontend(Size size_,
                                    const gfx::ContextMode contextMode,
                                    const std::optional<std::string>& localFontFamily,
                                    bool invalidateOnUpdate_)
-    : size(size_),
+    : HeadlessFrontend(ThreadPoolHandle::create(),
+                       size_,
+                       pixelRatio_,
+                       swapBehavior,
+                       contextMode,
+                       localFontFamily,
+                       invalidateOnUpdate_) {}
+
+HeadlessFrontend::HeadlessFrontend(const ThreadPoolHandle& threadPoolHandle,
+                                   float pixelRatio_,
+                                   gfx::HeadlessBackend::SwapBehaviour swapBehavior,
+                                   const gfx::ContextMode contextMode,
+                                   const std::optional<std::string>& localFontFamily)
+    : HeadlessFrontend(threadPoolHandle, {256, 256}, pixelRatio_, swapBehavior, contextMode, localFontFamily) {}
+
+HeadlessFrontend::HeadlessFrontend(const ThreadPoolHandle& threadPoolHandle_,
+                                   Size size_,
+                                   float pixelRatio_,
+                                   gfx::HeadlessBackend::SwapBehaviour swapBehavior,
+                                   const gfx::ContextMode contextMode,
+                                   const std::optional<std::string>& localFontFamily,
+                                   bool invalidateOnUpdate_)
+    : threadPoolHandle(threadPoolHandle_),
+      size(size_),
       pixelRatio(pixelRatio_),
       frameTime(0),
       backend(gfx::HeadlessBackend::Create(
+          threadPoolHandle_,
           {static_cast<uint32_t>(size.width * pixelRatio), static_cast<uint32_t>(size.height * pixelRatio)},
           swapBehavior,
           contextMode)),
@@ -50,6 +74,10 @@ void HeadlessFrontend::update(std::shared_ptr<UpdateParameters> updateParameters
 
 const TaggedScheduler& HeadlessFrontend::getThreadPool() const {
     return backend->getRendererBackend()->getThreadPool();
+}
+
+const ThreadPoolHandle& HeadlessFrontend::getThreadPoolHandle() const {
+    return threadPoolHandle;
 }
 
 void HeadlessFrontend::setObserver(RendererObserver& observer_) {

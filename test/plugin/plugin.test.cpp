@@ -67,12 +67,13 @@ public:
           map(frontend,
               observer,
               fileSource,
-              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio)) {}
+              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio),
+              frontend.getThreadPoolHandle()) {}
 
     explicit MapTest(MapOptions options)
         : fileSource(std::make_shared<FileSource>()),
           frontend(options.pixelRatio()),
-          map(frontend, observer, fileSource, options.withSize(frontend.getSize())) {}
+          map(frontend, observer, fileSource, options.withSize(frontend.getSize()), frontend.getThreadPoolHandle()) {}
 
     template <typename T = FileSource>
     MapTest(const std::string& cachePath,
@@ -86,7 +87,8 @@ public:
           map(frontend,
               observer,
               fileSource,
-              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio)) {}
+              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio),
+              frontend.getThreadPoolHandle()) {}
 
     template <typename T = FileSource>
     MapTest(const ResourceOptions& resourceOptions,
@@ -98,7 +100,8 @@ public:
           map(frontend,
               observer,
               fileSource,
-              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio)) {}
+              MapOptions().withMapMode(mode).withSize(frontend.getSize()).withPixelRatio(pixelRatio),
+              frontend.getThreadPoolHandle()) {}
 };
 
 TEST(Plugin, PluginLayerProperty) {

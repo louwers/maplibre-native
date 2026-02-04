@@ -13,8 +13,9 @@ public:
     explicit MapAdapter(RendererFrontend& frontend,
                         MapObserver& observer,
                         std::shared_ptr<FileSource> fileSource,
-                        const MapOptions& options)
-        : Map(std::make_unique<Map::Impl>(frontend, observer, std::move(fileSource), options)) {}
+                        const MapOptions& options,
+                        const ThreadPoolHandle& threadPoolHandle)
+        : Map(std::make_unique<Map::Impl>(frontend, observer, std::move(fileSource), options, threadPoolHandle)) {}
 };
 
 } // namespace mbgl

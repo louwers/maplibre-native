@@ -244,7 +244,8 @@ TEST(CustomDrawableLayer, Line) {
     Map map(frontend,
             MapObserver::nullObserver(),
             MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
-            ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"));
+            ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"),
+            frontend.getThreadPoolHandle());
 
     // load style
     map.getStyle().loadJSON(util::read_file("test/fixtures/api/simple.json"));
@@ -268,7 +269,8 @@ TEST(CustomDrawableLayer, Fill) {
     Map map(frontend,
             MapObserver::nullObserver(),
             MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
-            ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"));
+            ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"),
+            frontend.getThreadPoolHandle());
 
     // load style
     map.getStyle().loadJSON(util::read_file("test/fixtures/api/simple.json"));
@@ -292,7 +294,8 @@ TEST(CustomDrawableLayer, SymbolIcon) {
     Map map(frontend,
             MapObserver::nullObserver(),
             MapOptions().withMapMode(MapMode::Static).withSize(frontend.getSize()),
-            ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"));
+            ResourceOptions().withCachePath(":memory:").withAssetPath("test/fixtures/api/assets"),
+            frontend.getThreadPoolHandle());
 
     // load style
     map.getStyle().loadJSON(util::read_file("test/fixtures/api/simple.json"));

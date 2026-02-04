@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <mbgl/util/color.hpp>
+#include <mbgl/actor/scheduler.hpp>
 
 namespace mbgl {
 
@@ -105,9 +106,11 @@ public:
         float textSize = 4.0f;
     };
 
-    RenderingStatsView() = default;
-    RenderingStatsView(const Options& options_)
-        : options(options_) {}
+    RenderingStatsView(const ThreadPoolHandle& threadPoolHandle_)
+        : threadPoolHandle(threadPoolHandle_) {};
+    RenderingStatsView(const ThreadPoolHandle& threadPoolHandle_, const Options& options_)
+        : options(options_),
+          threadPoolHandle(threadPoolHandle_) {}
     ~RenderingStatsView() = default;
 
     void create(style::Style& style);
@@ -127,6 +130,9 @@ protected:
     uint32_t frameCount = 0;
     double encodingTime = 0.0;
     double renderingTime = 0.0;
+
+private:
+    ThreadPoolHandle threadPoolHandle;
 };
 
 } // namespace gfx
