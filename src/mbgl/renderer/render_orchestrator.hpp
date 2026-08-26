@@ -22,7 +22,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace mbgl {
+namespace mln {
 class ChangeRequest;
 class RendererObserver;
 class RenderSource;
@@ -138,6 +138,7 @@ public:
                       gfx::Context&,
                       const TransformState&,
                       const std::shared_ptr<UpdateParameters>&,
+                      const PaintParameters& paintParameters,
                       const RenderTree&);
 
     void processChanges();
@@ -194,6 +195,7 @@ private:
     void onTileChanged(RenderSource&, const OverscaledTileID&) override;
     void onTileError(RenderSource&, const OverscaledTileID&, std::exception_ptr) override;
     void onTileAction(RenderSource&, TileOperation, const OverscaledTileID&, const std::string&) override;
+    void onSymbolError(RenderSource&, const std::string&) override;
 
     // ImageManagerObserver implementation
     void onStyleImageMissing(const std::string&, const std::function<void()>&) override;
@@ -249,4 +251,4 @@ private:
     RenderItem::DebugLayerGroupMap debugLayerGroups;
 };
 
-} // namespace mbgl
+} // namespace mln

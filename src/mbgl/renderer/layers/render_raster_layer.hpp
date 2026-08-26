@@ -6,7 +6,7 @@
 #include <mbgl/style/layers/raster_layer_properties.hpp>
 #include <mbgl/gfx/context.hpp>
 
-namespace mbgl {
+namespace mln {
 
 class ImageSourceRenderData;
 
@@ -20,6 +20,7 @@ public:
                 gfx::Context&,
                 const TransformState&,
                 const std::shared_ptr<UpdateParameters>&,
+                const PaintParameters&,
                 const RenderTree&,
                 UniqueChangeRequestVec&) override;
 
@@ -65,4 +66,4 @@ private:
     SegmentVectorPtr staticDataSegments;
 };
 
-} // namespace mbgl
+} // namespace mln

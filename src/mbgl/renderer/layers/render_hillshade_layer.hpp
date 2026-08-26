@@ -6,7 +6,7 @@
 #include <mbgl/style/layers/hillshade_layer_properties.hpp>
 #include <mbgl/tile/tile_id.hpp>
 
-namespace mbgl {
+namespace mln {
 
 class HillshadeLayerTweaker;
 using HillshadeLayerTweakerPtr = std::shared_ptr<HillshadeLayerTweaker>;
@@ -25,6 +25,7 @@ public:
                 gfx::Context&,
                 const TransformState&,
                 const std::shared_ptr<UpdateParameters>&,
+                const PaintParameters&,
                 const RenderTree&,
                 UniqueChangeRequestVec&) override;
 
@@ -62,4 +63,4 @@ private:
     LayerTweakerPtr prepareLayerTweaker;
 };
 
-} // namespace mbgl
+} // namespace mln

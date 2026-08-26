@@ -9,7 +9,7 @@
 #define MLN_DRAWABLE_LOCATION_INDICATOR
 #endif
 
-namespace mbgl {
+namespace mln {
 class RenderLocationIndicatorImpl;
 class RenderLocationIndicatorLayer final : public RenderLayer {
 public:
@@ -30,6 +30,7 @@ public:
                 gfx::Context &,
                 const TransformState &,
                 const std::shared_ptr<UpdateParameters> &,
+                const PaintParameters &,
                 const RenderTree &,
                 UniqueChangeRequestVec &) override;
 #endif
@@ -60,4 +61,4 @@ private:
 #endif
 };
 
-} // namespace mbgl
+} // namespace mln

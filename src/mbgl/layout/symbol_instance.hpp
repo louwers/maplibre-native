@@ -26,7 +26,7 @@
     }
 #endif
 
-namespace mbgl {
+namespace mln {
 
 class Anchor;
 class IndexedSubfeature;
@@ -183,8 +183,10 @@ protected:
     bool check(std::uint64_t v, int n, const source_location&) const;
     bool checkKey(const source_location&) const;
     void forceFailInternal(); // this is just to avoid warnings about the values never being set
+    void fail(const std::string&) const;
 #else
     bool checkKey(std::string_view) const { return true; }
+    void fail(const std::string&) const {}
 #endif
 
 private:
@@ -258,4 +260,4 @@ private:
 
 using SymbolInstanceReferences = std::vector<std::reference_wrapper<const SymbolInstance>>;
 
-} // namespace mbgl
+} // namespace mln

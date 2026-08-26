@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <utility>
 
-namespace mbgl {
+namespace mln {
 
 using namespace style;
 namespace {
@@ -94,6 +94,18 @@ void SymbolBucket::upload([[maybe_unused]] gfx::UploadPass& uploadPass) {
 bool SymbolBucket::hasData() const {
     return hasTextData() || hasIconData() || hasSdfIconData() || hasIconCollisionBoxData() ||
            hasTextCollisionBoxData() || hasIconCollisionCircleData() || hasTextCollisionCircleData();
+}
+
+void SymbolBucket::update(const FeatureStates& states,
+                          const GeometryTileLayer& layer,
+                          const std::string& layerID,
+                          const ImagePositions& imagePositions) {
+    auto it = paintProperties.find(layerID);
+    if (it != paintProperties.end()) {
+        it->second.iconBinders.updateVertexVectors(states, layer, imagePositions);
+        it->second.textBinders.updateVertexVectors(states, layer, imagePositions);
+        uploaded = false;
+    }
 }
 
 bool SymbolBucket::hasTextData() const {
@@ -311,4 +323,4 @@ void SymbolBucket::updateVertices(const Placement& placement,
     }
 }
 
-} // namespace mbgl
+} // namespace mln

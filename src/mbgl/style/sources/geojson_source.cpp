@@ -11,7 +11,7 @@
 #include <mbgl/util/thread_pool.hpp>
 #include <mbgl/util/identity.hpp>
 
-namespace mbgl {
+namespace mln {
 namespace style {
 
 // static
@@ -120,8 +120,8 @@ void GeoJSONSource::loadDescription(FileSource& fileSource) {
     });
 }
 
-bool GeoJSONSource::supportsLayerType(const mbgl::style::LayerTypeInfo* info) const {
-    return mbgl::underlying_type(Tile::Kind::Geometry) == mbgl::underlying_type(info->tileKind);
+bool GeoJSONSource::supportsLayerType(const mln::style::LayerTypeInfo* info) const {
+    return mln::underlying_type(Tile::Kind::Geometry) == mln::underlying_type(info->tileKind);
 }
 
 Mutable<Source::Impl> GeoJSONSource::createMutable() const noexcept {
@@ -132,5 +132,9 @@ bool GeoJSONSource::isUpdateSynchronous() const noexcept {
     return baseImpl->isUpdateSynchronous();
 }
 
+void GeoJSONSource::setOverrideSynchronousUpdate(bool value) noexcept {
+    impl().setOverrideSynchronousUpdate(value);
+}
+
 } // namespace style
-} // namespace mbgl
+} // namespace mln

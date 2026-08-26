@@ -15,7 +15,7 @@
 
 #include <mapbox/eternal.hpp>
 
-namespace mbgl {
+namespace mln {
 namespace style {
 
 
@@ -135,7 +135,7 @@ enum class Property : uint8_t {
 
 template <typename T>
 constexpr uint8_t toUint8(T t) noexcept {
-    return uint8_t(mbgl::underlying_type(t));
+    return uint8_t(mln::underlying_type(t));
 }
 
 constexpr const auto layerProperties = mapbox::eternal::hash_map<mapbox::eternal::string, uint8_t>(
@@ -181,7 +181,7 @@ Value ColorReliefLayer::serialize() const {
 
 std::optional<Error> ColorReliefLayer::setPropertyInternal(const std::string& name, const Convertible& value) {
     const auto it = layerProperties.find(name.c_str());
-    if (it == layerProperties.end()) return Error{"layer doesn't support this property"};
+    if (it == layerProperties.end()) return Error{"layer '" + getID() + "' doesn't support property '" + name + "'"};
 
     auto property = static_cast<Property>(it->second);
 
@@ -222,7 +222,7 @@ std::optional<Error> ColorReliefLayer::setPropertyInternal(const std::string& na
         return std::nullopt;
     }
 
-    return Error{"layer doesn't support this property"};
+    return Error{"layer '" + getID() + "' doesn't support property '" + name + "'"};
 }
 
 StyleProperty ColorReliefLayer::getProperty(const std::string& name) const {
@@ -235,6 +235,6 @@ Mutable<Layer::Impl> ColorReliefLayer::mutableBaseImpl() const {
 }
 
 } // namespace style
-} // namespace mbgl
+} // namespace mln
 
 // clang-format on

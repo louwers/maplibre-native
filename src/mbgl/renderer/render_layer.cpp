@@ -14,7 +14,7 @@
 
 #include <mbgl/renderer/layer_group.hpp>
 
-namespace mbgl {
+namespace mln {
 
 using namespace style;
 
@@ -288,4 +288,4 @@ bool RenderLayer::applyColorRamp(const style::ColorRampPropertyValue& colorValue
     return true;
 }
 
-} // namespace mbgl
+} // namespace mln

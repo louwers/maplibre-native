@@ -27,7 +27,7 @@
 #include <mbgl/shaders/fill_extrusion_layer_ubo.hpp>
 #include <mbgl/shaders/shader_program_base.hpp>
 
-namespace mbgl {
+namespace mln {
 
 using namespace style;
 using namespace shaders;
@@ -63,7 +63,7 @@ void RenderFillExtrusionLayer::evaluate(const PropertyEvaluationParameters& para
 
     passes = (properties->evaluated.get<style::FillExtrusionOpacity>() > 0) ? RenderPass::Translucent
                                                                             : RenderPass::None;
-    properties->renderPasses = mbgl::underlying_type(passes);
+    properties->renderPasses = mln::underlying_type(passes);
     evaluatedProperties = std::move(properties);
 
     if (layerTweaker) {
@@ -106,6 +106,7 @@ void RenderFillExtrusionLayer::update(gfx::ShaderRegistry& shaders,
                                       gfx::Context& context,
                                       const TransformState&,
                                       const std::shared_ptr<UpdateParameters>&,
+                                      [[maybe_unused]] const PaintParameters& paintParameters,
                                       const RenderTree&,
                                       UniqueChangeRequestVec& changes) {
     if (!renderTiles || renderTiles->empty() || passes == RenderPass::None) {
@@ -532,4 +533,4 @@ void RenderFillExtrusionLayer::update(gfx::ShaderRegistry& shaders,
     }
 }
 
-} // namespace mbgl
+} // namespace mln

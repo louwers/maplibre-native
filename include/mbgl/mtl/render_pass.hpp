@@ -10,7 +10,7 @@
 #include <memory>
 #include <optional>
 
-namespace mbgl {
+namespace mln {
 namespace mtl {
 
 class BufferResource;
@@ -25,6 +25,7 @@ public:
     mtl::CommandEncoder& getCommandEncoder() { return commandEncoder; }
     const mtl::CommandEncoder& getCommandEncoder() const { return commandEncoder; }
 
+    const MTLCommandBufferPtr& getCommandBuffer() const { return commandBuffer; }
     const MTLRenderCommandEncoderPtr& getMetalEncoder() const { return encoder; }
     const gfx::RenderPassDescriptor& getDescriptor() const { return descriptor; }
 
@@ -71,6 +72,7 @@ private:
 private:
     gfx::RenderPassDescriptor descriptor;
     mtl::CommandEncoder& commandEncoder;
+    MTLCommandBufferPtr commandBuffer;
     MTLRenderCommandEncoderPtr encoder;
     MTLDepthStencilStatePtr currentDepthStencilState;
     MTLRenderPipelineStatePtr currentPipelineState;
@@ -100,4 +102,4 @@ private:
 };
 
 } // namespace mtl
-} // namespace mbgl
+} // namespace mln

@@ -4,6 +4,7 @@
 #include <mbgl/layermanager/layer_manager.hpp>
 #include <mbgl/renderer/render_source_observer.hpp>
 #include <mbgl/renderer/sources/render_custom_geometry_source.hpp>
+#include <mbgl/renderer/sources/render_custom_vector_source.hpp>
 #include <mbgl/renderer/sources/render_geojson_source.hpp>
 #include <mbgl/renderer/sources/render_image_source.hpp>
 #include <mbgl/renderer/sources/render_raster_dem_source.hpp>
@@ -17,7 +18,7 @@
 #include <memory>
 #include <utility>
 
-namespace mbgl {
+namespace mln {
 
 using namespace style;
 
@@ -49,6 +50,9 @@ std::unique_ptr<RenderSource> RenderSource::create(const Immutable<Source::Impl>
         case SourceType::CustomVector:
             return std::make_unique<RenderCustomGeometrySource>(staticImmutableCast<CustomGeometrySource::Impl>(impl),
                                                                 threadPool);
+        case SourceType::CustomMVTVector:
+            return std::make_unique<RenderCustomVectorSource>(staticImmutableCast<CustomVectorSource::Impl>(impl),
+                                                              threadPool);
     }
 
     // Not reachable, but placate GCC.
@@ -82,6 +86,10 @@ void RenderSource::onTileAction(OverscaledTileID id, std::string sourceID, TileO
     observer->onTileAction(*this, op, id, sourceID);
 }
 
+void RenderSource::onSymbolError(const std::string& message) {
+    observer->onSymbolError(*this, message);
+}
+
 bool RenderSource::isEnabled() const {
     return enabled;
 }
@@ -95,4 +103,4 @@ Immutable<std::vector<RenderTile>> RenderSource::getRawRenderTiles() const {
     return makeMutable<std::vector<RenderTile>>();
 }
 
-} // namespace mbgl
+} // namespace mln

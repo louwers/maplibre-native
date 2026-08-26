@@ -31,7 +31,7 @@
 
 #include <algorithm>
 
-namespace mbgl {
+namespace mln {
 
 using namespace style;
 
@@ -656,7 +656,7 @@ std::vector<Feature> RenderOrchestrator::queryRenderedFeatures(
 
     queryRenderedSymbols(resultsByLayer, geometry, filteredLayers, options);
 
-    mbgl::DynamicFeatureIndex dynamicIndex;
+    mln::DynamicFeatureIndex dynamicIndex;
     for (const auto& pair : filteredLayers) {
         const RenderLayer* layer = pair.second;
         layer->populateDynamicRenderFeatureIndex(dynamicIndex);
@@ -964,6 +964,7 @@ void RenderOrchestrator::updateLayers(gfx::ShaderRegistry& shaders,
                                       gfx::Context& context,
                                       const TransformState& state,
                                       const std::shared_ptr<UpdateParameters>& updateParameters,
+                                      const PaintParameters& paintParameters,
                                       const RenderTree& renderTree) {
     MLN_TRACE_FUNC();
 
@@ -992,7 +993,7 @@ void RenderOrchestrator::updateLayers(gfx::ShaderRegistry& shaders,
         }
 #endif
         try {
-            renderLayer.update(shaders, context, state, updateParameters, renderTree, changes);
+            renderLayer.update(shaders, context, state, updateParameters, paintParameters, renderTree, changes);
         } catch (...) {
             observer->onRenderError(std::current_exception());
         }
@@ -1081,6 +1082,10 @@ void RenderOrchestrator::onTileAction(RenderSource&,
     observer->onTileAction(op, id, sourceID);
 }
 
+void RenderOrchestrator::onSymbolError(RenderSource&, const std::string& message) {
+    observer->onSymbolError(message);
+}
+
 void RenderOrchestrator::onStyleImageMissing(const std::string& id, const std::function<void()>& done) {
     MLN_TRACE_FUNC();
 
@@ -1093,4 +1098,4 @@ void RenderOrchestrator::onRemoveUnusedStyleImages(const std::vector<std::string
     observer->onRemoveUnusedStyleImages(unusedImageIDs);
 }
 
-} // namespace mbgl
+} // namespace mln

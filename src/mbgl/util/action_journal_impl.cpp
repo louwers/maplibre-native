@@ -24,20 +24,20 @@
 #ifdef USE_GHC_FILESYSTEM
 
 #include <ghc/filesystem.hpp>
-namespace mbgl {
+namespace mln {
 namespace filesystem = ghc::filesystem;
 }
 
 #else
 
 #include <filesystem>
-namespace mbgl {
+namespace mln {
 namespace filesystem = std::filesystem;
 }
 
 #endif
 
-namespace mbgl {
+namespace mln {
 namespace util {
 
 constexpr auto ACTION_JOURNAL_DIRECTORY_NAME = "action_journal";
@@ -148,11 +148,21 @@ ActionJournal::Impl::Impl(const Map& map_, const ActionJournalOptions& options_)
 
     previousFrameTime = util::MonotonicTimer::now().count();
 
-    options.withPath((mbgl::filesystem::canonical(options.path()) / ACTION_JOURNAL_DIRECTORY_NAME).generic_string());
+    try {
+        options.withPath(
+            (mln::filesystem::weakly_canonical(options.path()) / ACTION_JOURNAL_DIRECTORY_NAME).generic_string());
 
-    if (!openFile(detectFiles(), false)) {
-        Log::Error(Event::General, "Failed to open Action Journal file");
+        if (!openFile(detectFiles(), false)) {
+            Log::Error(Event::General, "Failed to open Action Journal file");
+        }
+    } catch (const mln::filesystem::filesystem_error& e) {
+        Log::Error(Event::General, std::string("Action Journal file exception: ") + e.what());
+    } catch (...) {
+        Log::Error(Event::General, std::string("Action Journal exception: ") + toString(std::current_exception()));
     }
+
+    scheduler->setExceptionHandler(
+        [](const std::exception_ptr e) { Log::Error(Event::General, "Action Journal log exception: " + toString(e)); });
 }
 
 ActionJournal::Impl::~Impl() {
@@ -165,12 +175,12 @@ std::string ActionJournal::Impl::getLogDirectory() const {
 
 std::vector<std::string> ActionJournal::Impl::getLogFiles() const {
     std::set<std::string> files;
-    for (const auto& entry : mbgl::filesystem::directory_iterator(options.path())) {
+    for (const auto& entry : mln::filesystem::directory_iterator(options.path())) {
         if (!entry.is_regular_file()) {
             continue;
         }
 
-        files.emplace(mbgl::filesystem::canonical(entry.path()).generic_string());
+        files.emplace(mln::filesystem::canonical(entry.path()).generic_string());
     }
 
     return std::vector<std::string>(files.begin(), files.end());
@@ -225,7 +235,7 @@ void ActionJournal::Impl::clearLog() {
     currentFileIndex = 0;
     currentFileSize = 0;
 
-    if (!mbgl::filesystem::remove_all(options.path())) {
+    if (!mln::filesystem::remove_all(options.path())) {
         Log::Error(Event::General, "Failed to clear ActionJournal");
     }
 
@@ -477,6 +487,26 @@ void ActionJournal::Impl::onSpriteRequested(const std::optional<style::Sprite>& 
     });
 }
 
+void ActionJournal::Impl::onRenderError(std::exception_ptr e) {
+    scheduler->schedule([=, this, env = MapEnvironmentSnapshot(*this)]() {
+        ActionJournalEvent event("onRenderError", env);
+
+        event.addEvent("exception", toString(e));
+
+        log(event);
+    });
+}
+
+void ActionJournal::Impl::onSymbolError(const std::string& message) {
+    scheduler->schedule([=, this, env = MapEnvironmentSnapshot(*this)]() {
+        ActionJournalEvent event("onSymbolError", env);
+
+        event.addEvent("message", message);
+
+        log(event);
+    });
+}
+
 void ActionJournal::Impl::onMapCreate() {
     scheduler->schedule(
         [=, this, env = MapEnvironmentSnapshot(*this)]() { log(ActionJournalEvent("onMapCreate", env)); });
@@ -501,16 +531,16 @@ std::string ActionJournal::Impl::getFilepath(uint32_t fileIndex) const {
 }
 
 uint32_t ActionJournal::Impl::detectFiles() const {
-    if (!mbgl::filesystem::exists(options.path())) {
+    if (!mln::filesystem::exists(options.path())) {
         return 0;
     }
 
-    std::map<uint32_t, mbgl::filesystem::path> existingFiles;
+    std::map<uint32_t, mln::filesystem::path> existingFiles;
 
     const std::regex fileRegex(std::string(R"(.*\.([0-9]+)\.)") + ACTION_JOURNAL_FILE_EXTENSION);
     std::smatch fileMatch;
 
-    for (const auto& entry : mbgl::filesystem::directory_iterator(options.path())) {
+    for (const auto& entry : mln::filesystem::directory_iterator(options.path())) {
         if (!entry.is_regular_file()) {
             continue;
         }
@@ -529,7 +559,7 @@ uint32_t ActionJournal::Impl::detectFiles() const {
 
     // removing extra files (old files or due to the file count changing)
     for (auto it = existingFiles.begin(); existingFiles.size() > options.logFileCount();) {
-        mbgl::filesystem::remove(it->second);
+        mln::filesystem::remove(it->second);
         it = existingFiles.erase(it);
     }
 
@@ -538,7 +568,7 @@ uint32_t ActionJournal::Impl::detectFiles() const {
     // validate file index
     for (const auto& file : existingFiles) {
         if (file.first != expectedIndex) {
-            mbgl::filesystem::rename(file.second, getFilepath(expectedIndex));
+            mln::filesystem::rename(file.second, getFilepath(expectedIndex));
         }
 
         ++expectedIndex;
@@ -550,16 +580,16 @@ uint32_t ActionJournal::Impl::detectFiles() const {
 uint32_t ActionJournal::Impl::rollFiles() {
     // delete the oldest file
     const auto& oldestFilepath = getFilepath(0);
-    if (mbgl::filesystem::exists(oldestFilepath)) {
-        mbgl::filesystem::remove(oldestFilepath);
+    if (mln::filesystem::exists(oldestFilepath)) {
+        mln::filesystem::remove(oldestFilepath);
     }
 
     // rename the rest
     uint32_t expectedIndex = 0;
     for (uint32_t index = 1; index < options.logFileCount(); ++index) {
         const auto& filepath = getFilepath(index);
-        if (mbgl::filesystem::exists(filepath)) {
-            mbgl::filesystem::rename(filepath, getFilepath(expectedIndex++));
+        if (mln::filesystem::exists(filepath)) {
+            mln::filesystem::rename(filepath, getFilepath(expectedIndex++));
         }
     }
 
@@ -569,8 +599,8 @@ uint32_t ActionJournal::Impl::rollFiles() {
 bool ActionJournal::Impl::openFile(uint32_t fileIndex, bool truncate) {
     assert(fileIndex < options.logFileCount());
 
-    if (!mbgl::filesystem::exists(options.path())) {
-        mbgl::filesystem::create_directories(options.path());
+    if (!mln::filesystem::exists(options.path())) {
+        mln::filesystem::create_directories(options.path());
     }
 
     const auto& filepath = getFilepath(fileIndex);
@@ -581,7 +611,7 @@ bool ActionJournal::Impl::openFile(uint32_t fileIndex, bool truncate) {
 
     if (currentFile.is_open()) {
         currentFileIndex = fileIndex;
-        currentFileSize = mbgl::filesystem::file_size(filepath);
+        currentFileSize = mln::filesystem::file_size(filepath);
         return true;
     }
 
@@ -589,7 +619,14 @@ bool ActionJournal::Impl::openFile(uint32_t fileIndex, bool truncate) {
 }
 
 bool ActionJournal::Impl::prepareFile(size_t size) {
-    if (currentFileSize + size <= options.logFileSize() && currentFile) {
+    if (!currentFile) {
+        if (!openFile(detectFiles(), false)) {
+            Log::Error(Event::General, "Failed to open Action Journal file");
+            return false;
+        }
+    }
+
+    if (currentFileSize + size <= options.logFileSize()) {
         currentFileSize += size;
         return true;
     }
@@ -622,4 +659,4 @@ void ActionJournal::Impl::logToFile(const std::string& value) {
 }
 
 } // namespace util
-} // namespace mbgl
+} // namespace mln

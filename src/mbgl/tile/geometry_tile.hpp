@@ -15,7 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace mbgl {
+namespace mln {
 
 class GeometryTileData;
 class RenderLayer;
@@ -68,7 +68,7 @@ public:
 
     class LayoutResult {
     public:
-        mbgl::unordered_map<std::string, LayerRenderData> layerRenderData;
+        mln::unordered_map<std::string, LayerRenderData> layerRenderData;
         std::shared_ptr<FeatureIndex> featureIndex;
         gfx::GlyphAtlas glyphAtlas;
         gfx::ImageAtlas imageAtlas;
@@ -76,7 +76,7 @@ public:
 
         LayerRenderData* getLayerRenderData(const style::Layer::Impl&);
 
-        LayoutResult(mbgl::unordered_map<std::string, LayerRenderData>&& renderData_,
+        LayoutResult(mln::unordered_map<std::string, LayerRenderData>&& renderData_,
                      std::unique_ptr<FeatureIndex>&& featureIndex_,
                      gfx::GlyphAtlas&& glyphAtlas_,
                      gfx::ImageAtlas&& imageAtlas_,
@@ -92,6 +92,8 @@ public:
     void onLayout(std::shared_ptr<LayoutResult>&&, uint64_t correlationID);
 
     void onError(std::exception_ptr, uint64_t correlationID);
+
+    void setObserver(TileObserver*) override;
 
     bool holdForFade() const override;
     void markRenderedIdeal() override;
@@ -139,4 +141,4 @@ private:
     FadeState fadeState = FadeState::Loaded;
 };
 
-} // namespace mbgl
+} // namespace mln

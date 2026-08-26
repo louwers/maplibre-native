@@ -28,7 +28,7 @@ const size_t kMarkBatchSize = 200;
 
 } // namespace
 
-namespace mbgl {
+namespace mln {
 
 using namespace style;
 
@@ -219,6 +219,7 @@ OfflineRegionStatus OfflineDownload::getStatus() const {
             case SourceType::Video:
             case SourceType::Annotations:
             case SourceType::CustomVector:
+            case SourceType::CustomMVTVector:
                 break;
         }
     }
@@ -333,6 +334,7 @@ void OfflineDownload::activateDownload() {
                 case SourceType::Video:
                 case SourceType::Annotations:
                 case SourceType::CustomVector:
+                case SourceType::CustomMVTVector:
                     break;
             }
         }
@@ -442,7 +444,7 @@ void OfflineDownload::queueResource(Resource&& resource) {
     resource.setPriority(Resource::Priority::Low);
     resource.setUsage(Resource::Usage::Offline);
     status.requiredResourceCount++;
-    if (resource.kind == mbgl::Resource::Kind::Tile) {
+    if (resource.kind == mln::Resource::Kind::Tile) {
         status.requiredTileCount++;
     }
     resourcesRemaining.push_front(std::move(resource));
@@ -560,4 +562,4 @@ void OfflineDownload::onMapboxTileCountLimitExceeded() {
     setState(OfflineRegionDownloadState::Inactive);
 }
 
-} // namespace mbgl
+} // namespace mln

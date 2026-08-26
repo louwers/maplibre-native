@@ -21,7 +21,7 @@ std::string sprintf(const char* msg, Args... args) {
 
 const static bool png_version_check [[maybe_unused]] = []() {
     const png_uint_32 version = png_access_version_number();
-    if (version != PNG_LIBPNG_VER) {
+    if (version / 100 != PNG_LIBPNG_VER / 100) {
         throw std::runtime_error(
             sprintf<96>("libpng version mismatch: headers report %d.%d.%d, but library "
                         "reports %d.%d.%d",
@@ -35,7 +35,7 @@ const static bool png_version_check [[maybe_unused]] = []() {
     return true;
 }();
 
-namespace mbgl {
+namespace mln {
 
 namespace {
 void user_error_fn(png_structp, png_const_charp error_msg) {
@@ -133,4 +133,4 @@ PremultipliedImage decodePNG(const uint8_t* data, size_t size) {
     return util::premultiply(std::move(image));
 }
 
-} // namespace mbgl
+} // namespace mln

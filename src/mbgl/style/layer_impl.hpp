@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-namespace mbgl {
+namespace mln {
 namespace style {
 
 /**
@@ -78,4 +78,4 @@ protected:
     static const LayerTypeInfo* staticTypeInfo() noexcept
 
 } // namespace style
-} // namespace mbgl
+} // namespace mln

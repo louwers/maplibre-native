@@ -7,7 +7,7 @@
 
 #include <memory>
 
-namespace mbgl {
+namespace mln {
 
 template <class AttributeList>
 class Segment;
@@ -84,4 +84,4 @@ protected:
 };
 
 } // namespace mtl
-} // namespace mbgl
+} // namespace mln

@@ -6,7 +6,7 @@
 
 #include <fstream>
 
-namespace mbgl {
+namespace mln {
 
 class Map;
 class Scheduler;
@@ -55,6 +55,8 @@ public:
     void onSpriteLoaded(const std::optional<style::Sprite>&) override;
     void onSpriteError(const std::optional<style::Sprite>&, std::exception_ptr) override;
     void onSpriteRequested(const std::optional<style::Sprite>&) override;
+    void onRenderError(std::exception_ptr) override;
+    void onSymbolError(const std::string&) override;
 
     void onMapCreate();
     void onMapDestroy();
@@ -120,4 +122,4 @@ protected:
 };
 
 } // namespace util
-} // namespace mbgl
+} // namespace mln

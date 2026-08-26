@@ -3,7 +3,7 @@
 #include <mbgl/renderer/layers/render_custom_layer.hpp>
 #include <mbgl/style/layer_observer.hpp>
 
-namespace mbgl {
+namespace mln {
 namespace style {
 
 namespace {
@@ -36,8 +36,8 @@ std::unique_ptr<Layer> CustomLayer::cloneRef(const std::string&) const {
 
 using namespace conversion;
 
-std::optional<Error> CustomLayer::setPropertyInternal(const std::string&, const Convertible&) {
-    return Error{"layer doesn't support this property"};
+std::optional<Error> CustomLayer::setPropertyInternal(const std::string& name, const Convertible&) {
+    return Error{"layer '" + getID() + "' doesn't support property '" + name + "'"};
 }
 
 StyleProperty CustomLayer::getProperty(const std::string&) const {
@@ -54,4 +54,4 @@ const LayerTypeInfo* CustomLayer::Impl::staticTypeInfo() noexcept {
 }
 
 } // namespace style
-} // namespace mbgl
+} // namespace mln

@@ -8,14 +8,14 @@
 #include <memory>
 #include <vector> // Added for std::vector<float>
 
-namespace mbgl {
+namespace mln {
 namespace gfx {
 class Texture2D;
 class ShaderProgramBase;
 } // namespace gfx
-} // namespace mbgl
+} // namespace mln
 
-namespace mbgl {
+namespace mln {
 
 class RenderColorReliefLayer final : public RenderLayer {
 public:
@@ -23,26 +23,27 @@ public:
     ~RenderColorReliefLayer() override;
 
     /// Generate any changes needed by the layer
-    void update(gfx::ShaderRegistry&,
-                gfx::Context&,
-                const TransformState&,
-                const std::shared_ptr<UpdateParameters>&,
-                const RenderTree&,
-                UniqueChangeRequestVec&) override;
+    void update(gfx::ShaderRegistry &,
+                gfx::Context &,
+                const TransformState &,
+                const std::shared_ptr<UpdateParameters> &,
+                const PaintParameters &,
+                const RenderTree &,
+                UniqueChangeRequestVec &) override;
 
 private:
-    void transition(const TransitionParameters&) override;
-    void evaluate(const PropertyEvaluationParameters&) override;
+    void transition(const TransitionParameters &) override;
+    void evaluate(const PropertyEvaluationParameters &) override;
     bool hasTransition() const override;
     bool hasCrossfade() const override;
-    void prepare(const LayerPrepareParameters&) override;
-    bool queryIntersectsFeature(const GeometryCoordinates&,
-                                const GeometryTileFeature&,
+    void prepare(const LayerPrepareParameters &) override;
+    bool queryIntersectsFeature(const GeometryCoordinates &,
+                                const GeometryTileFeature &,
                                 float,
-                                const TransformState&,
+                                const TransformState &,
                                 float,
-                                const mat4&,
-                                const FeatureState&) const override;
+                                const mat4 &,
+                                const FeatureState &) const override;
     void updateColorRamp();
 
     // Paint properties
@@ -69,4 +70,4 @@ private:
     std::shared_ptr<ColorReliefVertexVector> staticDataSharedVertices;
 };
 
-} // namespace mbgl
+} // namespace mln

@@ -1,8 +1,9 @@
 #include <mbgl/style/expression/length.hpp>
 #include <mbgl/style/conversion_impl.hpp>
+#include <mbgl/style/expression/utf8_op_helpers.hpp>
 #include <mbgl/util/string.hpp>
 
-namespace mbgl {
+namespace mln {
 namespace style {
 namespace expression {
 
@@ -13,12 +14,13 @@ Length::Length(std::unique_ptr<Expression> input_)
 EvaluationResult Length::evaluate(const EvaluationContext& params) const {
     EvaluationResult value = input->evaluate(params);
     if (!value) return value;
-    return value->match([](const std::string& s) { return EvaluationResult{static_cast<double>(s.size())}; },
-                        [](const std::vector<Value>& v) { return EvaluationResult{static_cast<double>(v.size())}; },
-                        [&](const auto&) -> EvaluationResult {
-                            return EvaluationError{"Expected value to be of type string or array, but found " +
-                                                   toString(typeOf(*value)) + " instead."};
-                        });
+    return value->match(
+        [](const std::string& s) { return EvaluationResult{static_cast<double>(unicodeLengthOnValidatedUtf8(s))}; },
+        [](const std::vector<Value>& v) { return EvaluationResult{static_cast<double>(v.size())}; },
+        [&](const auto&) -> EvaluationResult {
+            return EvaluationError{"Expected value to be of type string or array, but found " +
+                                   toString(typeOf(*value)) + " instead."};
+        });
 }
 
 void Length::eachChild(const std::function<void(const Expression&)>& visit) const {
@@ -37,7 +39,7 @@ std::vector<std::optional<Value>> Length::possibleOutputs() const {
     return {std::nullopt};
 }
 
-using namespace mbgl::style::conversion;
+using namespace mln::style::conversion;
 ParseResult Length::parse(const Convertible& value, ParsingContext& ctx) {
     std::size_t length = arrayLength(value);
 
@@ -60,4 +62,4 @@ ParseResult Length::parse(const Convertible& value, ParsingContext& ctx) {
 
 } // namespace expression
 } // namespace style
-} // namespace mbgl
+} // namespace mln

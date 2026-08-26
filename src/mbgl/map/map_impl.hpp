@@ -16,7 +16,7 @@
 
 #include <numbers>
 
-namespace mbgl {
+namespace mln {
 
 class FileSource;
 class ResourceTransform;
@@ -75,6 +75,7 @@ public:
     void onGlyphsRequested(const FontStack&, const GlyphRange&) final;
     void onTileAction(TileOperation op, const OverscaledTileID&, const std::string&) final;
     void onRenderError(std::exception_ptr) final;
+    void onSymbolError(const std::string&) final;
 
     // Map
     void jumpTo(const CameraOptions&);
@@ -121,4 +122,4 @@ CameraOptions cameraForLatLngs(const std::vector<LatLng>& latLngs,
                                const Transform& transform,
                                const EdgeInsets& padding);
 
-} // namespace mbgl
+} // namespace mln

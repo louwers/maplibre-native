@@ -15,7 +15,7 @@
 #include <memory>
 #include <string>
 
-namespace mbgl {
+namespace mln {
 namespace plugin {
 class PluginLayerHost;
 }
@@ -174,6 +174,7 @@ public:
                         gfx::Context&,
                         const TransformState&,
                         const std::shared_ptr<UpdateParameters>&,
+                        const PaintParameters&,
                         const RenderTree&,
                         UniqueChangeRequestVec&) {}
 
@@ -349,4 +350,4 @@ private:
 
 using RenderLayerReferences = std::vector<std::reference_wrapper<RenderLayer>>;
 
-} // namespace mbgl
+} // namespace mln

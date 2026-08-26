@@ -17,6 +17,7 @@
 #include <mbgl/tile/geometry_tile_data.hpp>
 #include <mbgl/tile/geometry_tile_worker.hpp>
 #include <mbgl/tile/tile_observer.hpp>
+#include <mbgl/util/error_sink.hpp>
 #include <mbgl/util/instrumentation.hpp>
 #include <mbgl/util/logging.hpp>
 #include <mbgl/util/thread_pool.hpp>
@@ -24,7 +25,7 @@
 
 #include <utility>
 
-namespace mbgl {
+namespace mln {
 
 LayerRenderData* GeometryTile::LayoutResult::getLayerRenderData(const style::Layer::Impl& layerImpl) {
     MLN_TRACE_FUNC();
@@ -204,7 +205,8 @@ GeometryTile::GeometryTile(const OverscaledTileID& id_,
              parameters.pixelRatio,
              parameters.debugOptions & MapDebugOptions::Collision,
              parameters.dynamicTextureAtlas,
-             parameters.glyphManager->getFontFaces()),
+             parameters.glyphManager->getFontFaces(),
+             observer),
       fileSource(parameters.fileSource),
       glyphManager(parameters.glyphManager),
       imageManager(parameters.imageManager),
@@ -344,6 +346,8 @@ void GeometryTile::onLayout(std::shared_ptr<LayoutResult>&& result, const uint64
         observer->onTileAction(id, sourceID, TileOperation::EndParse);
     }
 
+    const ErrorScope errorScope{observer};
+
     layoutResult = std::move(result);
     if (!atlasTextures) {
         atlasTextures = std::make_shared<TileAtlasTextures>();
@@ -366,6 +370,12 @@ void GeometryTile::onLayout(std::shared_ptr<LayoutResult>&& result, const uint64
             }
         }
     }
+}
+
+void GeometryTile::setObserver(TileObserver* observer_) {
+    Tile::setObserver(observer_);
+
+    worker.self().invoke(&GeometryTileWorker::setObserver, observer);
 }
 
 void GeometryTile::onError(std::exception_ptr err, const uint64_t resultCorrelationID) {
@@ -608,4 +618,4 @@ void GeometryTile::setFeatureState(const LayerFeatureStates& states) {
     }
 }
 
-} // namespace mbgl
+} // namespace mln

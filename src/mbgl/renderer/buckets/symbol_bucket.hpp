@@ -15,7 +15,7 @@
 #include <memory>
 #include <vector>
 
-namespace mbgl {
+namespace mln {
 
 class CrossTileSymbolLayerIndex;
 
@@ -228,6 +228,7 @@ public:
 
     void upload(gfx::UploadPass&) override;
     bool hasData() const override;
+    void update(const FeatureStates&, const GeometryTileLayer&, const std::string&, const ImagePositions&) override;
     std::pair<uint32_t, bool> registerAtCrossTileIndex(CrossTileSymbolLayerIndex&, const RenderTile&) override;
     void place(Placement&, const BucketPlacementData&, std::set<uint32_t>&) override;
     void updateVertices(
@@ -444,4 +445,4 @@ public:
     FeatureSortOrder featureSortOrder;
 };
 
-} // namespace mbgl
+} // namespace mln

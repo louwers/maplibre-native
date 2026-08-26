@@ -3,7 +3,7 @@
 #include <mbgl/shaders/shader_source.hpp>
 #include <mbgl/shaders/vulkan/shader_program.hpp>
 
-namespace mbgl {
+namespace mln {
 namespace shaders {
 
 constexpr auto locationIndicatorShaderPrelude = R"(#define idLocationIndicatorDrawableUBO  drawableUBOStartId)";
@@ -80,10 +80,14 @@ layout(location = 0) out vec4 out_color;
 layout(set = DRAWABLE_IMAGE_SET_INDEX, binding = 0) uniform sampler2D image_sampler;
 
 void main() {
-    out_color = texture(image_sampler, frag_uv);
+    // using lod bias variant for sampling as a workaround for Adreno 600 series
+    out_color = texture(image_sampler, frag_uv, 0.0);
+    // working alternatives
+    //out_color = textureGrad(image_sampler, frag_uv, dFdx(frag_uv), dFdy(frag_uv));
+    //out_color = texelFetch(image_sampler, ivec2(frag_uv * vec2(textureSize(image_sampler, 0))), 0);
 }
 )";
 };
 
 } // namespace shaders
-} // namespace mbgl
+} // namespace mln

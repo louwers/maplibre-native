@@ -19,7 +19,7 @@
 #include <unordered_map>
 #include <optional>
 
-namespace mbgl {
+namespace mln {
 
 class LayerRenderData;
 class TransformState;
@@ -62,7 +62,7 @@ public:
 
     virtual std::unique_ptr<TileRenderData> createRenderData() = 0;
 
-    void setObserver(TileObserver* observer);
+    virtual void setObserver(TileObserver* observer);
 
     virtual void setNecessity(TileNecessity) {}
 
@@ -157,4 +157,4 @@ protected:
     TileObserver* observer = nullptr;
 };
 
-} // namespace mbgl
+} // namespace mln

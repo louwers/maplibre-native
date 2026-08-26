@@ -1,9 +1,10 @@
 #include "mbgl/style/expression/expression.hpp"
 #include <mbgl/style/conversion_impl.hpp>
 #include <mbgl/style/expression/index_of.hpp>
+#include <mbgl/style/expression/utf8_op_helpers.hpp>
 #include <mbgl/util/string.hpp>
 
-namespace mbgl {
+namespace mln {
 namespace style {
 namespace expression {
 
@@ -77,10 +78,13 @@ EvaluationResult IndexOf::evaluateForStringInput(const std::string &string,
             assert(false);
             return "";
         });
-    size_t index = string.find(keywordString, fromIndexValue);
-    if (index == std::string::npos) {
+    size_t fromIndexByteOffset = getUnicodeCharacterOffsetOnValidatedUtf8(string, fromIndexValue);
+    size_t byte_index = string.find(keywordString, fromIndexByteOffset);
+    if (byte_index == std::string::npos) {
         return static_cast<double>(-1);
     }
+    std::string_view prefix(string.data(), byte_index);
+    size_t index = unicodeLengthOnValidatedUtf8(prefix);
     return static_cast<double>(index);
 }
 
@@ -92,7 +96,7 @@ void IndexOf::eachChild(const std::function<void(const Expression &)> &visit) co
     }
 }
 
-using namespace mbgl::style::conversion;
+using namespace mln::style::conversion;
 ParseResult IndexOf::parse(const Convertible &value, ParsingContext &ctx) {
     assert(isArray(value));
 
@@ -131,4 +135,4 @@ std::vector<std::optional<Value>> IndexOf::possibleOutputs() const {
 
 } // namespace expression
 } // namespace style
-} // namespace mbgl
+} // namespace mln

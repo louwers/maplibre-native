@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace mbgl {
+namespace mln {
 
 class CollisionIndex;
 class ImageManager;
@@ -127,6 +127,7 @@ protected:
     void onTileChanged(Tile&) override;
     void onTileError(Tile&, std::exception_ptr) final;
     void onTileAction(OverscaledTileID, std::string, TileOperation) override;
+    void onSymbolError(const std::string&) override;
 };
 
-} // namespace mbgl
+} // namespace mln

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace mbgl {
+namespace mln {
 
 namespace style {
 
@@ -15,7 +15,8 @@ enum class SourceType : uint8_t {
     Video,
     Annotations,
     Image,
-    CustomVector
+    CustomVector,
+    CustomMVTVector
 };
 
 enum class VisibilityType : bool {
@@ -134,4 +135,4 @@ enum class LightAnchorType : bool {
 };
 
 } // namespace style
-} // namespace mbgl
+} // namespace mln

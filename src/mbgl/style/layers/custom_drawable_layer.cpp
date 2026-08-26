@@ -33,7 +33,7 @@
 
 #include <cmath>
 
-namespace mbgl {
+namespace mln {
 
 namespace style {
 
@@ -69,8 +69,8 @@ std::unique_ptr<Layer> CustomDrawableLayer::cloneRef(const std::string&) const {
 
 using namespace conversion;
 
-std::optional<Error> CustomDrawableLayer::setPropertyInternal(const std::string&, const Convertible&) {
-    return Error{"layer doesn't support this property"};
+std::optional<Error> CustomDrawableLayer::setPropertyInternal(const std::string& name, const Convertible&) {
+    return Error{"layer '" + getID() + "' doesn't support property '" + name + "'"};
 }
 
 StyleProperty CustomDrawableLayer::getProperty(const std::string&) const {
@@ -533,8 +533,8 @@ util::SimpleIdentity CustomDrawableLayerHost::Interface::addPolyline(const LineS
             GeometryCoordinates tileCoordinates;
             for (const auto& coord : coordinates) {
                 const auto point = Projection::project(LatLng(coord.y, coord.x), zoom);
-                tileCoordinates.push_back(Point<int16_t>(static_cast<int16_t>(point.x * mbgl::util::EXTENT),
-                                                         static_cast<int16_t>(point.y * mbgl::util::EXTENT)));
+                tileCoordinates.push_back(Point<int16_t>(static_cast<int16_t>(point.x * mln::util::EXTENT),
+                                                         static_cast<int16_t>(point.y * mln::util::EXTENT)));
             }
 
             builder->addPolyline(tileCoordinates, lineOptions.geometry);
@@ -747,7 +747,7 @@ util::SimpleIdentity CustomDrawableLayerHost::Interface::addGeometry(
 
     // white texture
     if (!geometryOptions.texture) {
-        auto image = std::make_shared<PremultipliedImage>(mbgl::Size(2, 2));
+        auto image = std::make_shared<PremultipliedImage>(mln::Size(2, 2));
         image->fill(255);
 
         geometryOptions.texture = context.createTexture2D();
@@ -888,4 +888,4 @@ std::unique_ptr<gfx::DrawableBuilder> CustomDrawableLayerHost::Interface::create
 }
 
 } // namespace style
-} // namespace mbgl
+} // namespace mln

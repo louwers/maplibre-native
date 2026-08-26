@@ -8,7 +8,7 @@
 
 #include <optional>
 
-namespace mbgl {
+namespace mln {
 
 class HeatmapLayerTweaker;
 class HeatmapTextureLayerTweaker;
@@ -27,6 +27,7 @@ public:
                 gfx::Context&,
                 const TransformState&,
                 const std::shared_ptr<UpdateParameters>&,
+                const PaintParameters&,
                 const RenderTree&,
                 UniqueChangeRequestVec&) override;
 
@@ -74,4 +75,4 @@ private:
     LayerTweakerPtr textureTweaker;
 };
 
-} // namespace mbgl
+} // namespace mln

@@ -13,16 +13,21 @@
 #include <mbgl/gfx/drawable_custom_layer_host_tweaker.hpp>
 #include <mbgl/gfx/drawable_builder.hpp>
 
-#if MLN_RENDER_BACKEND_VULKAN
+#if MLN_RENDER_BACKEND_METAL
+#include <mbgl/style/layers/mtl/custom_layer_render_parameters.hpp>
+#include <mbgl/mtl/render_pass.hpp>
+#elif MLN_RENDER_BACKEND_VULKAN
 #include <mbgl/vulkan/context.hpp>
 #include <mbgl/vulkan/renderer_backend.hpp>
 #include <mbgl/style/layers/vulkan/custom_layer_init_parameters.hpp>
+#include <mbgl/style/layers/vulkan/custom_layer_render_parameters.hpp>
+#include <mbgl/vulkan/render_pass.hpp>
 #endif
 
 // TODO: platform agnostic error checks
 #define MBGL_CHECK_ERROR(cmd) (cmd)
 
-namespace mbgl {
+namespace mln {
 
 using namespace style;
 
@@ -36,7 +41,7 @@ inline const CustomLayer::Impl& impl(const Immutable<style::Layer::Impl>& impl) 
 void initializeHost(const std::shared_ptr<style::CustomLayerHost>& host, [[maybe_unused]] gfx::Context& context) {
 #if MLN_RENDER_BACKEND_VULKAN
     {
-        auto& vkBackend = static_cast<mbgl::vulkan::Context&>(context).getBackend();
+        auto& vkBackend = static_cast<mln::vulkan::Context&>(context).getBackend();
         style::vulkan::CustomLayerInitParameters params(
             vkBackend.getDispatcher(), vkBackend.getDevice().get(), vkBackend.getPhysicalDevice());
         host->initialize(params);
@@ -48,6 +53,20 @@ void initializeHost(const std::shared_ptr<style::CustomLayerHost>& host, [[maybe
     }
 #endif
 }
+
+void callPreRender(const std::shared_ptr<style::CustomLayerHost>& host,
+                   gfx::Context& context,
+                   const PaintParameters& paintParameters) {
+#if MLN_RENDER_BACKEND_METAL
+    style::mtl::CustomLayerRenderParameters parameters(paintParameters);
+#elif MLN_RENDER_BACKEND_VULKAN
+    style::vulkan::CustomLayerRenderParameters parameters(paintParameters);
+#else
+    style::CustomLayerRenderParameters parameters(paintParameters);
+#endif
+    host->preRender(context, parameters);
+}
+
 } // namespace
 
 RenderCustomLayer::RenderCustomLayer(Immutable<style::CustomLayer::Impl> _impl)
@@ -87,6 +106,7 @@ void RenderCustomLayer::update([[maybe_unused]] gfx::ShaderRegistry& shaders,
                                gfx::Context& context,
                                [[maybe_unused]] const TransformState& state,
                                const std::shared_ptr<UpdateParameters>&,
+                               [[maybe_unused]] const PaintParameters& paintParameters,
                                [[maybe_unused]] const RenderTree& renderTree,
                                [[maybe_unused]] UniqueChangeRequestVec& changes) {
     // create layer group
@@ -114,6 +134,9 @@ void RenderCustomLayer::update([[maybe_unused]] gfx::ShaderRegistry& shaders,
         needsInitialize = false;
     }
 
+    // call the pre-render
+    MBGL_CHECK_ERROR(callPreRender(host, context, paintParameters));
+
     // create drawable
     if (localLayerGroup->getDrawableCount() == 0 || hostChanged) {
         localLayerGroup->clearDrawables();
@@ -136,4 +159,4 @@ void RenderCustomLayer::update([[maybe_unused]] gfx::ShaderRegistry& shaders,
     }
 }
 
-} // namespace mbgl
+} // namespace mln

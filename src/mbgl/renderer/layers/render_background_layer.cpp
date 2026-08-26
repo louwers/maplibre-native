@@ -23,7 +23,7 @@
 
 #include <algorithm>
 
-namespace mbgl {
+namespace mln {
 
 using namespace style;
 using namespace shaders;
@@ -63,7 +63,7 @@ void RenderBackgroundLayer::evaluate(const PropertyEvaluationParameters& paramet
                  ? RenderPass::Translucent
                  // Supply both - evaluated based on opaquePassCutoff in render().
                  : RenderPass::Opaque | RenderPass::Translucent;
-    properties->renderPasses = mbgl::underlying_type(passes);
+    properties->renderPasses = mln::underlying_type(passes);
 
     evaluatedProperties = std::move(properties);
 
@@ -116,6 +116,7 @@ void RenderBackgroundLayer::update(gfx::ShaderRegistry& shaders,
                                    gfx::Context& context,
                                    const TransformState& state,
                                    const std::shared_ptr<UpdateParameters>& updateParameters,
+                                   [[maybe_unused]] const PaintParameters& paintParameters,
                                    [[maybe_unused]] const RenderTree& renderTree,
                                    [[maybe_unused]] UniqueChangeRequestVec& changes) {
     assert(updateParameters);
@@ -232,4 +233,4 @@ void RenderBackgroundLayer::update(gfx::ShaderRegistry& shaders,
     }
 }
 
-} // namespace mbgl
+} // namespace mln

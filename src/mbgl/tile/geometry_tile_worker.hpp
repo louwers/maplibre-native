@@ -17,7 +17,7 @@
 #include <atomic>
 #include <memory>
 
-namespace mbgl {
+namespace mln {
 
 class GeometryTile;
 class GeometryTileData;
@@ -44,8 +44,11 @@ public:
                        float pixelRatio,
                        bool showCollisionBoxes_,
                        gfx::DynamicTextureAtlasPtr,
-                       std::shared_ptr<FontFaces> fontFaces);
+                       std::shared_ptr<FontFaces> fontFaces,
+                       TileObserver* observer);
     ~GeometryTileWorker();
+
+    void setObserver(TileObserver* observer);
 
     void setLayers(std::vector<Immutable<style::LayerProperties>>,
                    std::set<std::string> availableImages,
@@ -90,7 +93,7 @@ private:
     const float pixelRatio;
 
     std::unique_ptr<FeatureIndex> featureIndex;
-    mbgl::unordered_map<std::string, LayerRenderData> renderData;
+    mln::unordered_map<std::string, LayerRenderData> renderData;
 
     enum State {
         Idle,
@@ -123,6 +126,8 @@ private:
     gfx::DynamicTextureAtlasPtr dynamicTextureAtlas;
 
     std::shared_ptr<FontFaces> fontFaces;
+
+    TileObserver* observer;
 };
 
-} // namespace mbgl
+} // namespace mln

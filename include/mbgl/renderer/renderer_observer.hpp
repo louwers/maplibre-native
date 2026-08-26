@@ -7,21 +7,22 @@
 #include <mbgl/tile/tile_operation.hpp>
 #include <mbgl/gfx/backend.hpp>
 #include <mbgl/shaders/shader_source.hpp>
+#include <mbgl/util/symbol_error_observer.hpp>
 
 #include <cstdint>
 #include <exception>
 #include <functional>
 #include <string>
 
-namespace mbgl {
+namespace mln {
 
 namespace gfx {
 class ShaderRegistry;
 }
 
-class RendererObserver {
+class RendererObserver : public SymbolErrorObserver {
 public:
-    virtual ~RendererObserver() = default;
+    ~RendererObserver() override = default;
 
     enum class RenderMode : uint32_t {
         Partial,
@@ -85,4 +86,4 @@ public:
     virtual void onRenderError(std::exception_ptr) {}
 };
 
-} // namespace mbgl
+} // namespace mln

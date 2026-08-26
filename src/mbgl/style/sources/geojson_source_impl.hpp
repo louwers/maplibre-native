@@ -4,7 +4,7 @@
 #include <mbgl/style/sources/geojson_source.hpp>
 #include <mbgl/util/range.hpp>
 
-namespace mbgl {
+namespace mln {
 
 class AsyncRequest;
 class CanonicalTileID;
@@ -24,11 +24,13 @@ public:
     std::optional<std::string> getAttribution() const final;
 
     bool isUpdateSynchronous() const final;
+    void setOverrideSynchronousUpdate(bool newOverride) const;
 
 private:
     Immutable<GeoJSONOptions> options;
     std::shared_ptr<GeoJSONData> data;
+    mutable bool overrideSynchronousUpdate = false;
 };
 
 } // namespace style
-} // namespace mbgl
+} // namespace mln

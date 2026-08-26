@@ -4,7 +4,7 @@
 #include <string>
 #include <exception>
 
-namespace mbgl {
+namespace mln {
 
 class RenderSource;
 class OverscaledTileID;
@@ -16,6 +16,8 @@ public:
     virtual void onTileChanged(RenderSource&, const OverscaledTileID&) {}
     virtual void onTileError(RenderSource&, const OverscaledTileID&, std::exception_ptr) {}
     virtual void onTileAction(RenderSource&, TileOperation, const OverscaledTileID&, const std::string&) {}
+
+    virtual void onSymbolError(RenderSource&, const std::string&) {}
 };
 
-} // namespace mbgl
+} // namespace mln

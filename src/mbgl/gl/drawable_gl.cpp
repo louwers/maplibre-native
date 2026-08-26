@@ -12,7 +12,7 @@
 #include <mbgl/util/instrumentation.hpp>
 #include <mbgl/util/logging.hpp>
 
-namespace mbgl {
+namespace mln {
 namespace gl {
 
 DrawableGL::DrawableGL(std::string name_)
@@ -108,7 +108,7 @@ void DrawableGL::draw(PaintParameters& parameters) const {
         }
     }
     if (!shader || context.program.getCurrentValue() == 0) {
-        mbgl::Log::Warning(Event::General, "Missing shader for drawable " + util::toString(getID()) + "/" + getName());
+        mln::Log::Warning(Event::General, "Missing shader for drawable " + util::toString(getID()) + "/" + getName());
         assert(false);
         return;
     }
@@ -344,4 +344,4 @@ void DrawableGL::unbindTextures() const {
 }
 
 } // namespace gl
-} // namespace mbgl
+} // namespace mln
