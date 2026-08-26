@@ -1,10 +1,10 @@
-#include <mbgl/plugin/plugin_registry.hpp>
+#include <mln/plugin/plugin_registry.hpp>
 
 #include <algorithm>
 #include <cstring>
 #include <set>
 
-namespace mbgl {
+namespace mln {
 namespace plugin {
 namespace {
 
@@ -341,7 +341,7 @@ bool PluginRegistry::valueMatches(mln_plugin_value_type type, const Value& value
 }
 
 } // namespace plugin
-} // namespace mbgl
+} // namespace mln
 
 extern "C" {
 
@@ -350,7 +350,7 @@ mln_plugin_status mln_plugin_register_v1(const mln_plugin_descriptor_v1* descrip
                                          size_t errorMessageCapacity) {
     if (!descriptor) return MLN_PLUGIN_STATUS_INVALID_ARGUMENT;
     std::string error;
-    const auto status = mbgl::plugin::PluginRegistry::get().registerPlugin(*descriptor, error);
+    const auto status = mln::plugin::PluginRegistry::get().registerPlugin(*descriptor, error);
     if (errorMessage && errorMessageCapacity) {
         const auto count = std::min(error.size(), errorMessageCapacity - 1);
         std::memcpy(errorMessage, error.data(), count);
@@ -360,15 +360,15 @@ mln_plugin_status mln_plugin_register_v1(const mln_plugin_descriptor_v1* descrip
 }
 
 uint8_t mln_plugin_is_registered_v1(const char* pluginID) {
-    return pluginID && mbgl::plugin::PluginRegistry::get().isRegistered(pluginID) ? 1 : 0;
+    return pluginID && mln::plugin::PluginRegistry::get().isRegistered(pluginID) ? 1 : 0;
 }
 
 size_t mln_plugin_count_v1(void) {
-    return mbgl::plugin::PluginRegistry::get().pluginIDs().size();
+    return mln::plugin::PluginRegistry::get().pluginIDs().size();
 }
 
 size_t mln_plugin_id_at_v1(size_t index, char* output, size_t outputCapacity) {
-    const auto ids = mbgl::plugin::PluginRegistry::get().pluginIDs();
+    const auto ids = mln::plugin::PluginRegistry::get().pluginIDs();
     if (index >= ids.size()) return 0;
     const auto& id = ids[index];
     if (output && outputCapacity) {

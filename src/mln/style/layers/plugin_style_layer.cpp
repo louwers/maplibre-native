@@ -1,6 +1,6 @@
-#include <mbgl/style/layers/plugin_style_layer.hpp>
+#include <mln/style/layers/plugin_style_layer.hpp>
 
-namespace mbgl {
+namespace mln {
 namespace style {
 
 struct PluginStyleLayer::Impl::TypeInfoHolder {
@@ -72,4 +72,4 @@ Mutable<Layer::Impl> PluginStyleLayer::mutableBaseImpl() const {
 }
 
 } // namespace style
-} // namespace mbgl
+} // namespace mln

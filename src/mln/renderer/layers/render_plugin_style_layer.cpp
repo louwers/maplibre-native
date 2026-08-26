@@ -1,9 +1,9 @@
-#include <mbgl/renderer/layers/render_plugin_style_layer.hpp>
+#include <mln/renderer/layers/render_plugin_style_layer.hpp>
 
-#include <mbgl/gfx/context.hpp>
-#include <mbgl/renderer/layer_group.hpp>
+#include <mln/gfx/context.hpp>
+#include <mln/renderer/layer_group.hpp>
 
-namespace mbgl {
+namespace mln {
 namespace {
 
 const style::PluginStyleLayer::Impl& pluginImpl(const Immutable<style::Layer::Impl>& impl) {
@@ -46,6 +46,7 @@ void RenderPluginStyleLayer::update(gfx::ShaderRegistry&,
                                     gfx::Context& context,
                                     const TransformState&,
                                     const std::shared_ptr<UpdateParameters>&,
+                                    const PaintParameters&,
                                     const RenderTree&,
                                     UniqueChangeRequestVec& changes) {
     if (!layerGroup) {
@@ -55,4 +56,4 @@ void RenderPluginStyleLayer::update(gfx::ShaderRegistry&,
     }
 }
 
-} // namespace mbgl
+} // namespace mln

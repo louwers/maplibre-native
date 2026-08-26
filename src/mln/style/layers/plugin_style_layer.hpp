@@ -1,12 +1,12 @@
 #pragma once
 
-#include <mbgl/plugin/plugin_registry.hpp>
-#include <mbgl/style/layer_impl.hpp>
-#include <mbgl/style/layer_properties.hpp>
+#include <mln/plugin/plugin_registry.hpp>
+#include <mln/style/layer_impl.hpp>
+#include <mln/style/layer_properties.hpp>
 
 #include <memory>
 
-namespace mbgl {
+namespace mln {
 namespace style {
 
 class PluginStyleLayer final : public Layer {
@@ -51,4 +51,4 @@ public:
 };
 
 } // namespace style
-} // namespace mbgl
+} // namespace mln

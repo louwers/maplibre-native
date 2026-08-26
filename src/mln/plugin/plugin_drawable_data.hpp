@@ -1,13 +1,13 @@
 #pragma once
 
-#include <mbgl/gfx/drawable_data.hpp>
-#include <mbgl/plugin/plugin_api.h>
-#include <mbgl/util/mat4.hpp>
+#include <mln/gfx/drawable_data.hpp>
+#include <mln/plugin/plugin_api.h>
+#include <mln/util/mat4.hpp>
 
 #include <algorithm>
 #include <cstdint>
 
-namespace mbgl {
+namespace mln {
 namespace gfx {
 
 /** Internal metadata attached by geometry adapters to ordinary drawables. */
@@ -51,4 +51,4 @@ public:
 };
 
 } // namespace gfx
-} // namespace mbgl
+} // namespace mln

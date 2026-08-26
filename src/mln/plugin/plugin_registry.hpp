@@ -1,7 +1,7 @@
 #pragma once
 
-#include <mbgl/plugin/plugin_api.h>
-#include <mbgl/style/style_property.hpp>
+#include <mln/plugin/plugin_api.h>
+#include <mln/style/style_property.hpp>
 
 #include <map>
 #include <mutex>
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace mbgl {
+namespace mln {
 namespace plugin {
 
 struct PropertyDefinition {
@@ -77,4 +77,4 @@ private:
 };
 
 } // namespace plugin
-} // namespace mbgl
+} // namespace mln

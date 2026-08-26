@@ -1,29 +1,29 @@
-#include <mbgl/plugin/plugin_layer_host.hpp>
+#include <mln/plugin/plugin_layer_host.hpp>
 
-#include <mbgl/gfx/context.hpp>
-#include <mbgl/gfx/renderable.hpp>
-#include <mbgl/gfx/renderer_backend.hpp>
-#include <mbgl/renderer/paint_parameters.hpp>
-#include <mbgl/renderer/render_pass.hpp>
-#include <mbgl/renderer/renderer_observer.hpp>
-#include <mbgl/storage/file_source.hpp>
-#include <mbgl/storage/resource.hpp>
-#include <mbgl/style/layers/custom_layer_render_parameters.hpp>
-#include <mbgl/util/async_request.hpp>
-#include <mbgl/util/logging.hpp>
+#include <mln/gfx/context.hpp>
+#include <mln/gfx/renderable.hpp>
+#include <mln/gfx/renderer_backend.hpp>
+#include <mln/renderer/paint_parameters.hpp>
+#include <mln/renderer/render_pass.hpp>
+#include <mln/renderer/renderer_observer.hpp>
+#include <mln/storage/file_source.hpp>
+#include <mln/storage/resource.hpp>
+#include <mln/style/layers/custom_layer_render_parameters.hpp>
+#include <mln/util/async_request.hpp>
+#include <mln/util/logging.hpp>
 
 #if MLN_RENDER_BACKEND_VULKAN
-#include <mbgl/vulkan/command_encoder.hpp>
-#include <mbgl/vulkan/context.hpp>
-#include <mbgl/vulkan/render_pass.hpp>
-#include <mbgl/vulkan/renderable_resource.hpp>
+#include <mln/vulkan/command_encoder.hpp>
+#include <mln/vulkan/context.hpp>
+#include <mln/vulkan/render_pass.hpp>
+#include <mln/vulkan/renderable_resource.hpp>
 #endif
 
 #if MLN_RENDER_BACKEND_METAL
-#include <mbgl/mtl/context.hpp>
-#include <mbgl/mtl/render_pass.hpp>
-#include <mbgl/mtl/renderable_resource.hpp>
-#include <mbgl/mtl/renderer_backend.hpp>
+#include <mln/mtl/context.hpp>
+#include <mln/mtl/render_pass.hpp>
+#include <mln/mtl/renderable_resource.hpp>
+#include <mln/mtl/renderer_backend.hpp>
 
 #include <Metal/Metal.hpp>
 #endif
@@ -33,7 +33,7 @@
 #include <map>
 #include <utility>
 
-namespace mbgl {
+namespace mln {
 namespace plugin {
 namespace {
 
@@ -449,4 +449,4 @@ void PluginLayerHost::disable(Instance& instance, const char* callbackName, mln_
 }
 
 } // namespace plugin
-} // namespace mbgl
+} // namespace mln

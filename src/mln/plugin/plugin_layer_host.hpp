@@ -1,14 +1,14 @@
 #pragma once
 
-#include <mbgl/plugin/plugin_registry.hpp>
-#include <mbgl/style/layer_impl.hpp>
-#include <mbgl/util/immutable.hpp>
+#include <mln/plugin/plugin_registry.hpp>
+#include <mln/style/layer_impl.hpp>
+#include <mln/util/immutable.hpp>
 
 #include <memory>
 #include <string>
 #include <vector>
 
-namespace mbgl {
+namespace mln {
 
 class PaintParameters;
 class FileSource;
@@ -52,4 +52,4 @@ private:
 };
 
 } // namespace plugin
-} // namespace mbgl
+} // namespace mln
