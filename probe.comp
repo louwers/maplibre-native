@@ -1,0 +1,10 @@
+#version 450
+layout(local_size_x = 8) in;
+shared uint s[8];
+void main() {
+    s[gl_LocalInvocationIndex] = gl_GlobalInvocationID.x * 3u;
+    barrier();
+    if (s[(gl_LocalInvocationIndex + 1u) % 8u] == 0xffffffffu) {
+        s[0] = 1u;
+    }
+}
