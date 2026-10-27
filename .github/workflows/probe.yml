@@ -34,6 +34,11 @@ jobs:
           dpkg-query -W 'libllvm*' | cat || true
           gcc --version | head -1
 
+      - name: ICD manifests
+        run: |
+          ls -la /usr/share/vulkan/icd.d/ /etc/vulkan/icd.d/ 2>&1 || true
+          for f in /usr/share/vulkan/icd.d/*.json; do echo "--- $f"; cat "$f"; echo; done
+
       - name: Build
         run: |
           gcc -O1 -fPIC -shared -o libkeyshim.so keyshim.c -ldl -lpthread
@@ -51,58 +56,15 @@ jobs:
         if: always()
         run: xvfb-run -a env LD_PRELOAD="$PWD/libkeyshim.so" KEYSHIM_FRAMES=24 ./probe probe.spv 40
 
-  real:
-    name: real mbgl-render-test-runner (coverage ${{ matrix.coverage }})
-    strategy:
-      fail-fast: false
-      matrix:
-        coverage: ['ON', 'OFF']
-    runs-on: ubuntu-26.04
-    timeout-minutes: 150
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          repository: maplibre/maplibre-native
-          ref: ac2ff66c644cdc8f292c67823f5eed135dc319a3
-          submodules: recursive
-          path: mln
-          persist-credentials: false
-
-      - name: Install dependencies
-        working-directory: mln
-        run: .github/scripts/install-linux-deps
-
-      - name: Build keyshim
-        run: gcc -O1 -fPIC -shared -o libkeyshim.so keyshim.c -ldl -lpthread
-
-      - name: Build mbgl-render-test-runner
-        working-directory: mln
+      - name: Probe (shim, loader pinned to lavapipe)
+        if: always()
         run: |
-          cmake --preset linux-vulkan -DMLN_WITH_COVERAGE=${{ matrix.coverage }}
-          cmake --build build-linux-vulkan --target mbgl-render-test-runner
+          LVP=$(ls /usr/share/vulkan/icd.d/lvp_icd*.json | head -1)
+          echo "pinning VK_DRIVER_FILES=$LVP"
+          VK_DRIVER_FILES="$LVP" LD_PRELOAD="$PWD/libkeyshim.so" KEYSHIM_FRAMES=24 ./probe probe.spv 40
 
-      - name: Run a subset of the render tests under the shim
-        working-directory: mln
-        env:
-          EGL_PLATFORM: surfaceless
-          KEYSHIM_FRAMES: 24
-          KEYSHIM_REPORT_AT_EXIT: 1
+      - name: Probe (pinned, under xvfb-run, no shim)
+        if: always()
         run: |
-          xvfb-run -a env LD_PRELOAD="$GITHUB_WORKSPACE/libkeyshim.so" \
-            build-linux-vulkan/mbgl-render-test-runner --manifestPath=metrics/linux-vulkan.json \
-            -f 'render-tests/(line-pitch|circle-pitch-alignment|fill-extrusion-pattern)/' 2>&1 | tee ../run.log || true
-          echo "=== tests run:"
-          grep -cE '\* (passed|failed|ignore)' ../run.log || true
-
-      - name: Key creators
-        run: |
-          grep 'keyshim:' run.log | cut -c1-1500
-          echo "=== symbolized frames from the runner binary"
-          grep -o 'mbgl-render-test-runner+0x[0-9a-f]*' run.log | sort | uniq -c | sort -rn | head -40 | while read n t; do
-            off=${t#*+}
-            echo "$n $t => $(addr2line -e mln/build-linux-vulkan/mbgl-render-test-runner -f -C -p $off)"
-          done
+          LVP=$(ls /usr/share/vulkan/icd.d/lvp_icd*.json | head -1)
+          xvfb-run -a env VK_DRIVER_FILES="$LVP" ./probe probe.spv 40
